@@ -9,7 +9,7 @@ public class Square implements DrawableBody {
 	private Fixture fixture;
 	private Color color;
 	
-	public Square(World world) {
+	public Square(World world, float x) {
 		BodyDef bdef = new BodyDef();
 		bdef.type = BodyType.DYNAMIC;
 		bdef.position.set(x,10);

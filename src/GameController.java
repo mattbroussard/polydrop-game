@@ -19,21 +19,8 @@ public class GameController implements Runnable {
 
 	}
 	
-	public Body spawnSquare(float x) {
-		BodyDef bdef = new BodyDef();
-		bdef.type = BodyType.DYNAMIC;
-		bdef.position.set(x,10);
-		Body square = model.world.createBody(bdef);
-		
-		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(.5f, .5f);
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.shape = shape;
-		fixtureDef.density=1;
-		fixtureDef.friction=0.3f;
-		square.createFixture(fixtureDef);
-		
-		return square;
+	public DrawableBody spawnSquare(float x) {		
+		return new Square(model.world, x);
 	}
 	
 	public void addView(GameView v) {
