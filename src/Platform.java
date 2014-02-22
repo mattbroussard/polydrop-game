@@ -1,3 +1,7 @@
+import java.awt.Color;
+
+import org.jbox2d.dynamics.*;
+
 
 public class Platform implements DrawableBody {
 
