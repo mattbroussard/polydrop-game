@@ -19,6 +19,7 @@ public class Main {
 		frame.setSize(640, 480);
 		frame.setLocation(100, 100);
 		frame.setContentPane(view);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 
 	}
