@@ -5,3 +5,6 @@ Icon*
 Thumbs.db
 classes/
 leaphack.jar
+lib/
+*.dll
+*.dylib

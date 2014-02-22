@@ -2,11 +2,11 @@
 import java.awt.*;
 import javax.swing.*;
 
-public class View extends JComponent {
+public class GameView extends JComponent {
 	
-	Model model;
+	GameModel model;
 
-	public View(Model m) {
+	public GameView(GameModel m) {
 
 		super();
 		model = m;
