@@ -2,7 +2,7 @@
 public class GameModel {
 	
 	
-	int x = 50, y = 50, w = 50, h = 10;
+	double x = 50, y = 50, w = 50, h = 10;
 	
 	
 	public GameModel() {
@@ -10,11 +10,15 @@ public class GameModel {
 		//do something
 		
 	}
-	public void moveLeft(int d){
+	public void moveLeft(double d){
+		x -= d;
+	}
+	public void moveRight(double d){
+		x += d;
+	}
+	public void tilt(double theta ){
 		
 	}
-	public void moveRight(int d){
-		
-	}
+	
 
 }
