@@ -21,11 +21,11 @@ public class GameModel {
 		
 		BodyDef bdef = new BodyDef();
 		bdef.type = BodyType.STATIC;
-		bdef.position.set(100,50);
+		bdef.position.set(4,1);
 		platform = world.createBody(bdef);
 		
 		PolygonShape platformShape = new PolygonShape();
-		platformShape.setAsBox(1, 1);
+		platformShape.setAsBox(.5f, 4);
 		FixtureDef platformFixtureDef = new FixtureDef();
 		platformFixtureDef .shape = platformShape;
 		platformFixtureDef .density=1;
