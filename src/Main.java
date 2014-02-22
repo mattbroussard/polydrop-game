@@ -11,14 +11,14 @@ public class Main {
 
 		//Setup controllers
 		GameController game = new GameController(model);
-		LeapController leap = new LeapController(game);
+		//LeapController leap = new LeapController(game);
 
 		//Setup view
 		GameView view = new GameView(model, game);
 		game.addView(view);
 		JFrame frame = new JFrame("Derp");
-		frame.setSize(640, 480);
-		frame.setLocation(100, 100);
+		frame.setExtendedState(Frame.MAXIMIZED_BOTH);
+		frame.setUndecorated(true);
 		frame.setContentPane(view);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.addKeyListener(view);
