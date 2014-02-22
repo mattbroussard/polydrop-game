@@ -1,6 +1,6 @@
 import java.awt.Polygon;
 
-public class Platform extends Polygon implements Block{
+public class Platform extends Block{
 	
 	public Platform(int x, int y, int w, int h){
 		super();
@@ -33,5 +33,11 @@ public class Platform extends Polygon implements Block{
 	}
 	public void applyNetForce() {
 		// do this
+	}
+
+	@Override
+	public void rotate(double theta) {
+		// TODO Auto-generated method stub
+		
 	}
 }

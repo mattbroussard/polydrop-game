@@ -1,7 +1,7 @@
-
-public interface Block extends Polygon {
-	public Vector2 getCenterOfMass();
-	public Vector2 addForce();
-	public Vector2 getNetForce();
-	public void rotate(double theta);
+import java.awt.Polygon;
+public abstract class Block extends Polygon {
+	public abstract Vector2 getCenterOfMass();
+	public abstract Vector2 addForce();
+	public abstract Vector2 getNetForce();
+	public abstract void rotate(double theta);
 }

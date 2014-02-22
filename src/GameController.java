@@ -35,11 +35,13 @@ public class GameController {
 		System.out.printf("x=%.3f, y=%.3f, theta=%.3f\n", x, y, theta);
 	}
 
-	public synchronized void collides(Block a, Block b) {
+	public synchronized boolean collides(Block a, Block b) {
 		for(int i = 0; i < a.npoints; i++)
-			if(b.contains(a.xpoints[i], a.ypoints[i]))
+			if(b.contains(a.xpoints[i], a.ypoints[i])){
 				System.out.println("Collision!");
-				return true;
+				return true;				
+			}
+
 		return false;
 	}
 	//public void pause() {}

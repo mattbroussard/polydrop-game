@@ -1,5 +1,5 @@
 
-public class SquareBlock implements Block {
+public class SquareBlock extends Block {
 	
 	private double upperLeft_x;
 	private double sideLength;
@@ -29,6 +29,18 @@ public class SquareBlock implements Block {
 		return new Vector2(0.0, 0.0);
 	} */
 	public void applyNetForce() {
+		
+	}
+
+	@Override
+	public Vector2 getNetForce() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void rotate(double theta) {
+		// TODO Auto-generated method stub
 		
 	}
 }
