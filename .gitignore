@@ -3,8 +3,8 @@
 ._*
 Icon*
 Thumbs.db
-classes/
+*.class
 leaphack.jar
-lib/
-*.dll
-*.dylib
+lib/*.jar
+lib/*.dll
+lib/*.dylib

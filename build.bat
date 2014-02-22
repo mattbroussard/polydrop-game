@@ -1,0 +1,1 @@
+javac -classpath lib/leapJava.jar -d classes/ src/*.java
