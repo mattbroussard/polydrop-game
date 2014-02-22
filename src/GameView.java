@@ -63,8 +63,8 @@ public class GameView extends JComponent implements KeyListener{
 		g.drawString("Hello World", 20, 20);
 		
 		g.setColor(Color.GRAY);
-		Platform p = model.getPlatform();
-		g.fillPolygon(p);
+		Body p = model.getPlatform();
+		//g.fillPolygon(p);
 
 		Body body = model.body;
 		resetTrans(g2);

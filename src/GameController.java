@@ -23,13 +23,13 @@ public class GameController implements Runnable {
 	}
 	
 	public synchronized void movePlatformRight(double d) {
-		Platform p = model.getPlatform();
-		p.moveRight(d);
+	//	Platform p = model.getPlatform();
+	//	p.moveRight(d);
 		view.repaint();
 	}
 	
 	public synchronized void movePlatformLeft(double d) {
-		model.getPlatform().moveLeft(d);
+		//model.getPlatform().moveLeft(d);
 		view.repaint();
 	}
 	
