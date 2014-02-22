@@ -1,5 +1,5 @@
 default:
-	javac -classpath lib/leapJava.jar -d classes/ src/*.java
+	javac -classpath lib/leapJava.jar:lib/jbox2d-library-2.2.1.1.jar -d classes/ src/*.java
 
 clean:
 	rm -f classes/*
@@ -7,7 +7,7 @@ clean:
 
 run: test
 test:
-	java -Djava.library.path=lib -classpath classes:lib/leapJava.jar Main
+	java -Djava.library.path=lib -classpath classes:lib/leapJava.jar:lib/jbox2d-library-2.2.1.1.jar Main
 
 go: default test
 
