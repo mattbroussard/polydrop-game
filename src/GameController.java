@@ -19,22 +19,9 @@ public class GameController implements Runnable {
 
 	}
 	
-	public Body spawnSquare(float x) {
-		BodyDef bdef = new BodyDef();
-		bdef.type = BodyType.DYNAMIC;
-		bdef.position.set(x,10);
-		Body square = model.world.createBody(bdef);
-		
-		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(.5f, .5f);
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.shape = shape;
-		fixtureDef.density=1;
-		fixtureDef.friction=0.3f;
-		Fixture f = square.createFixture(fixtureDef);
-		square.setUserData(f);
-		
-		return square;
+
+	public DrawableBody spawnSquare(float x) {		
+		return new Square(model.world, x);
 	}
 	
 	public void addView(GameView v) {
@@ -86,7 +73,7 @@ public class GameController implements Runnable {
 	//stub
 	public synchronized void updatePlatformPosition(double x, double y, double theta) {
 //		model.platform.setLinearVelocity(new Vec2((float)(16*x-8)/50, (float)(10*y)));
-		model.platform.setTransform(new Vec2((float)(16*x-8), (float)(10*y)), (float) theta);
+		model.platform.getBody().setTransform(new Vec2((float)(16*x-8), (float)(10*y)), (float) theta);
 		//theta = theta * (180f / Math.PI);
 		//System.out.printf("x=%.3f, y=%.3f, theta=%.3f\n", x, y, theta);
 	}
