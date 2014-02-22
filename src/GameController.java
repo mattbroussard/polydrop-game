@@ -34,7 +34,7 @@ public class GameController {
 		theta = theta * (180f / Math.PI);
 		System.out.printf("x=%.3f, y=%.3f, theta=%.3f\n", x, y, theta);
 	}
-	public void pause() {}
-	public void unpause() {}
+	//public void pause() {}
+	//public void unpause() {}
 
 }

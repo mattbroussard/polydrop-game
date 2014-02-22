@@ -8,3 +8,4 @@ leaphack.jar
 lib/*.jar
 lib/*.dll
 lib/*.dylib
+*.log

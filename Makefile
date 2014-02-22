@@ -9,5 +9,7 @@ run: test
 test:
 	java -Djava.library.path=lib -classpath classes:lib/leapJava.jar Main
 
+go: default test
+
 jar:
 	jar cvfM leaphack.jar META-INF classes/*
