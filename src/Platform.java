@@ -1,10 +1,16 @@
 
+import org.jbox2d.dynamics.*;
+import org.jbox2d.common.*;
+import org.jbox2d.collision.shapes.*;
+import java.awt.Color;
+
 public class Platform implements DrawableBody {
 
 	private Body body;
+	private Fixture fixture;
 	private Color color;
 	
-	public Platform(int x, int y, int w, int h) {
+	public Platform(World world) {
 		BodyDef bdef = new BodyDef();
 		bdef.type = BodyType.STATIC;
 		bdef.position.set(0,1);
@@ -32,7 +38,7 @@ public class Platform implements DrawableBody {
 		return this.body;
 	}
 
-	public getFixture() {
-		return this.body.getUserData();
+	public Fixture getFixture() {
+		return this.fixture;
 	}
 }
