@@ -66,7 +66,7 @@ public class GameView extends JComponent implements KeyListener{
 		Body p = model.getPlatform();
 		//g.fillPolygon(p);
 
-		Body body = model.body;
+		Body body = model.platform;
 		resetTrans(g2);
 		g2.translate(body.getWorldCenter().x, body.getWorldCenter().y);
 		g2.rotate(body.getAngle());

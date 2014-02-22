@@ -1,5 +1,6 @@
 
 import org.jbox2d.dynamics.*;
+import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.*;
 
 public class GameController implements Runnable {
@@ -16,6 +17,23 @@ public class GameController implements Runnable {
 		t = new Thread(this);
 		t.start();
 
+	}
+	
+	public Body spawnSquare(float x) {
+		BodyDef bdef = new BodyDef();
+		bdef.type = BodyType.DYNAMIC;
+		bdef.position.set(x,10);
+		Body square = model.world.createBody(bdef);
+		
+		PolygonShape shape = new PolygonShape();
+		shape.setAsBox(.5f, .5f);
+		FixtureDef fixtureDef = new FixtureDef();
+		fixtureDef.shape = shape;
+		fixtureDef.density=1;
+		fixtureDef.friction=0.3f;
+		square.createFixture(fixtureDef);
+		
+		return square;
 	}
 	
 	public void addView(GameView v) {
@@ -36,14 +54,23 @@ public class GameController implements Runnable {
 	public synchronized void pause(){
 		paused = !paused;
 	}
+	
 
 	//temp?
 	public void run() {
-
+		long squareSpawnTime = System.currentTimeMillis();
 		long time = System.currentTimeMillis();
 		while (true) {
-
+			
+			// drop square every 2 seconds
 			long now = System.currentTimeMillis();
+			if(now - squareSpawnTime >= 2*1000) {
+				spawnSquare(0f);
+				squareSpawnTime = now;
+			}
+			
+			// physics update
+			now = System.currentTimeMillis();			
 			model.world.step((now-time)/1000f, 6, 2);
 			if (view!=null) view.repaint();
 			time = now;
@@ -56,8 +83,10 @@ public class GameController implements Runnable {
 
 	//stub
 	public synchronized void updatePlatformPosition(double x, double y, double theta) {
-		theta = theta * (180f / Math.PI);
-		System.out.printf("x=%.3f, y=%.3f, theta=%.3f\n", x, y, theta);
+//		model.platform.setLinearVelocity(new Vec2((float)(16*x-8), (float)(10*y)));
+		model.platform.setTransform(new Vec2((float)(16*x-8), (float)(10*y)), (float) theta);
+		//theta = theta * (180f / Math.PI);
+		//System.out.printf("x=%.3f, y=%.3f, theta=%.3f\n", x, y, theta);
 	}
 
 	public synchronized boolean collides(Block a, Block b) {
