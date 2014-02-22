@@ -8,7 +8,7 @@ public class GameModel {
 	
 	static final Vec2 GRAVITY = new Vec2(0.0f, -9.81f);
 
-//	ArrayList<Block> blockList = new ArrayList<Block>();
+	ArrayList<Body> blockList = new ArrayList<Body>();
 	Body platform;
 //	double x = 50, y = 50, w = 50, h = 10;
 	
