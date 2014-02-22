@@ -1,29 +1,37 @@
 import java.awt.Polygon;
 
-public class Platform extends Polygon{
+public class Platform extends Polygon implements Block{
 	
 	public Platform(int x, int y, int w, int h){
 		super();
-		this.addPoint(x, y);
-		this.addPoint(x+w, y);
+		this.addPoint(x  , y  );
+		this.addPoint(x+w, y  );
 		this.addPoint(x+w, y+h);
-		this.addPoint(x, y+h);
+		this.addPoint(x  , y+h);
 	
 	}
 	
 	public void moveLeft(double d){
 		for(int i = 0; i < xpoints.length; i++)
 			xpoints[i] -= d;
-
-		//x -= d;
 	}
 	public void moveRight(double d){
-		//x += d;
-		moveLeft(d*-1);
-		
+		moveLeft(d*-1);		
 	}
 	public void tilt(double theta){
 		
 	}
 
+	public Vector2 getCenterOfMass() {
+		return new Vector2(0.0, 0.0);
+	}
+	public Vector2 addForce() {
+		return new Vector2(0.0, 0.0);
+	}
+	public Vector2 getNetForce() {
+		return new Vector2(0.0, 0.0);
+	}
+	public void applyNetForce() {
+		// do this
+	}
 }

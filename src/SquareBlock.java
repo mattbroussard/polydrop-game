@@ -9,6 +9,8 @@ public class SquareBlock implements Block {
 	private Vector2 centerOfMass;
 	private Vector2 velocity;
 
+	private Vector2 netForce;
+
 	public SquareBlock(double upperLeft_x, double sideLength) {
 		this.upperLeft_x = upperLeft_x;
 		this.sideLength = sideLength;
@@ -22,10 +24,11 @@ public class SquareBlock implements Block {
 	public Vector2 addForce() {
 		return new Vector2(0.0, 0.0);
 	}
+	/*
 	public Vector2 getNetForce() {
 		return new Vector2(0.0, 0.0);
-	}
+	} */
 	public void applyNetForce() {
-		// do this
+		
 	}
 }

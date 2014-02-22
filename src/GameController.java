@@ -30,9 +30,17 @@ public class GameController {
 	}
 
 	//stub
-	public void updatePlatformPosition(double x, double y, double theta) {
+	public synchronized void updatePlatformPosition(double x, double y, double theta) {
 		theta = theta * (180f / Math.PI);
 		System.out.printf("x=%.3f, y=%.3f, theta=%.3f\n", x, y, theta);
+	}
+
+	public synchronized void collides(Block a, Block b) {
+		for(int i = 0; i < a.npoints; i++)
+			if(b.contains(a.xpoints[i], a.ypoints[i]))
+				System.out.println("Collision!");
+				return true;
+		return false;
 	}
 	//public void pause() {}
 	//public void unpause() {}
