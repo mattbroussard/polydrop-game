@@ -11,7 +11,7 @@ public class Main {
 
 		//Setup controllers
 		GameController game = new GameController(model);
-		//LeapController leap = new LeapController(game);
+		LeapController leap = new LeapController(game);
 
 		//Setup view
 		GameView view = new GameView(model, game);
