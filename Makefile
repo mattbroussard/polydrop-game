@@ -1,5 +1,5 @@
 default:
-	javac -classpath lib -d classes/ src/*.java
+	javac -classpath lib/leapJava.jar -d classes/ src/*.java
 
 clean:
 	rm -f classes/*
@@ -7,7 +7,7 @@ clean:
 
 run: test
 test:
-	java -classpath lib:classes Main
+	java -Djava.library.path=lib -classpath classes:lib/leapJava.jar Main
 
 jar:
 	jar cvfM leaphack.jar META-INF classes/*

@@ -1,18 +1,25 @@
 
-//import com.leapmotion.leap.*;
+import com.leapmotion.leap.*;
 
-public class LeapController {
+public class LeapController extends Listener {
 	
 	GameController game;
-	//Controller leap;
+	Controller leap;
 
-	public LeapController(GameController c) {
+	@Override
+	public void onInit(Controller c) {
 
-		game = c;
+		System.out.println("onInit");
+
+	}
+
+	public LeapController(GameController gc) {
+
+		game = gc;
 
 		//setup Leap listener/controller
-		//leap = new Controller();
-		//leap.addListener(this);
+		leap = new Controller();
+		leap.addListener(this);
 
 	}
 
