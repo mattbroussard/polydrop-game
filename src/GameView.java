@@ -6,7 +6,6 @@ public class GameView extends JComponent {
 	
 	GameModel model;
 	
-	int x, y, w, h;
 
 	public GameView(GameModel m) {
 
@@ -20,7 +19,7 @@ public class GameView extends JComponent {
 		g.drawString("Hello World", 20, 20);
 		
 		g.setColor(Color.GRAY);
-		g.fill3DRect(x, y, w, h, true);
+		g.fill3DRect(model.x, model.y, model.w, model.h, true);
 		
 	}
 
