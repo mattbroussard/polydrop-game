@@ -6,7 +6,7 @@ import org.jbox2d.collision.shapes.*;
 
 public class GameModel {
 	
-	static final Vec2 GRAVITY = new Vec2(0.0f, 9.81f);
+	static final Vec2 GRAVITY = new Vec2(0.0f, -9.81f);
 
 //	ArrayList<Block> blockList = new ArrayList<Block>();
 	Body platform;
@@ -17,20 +17,22 @@ public class GameModel {
 	
 	public GameModel() {
 		world = new World(GRAVITY);
-
 		
 		BodyDef bdef = new BodyDef();
 		bdef.type = BodyType.STATIC;
 		bdef.position.set(0,1);
 		platform = world.createBody(bdef);
+
+		platform.setTransform(new Vec2(-4, 4), 0);
 		
 		PolygonShape platformShape = new PolygonShape();
-		platformShape.setAsBox(.5f, 4);
+		platformShape.setAsBox(4, 1);
 		FixtureDef platformFixtureDef = new FixtureDef();
-		platformFixtureDef .shape = platformShape;
-		platformFixtureDef .density=1;
-		platformFixtureDef .friction=0.3f;
-		platform.createFixture(platformFixtureDef);
+		platformFixtureDef.shape = platformShape;
+		platformFixtureDef.density=1;
+		platformFixtureDef.friction=0.3f;
+		Fixture f = platform.createFixture(platformFixtureDef);
+		platform.setUserData(f); //make this better
 		
 
 /*		// Dynamic Body

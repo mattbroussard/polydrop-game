@@ -1,10 +1,12 @@
 
 import com.leapmotion.leap.*;
 
-public class LeapController extends Listener {
+public class LeapController extends Listener implements Runnable {
 	
 	GameController game;
 	Controller leap;
+
+	Thread t;
 
 	static final double SPACE_WIDTH = 500f;
 	static final double SPACE_HEIGHT = 500f;
@@ -31,13 +33,11 @@ public class LeapController extends Listener {
 	}
 
 	int n = 0;
-	@Override
-	public void onFrame(Controller c) {
+	public void processFrame(Frame frame) {
 
 		n++;
-		System.out.printf("onFrame called %d\n", n);
+		//System.out.printf("onFrame called %d\n", n);
 
-		Frame frame = leap.frame();
 		HandList hands = frame.hands();
 		if (hands.count()==0) return;
 		Hand hand = hands.frontmost();
@@ -49,7 +49,18 @@ public class LeapController extends Listener {
 		Vector handNorm = hand.palmNormal();
 		double handRoll = handNorm.roll();
 
-		//game.updatePlatformPosition(handX, handY, handRoll);
+		game.updatePlatformPosition(handX, handY, handRoll);
+
+	}
+
+	public void run() {
+
+		while (true) {
+
+			processFrame(leap.frame());
+			try { Thread.sleep(50); } catch (Exception e) {}
+
+		}
 
 	}
 
@@ -60,6 +71,9 @@ public class LeapController extends Listener {
 		//setup Leap listener/controller
 		leap = new Controller();
 		leap.addListener(this);
+		
+		t = new Thread(this);
+		t.start();
 
 	}
 

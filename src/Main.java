@@ -17,8 +17,8 @@ public class Main {
 		GameView view = new GameView(model, game);
 		game.addView(view);
 		JFrame frame = new JFrame("Derp");
-		frame.setSize(640, 480);
-		frame.setLocation(100, 100);
+		frame.setExtendedState(Frame.MAXIMIZED_BOTH);
+		frame.setUndecorated(true);
 		frame.setContentPane(view);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.addKeyListener(view);
