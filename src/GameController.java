@@ -1,12 +1,20 @@
 
-public class GameController {
+import org.jbox2d.dynamics.*;
+import org.jbox2d.common.*;
+
+public class GameController implements Runnable {
 	
 	GameModel model;
 	GameView view;
 	boolean paused;
 
+	Thread t;
+
 	public GameController(GameModel m) {
 		model = m;
+
+		t = new Thread(this);
+		t.start();
 
 	}
 	
@@ -27,6 +35,23 @@ public class GameController {
 	
 	public synchronized void pause(){
 		paused = !paused;
+	}
+
+	//temp?
+	public void run() {
+
+		long time = System.currentTimeMillis();
+		while (true) {
+
+			long now = System.currentTimeMillis();
+			model.world.step((now-time)/1000f, 6, 2);
+			if (view!=null) view.repaint();
+			time = now;
+
+			try { Thread.sleep(50); } catch (Exception e) {}
+
+		}
+
 	}
 
 	//stub

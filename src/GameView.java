@@ -5,6 +5,10 @@ import java.awt.event.KeyListener;
 
 import javax.swing.*;
 
+import org.jbox2d.dynamics.*;
+import org.jbox2d.common.*;
+import java.awt.geom.*;
+
 public class GameView extends JComponent implements KeyListener{
 	
 	GameModel model;
@@ -43,14 +47,29 @@ public class GameView extends JComponent implements KeyListener{
 	@Override
 	public void keyTyped(KeyEvent e) {}
 	
+	public void resetTrans(Graphics2D g2) {
+		AffineTransform at = new AffineTransform();
+		at.setToIdentity();
+		g2.setTransform(at);
+	}
+
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
+
+		Graphics2D g2 = (Graphics2D)g;
 
 		g.drawString("Hello World", 20, 20);
 		
 		g.setColor(Color.GRAY);
 		Platform p = model.getPlatform();
 		g.fillPolygon(p);
+
+		Body body = model.body;
+		resetTrans(g2);
+		g2.translate(body.getWorldCenter().x, body.getWorldCenter().y);
+		g2.rotate(body.getAngle());
+		g2.drawRect(-10, -10, 20, 20);
+		resetTrans(g2);
 		
 	}
 
