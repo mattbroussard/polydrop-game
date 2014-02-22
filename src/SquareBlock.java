@@ -2,6 +2,7 @@
 public class SquareBlock extends Block {
 	
 	private double upperLeft_x;
+	private double upperLeft_y;
 	private double sideLength;
 	private Vector2 center;
 	private double theta;

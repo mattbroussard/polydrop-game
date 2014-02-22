@@ -41,7 +41,9 @@ public class GameView extends JComponent implements KeyListener{
 	}
 
 	@Override
-	public void keyTyped(KeyEvent e) {}
+	public void keyTyped(KeyEvent e) {
+		
+	}
 	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
