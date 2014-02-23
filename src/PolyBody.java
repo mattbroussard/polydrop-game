@@ -9,8 +9,10 @@ public class PolyBody implements DrawableBody {
 	private Fixture fixture;
 	private Color color;
 	private int sides;
-	
-	public PolyBody(World world, float x, int sides, Color c) {
+	private long lifetime = 5; // seconds
+	private long expirationTime;
+
+	public PolyBody(World world, float x, int sides, Color c, long timeCreated) {
 		
 		BodyDef bdef = new BodyDef();
 		bdef.type = BodyType.DYNAMIC;
@@ -34,7 +36,7 @@ public class PolyBody implements DrawableBody {
 
 		this.color = c;
 		this.sides = sides;
-
+		this.expirationTime = timeCreated + this.lifetime*1000;
 	}
 
 	public Color getColor() {

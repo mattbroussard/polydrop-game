@@ -8,8 +8,10 @@ public class Square implements DrawableBody {
 	private Body body;
 	private Fixture fixture;
 	private Color color;
+	private long lifetime = 5; // seconds
+	private long expirationTime;
 	
-	public Square(World world, float x) {
+	public Square(World world, float x, long timeCreated) {
 		BodyDef bdef = new BodyDef();
 		bdef.type = BodyType.DYNAMIC;
 		bdef.position.set(x,10);
@@ -24,6 +26,7 @@ public class Square implements DrawableBody {
 		this.fixture = body.createFixture(fixtureDef);
 
 		this.color = Colors.SHAPES[1];
+		this.expirationTime = timeCreated + this.lifetime*1000;
 	}
 
 	public Color getColor() {
@@ -39,4 +42,8 @@ public class Square implements DrawableBody {
 	}
 
 	public int getValue() { return 1; }
+
+	public long getExpiration() {
+		return this.expirationTime;
+	}
 }

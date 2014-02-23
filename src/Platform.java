@@ -40,4 +40,8 @@ public class Platform implements DrawableBody {
 	}
 
 	public int getValue() { return 0; }
+
+	public long getExpiration() {
+		return 0;
+	}
 }
