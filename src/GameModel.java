@@ -28,10 +28,6 @@ public class GameModel {
 	public int getScore() {
 		return score;
 	}
-
-	public boolean isGameOver() {
-		return gameOver;
-	}
 	
 	public int getMaxScore(){
 		return maxScore;
