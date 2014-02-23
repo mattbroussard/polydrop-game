@@ -16,9 +16,6 @@ public class Main {
 		GameController game = new GameController(model);
 		LeapController leap = new LeapController(game);
 
-		//Mac thing for full screen mode, apparently has to be set before making the frame
-		System.setProperty("apple.awt.fullscreenhidecursor", "true");
-
 		//Setup view and frame
 		GameView view = new GameView(model, game);
 		game.addView(view);
@@ -35,14 +32,6 @@ public class Main {
 
 			frame.setExtendedState(Frame.MAXIMIZED_BOTH);
 			frame.setUndecorated(true);
-
-			GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-
-			try {
-				gd.setFullScreenWindow(frame);
-			} catch (Exception e) {
-				//what should I do here?
-			}
 
 		} else {
 			
