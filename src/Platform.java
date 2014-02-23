@@ -41,7 +41,9 @@ public class Platform implements DrawableBody {
 
 	public int getValue() { return 0; }
 
+	public void reduceLifetime(long dt) {}
+
 	public long getExpiration() {
-		return 0;
+		return -1000;
 	}
 }
