@@ -6,7 +6,7 @@ import org.jbox2d.collision.shapes.*;
 
 public class GameModel {
 	
-	static final Vec2 GRAVITY = new Vec2(0.0f, -9.81f);
+	static final Vec2 GRAVITY = new Vec2(0.0f, -20f);
 
 	ArrayList<DrawableBody> blockList = new ArrayList<DrawableBody>();
 	Platform platform;

@@ -19,11 +19,11 @@ public class Platform implements DrawableBody {
 		body.setTransform(new Vec2(-4, 4), 0);
 		
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(4, 1);
+		shape.setAsBox(4, 0.25f);
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.shape = shape;
 		fixtureDef.density = 1;
-		fixtureDef.friction = 0.3f;
+		fixtureDef.friction = 2.0f;
 		this.fixture = body.createFixture(fixtureDef);
 		//body.setUserData(f); //make this better
 
