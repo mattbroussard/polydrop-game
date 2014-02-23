@@ -13,10 +13,8 @@ public class Platform implements DrawableBody {
 	public Platform(World world) {
 		BodyDef bdef = new BodyDef();
 		bdef.type = BodyType.KINEMATIC;
-		bdef.position.set(0,1);
+		bdef.position.set(0,2);
 		body = world.createBody(bdef);
-
-		body.setTransform(new Vec2(-4, 4), 0);
 		
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(4, 0.25f);
@@ -27,7 +25,7 @@ public class Platform implements DrawableBody {
 		this.fixture = body.createFixture(fixtureDef);
 		//body.setUserData(f); //make this better
 
-		this.color = Color.green;
+		this.color = Colors.PLATFORM;
 	}
 
 	public Color getColor() {

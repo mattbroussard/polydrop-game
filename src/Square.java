@@ -23,7 +23,7 @@ public class Square implements DrawableBody {
 		fixtureDef.friction = 0.9f;
 		this.fixture = body.createFixture(fixtureDef);
 
-		this.color = Color.red;
+		this.color = Colors.SHAPES[1];
 	}
 
 	public Color getColor() {
