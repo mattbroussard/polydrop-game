@@ -199,6 +199,22 @@ public class GameView extends JComponent implements KeyListener{
 		g2.setColor(Colors.SCORE);
 		g2.drawString(score, 40, 80);
 
+		//Draw health bar
+		resetTrans(g2);
+		double health = (double)model.getHealth() / 100.0f;
+		int healthWidth = 200;
+		int healthHeight = 30;
+		int healthX = this.getWidth() - 40 - healthWidth;
+		int healthMid = healthX + (int)(health * healthWidth);
+		int healthY = 40;
+		g2.setColor(Colors.HEALTH);
+		g2.fillRect(healthX, healthY, healthWidth, healthHeight);
+		Color healthColor = Colors.HEALTH_GOOD;
+		if (health < 0.6f) healthColor = Colors.HEALTH_MID;
+		if (health < 0.3f) healthColor = Colors.HEALTH_BAD;
+		g2.setColor(healthColor);
+		g2.fillRect(healthX, healthY, healthMid - healthX, healthHeight);
+
 		synchronized (notifs) {
 
 			//Prune old score notifications

@@ -26,4 +26,9 @@ public class Colors {
 	public static final Color REWARD = Color.GREEN;
 	public static final Color PENALTY = Color.RED;
 
+	public static final Color HEALTH = Color.WHITE;
+	public static final Color HEALTH_GOOD = Color.GREEN;
+	public static final Color HEALTH_MID = Color.YELLOW;
+	public static final Color HEALTH_BAD = Color.RED;
+
 }
