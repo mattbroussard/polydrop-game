@@ -94,8 +94,11 @@ public class GameView extends JComponent implements KeyListener{
 		transformForBodies(g2);
 
 		//Draw platform
-		Body p = model.getPlatform();
+		Platform p = model.getPlatform();
 		drawBody(p, g2);
+		
+		for(Body b : model.blockList) drawBody(b, g2);
+		
 
 		
 	}

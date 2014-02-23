@@ -19,6 +19,7 @@ public class GameController implements Runnable {
 
 	}
 	
+
 	public DrawableBody spawnSquare(float x) {		
 		return new Square(model.world, x);
 	}
@@ -52,7 +53,8 @@ public class GameController implements Runnable {
 			// drop square every 2 seconds
 			long now = System.currentTimeMillis();
 			if(now - squareSpawnTime >= 2*1000) {
-				spawnSquare(0f);
+				model.blockList.add(spawnSquare(0f));
+				System.out.println("creating new square");
 				squareSpawnTime = now;
 			}
 			
@@ -70,8 +72,8 @@ public class GameController implements Runnable {
 
 	//stub
 	public synchronized void updatePlatformPosition(double x, double y, double theta) {
-//		model.platform.setLinearVelocity(new Vec2((float)(16*x-8), (float)(10*y)));
-		model.platform.setTransform(new Vec2((float)(16*x-8), (float)(10*y)), (float) theta);
+//		model.platform.setLinearVelocity(new Vec2((float)(16*x-8)/50, (float)(10*y)));
+		model.platform.getBody().setTransform(new Vec2((float)(16*x-8), (float)(10*y)), (float) theta);
 		//theta = theta * (180f / Math.PI);
 		//System.out.printf("x=%.3f, y=%.3f, theta=%.3f\n", x, y, theta);
 	}
