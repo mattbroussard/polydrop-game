@@ -120,7 +120,14 @@ public class GameView extends JComponent implements KeyListener{
 		long exp = System.currentTimeMillis() + NOTIFICATION_TIME;
 		String msg = String.format("%s%d", (scoreDelta>=0?"+":""), scoreDelta);
 
-		Notification n = new Notification(pos.x, pos.y, exp, msg, c);
+		Notification n = new Notification(pos.x, pos.y, exp, msg, 30, c);
+		notifs.addFirst(n);
+
+	}
+
+	public void notifyLevel() {
+
+		Notification n = new Notification(-1.0f, 5.0f, System.currentTimeMillis() + NOTIFICATION_TIME, "Level Up!", 60, Colors.REWARD);
 		notifs.addFirst(n);
 
 	}
@@ -179,13 +186,13 @@ public class GameView extends JComponent implements KeyListener{
 
 		//Draw score notifications
 		resetTrans(g2);
-		g2.setFont(new Font("Monospace", 0, 30));
 		for (GameView.Notification n : notifs) {
 			double x = convertGameX(n.x);
 			double progress = ((double)(NOTIFICATION_TIME-n.expiry+now) / (double)NOTIFICATION_TIME);
 			double dy = progress * NOTIFICATION_DISTANCE;
 			double y = convertGameY(n.y + dy);
 			g2.setColor(interpolateColor(n.color, Colors.BACKGROUND, progress));
+			g2.setFont(new Font("Monospace", 0, n.size));
 			g2.drawString(n.msg, (int)x, (int)y);
 			//System.out.printf("Drawing notif \"%s\" at (%d,%d).\n", n.msg, (int)x, (int)y);
 		}
@@ -197,12 +204,14 @@ public class GameView extends JComponent implements KeyListener{
 		double y;
 		long expiry;
 		String msg;
+		int size;
 		Color color;
-		public Notification(double x, double y, long expiry, String msg, Color color) {
+		public Notification(double x, double y, long expiry, String msg, int size, Color color) {
 			this.x = x;
 			this.y = y;
 			this.expiry = expiry;
 			this.msg = msg;
+			this.size = size;
 			this.color = color;
 		}
 	}

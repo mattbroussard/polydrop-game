@@ -42,6 +42,10 @@ public class GameController implements Runnable {
 		return paused;
 	}
 	
+	public int calculateLevel(int score) {
+		return score/300;
+	}
+
 	public DrawableBody spawn() {
 
 		int sides = (int)Math.round(Math.random()*5) + 3;
@@ -53,7 +57,7 @@ public class GameController implements Runnable {
 								 	{3,4,5,6,7,8},
 								 	{3,3,3,4,4,5,6,7,7,8,8,8}};
 //		int level = Arrays.binarySearch(scoreNeededToLevel, model.getMaxScore());
-		int level = model.getMaxScore() / 300;
+		int level = calculateLevel(model.getMaxScore());
 		if(level >= distributions.length) level = distributions.length-1;
 		int newPoly = (int)(Math.random()*(distributions[level].length));
 		//return distributions[newPoly] == 4 ? new Square(model.world, x) : new PolyBody(model.world, x, distributions[newPoly], Colors.SHAPES[distributions[newPoly]-3]);
@@ -81,7 +85,6 @@ public class GameController implements Runnable {
 			if(now - squareSpawnTime >= 2*1000) {
 				DrawableBody db = spawn();
 				model.blockList.add(db);
-				//model.addPoints(db.getValue());
 				squareSpawnTime = now;
 			}
 			
@@ -98,7 +101,14 @@ public class GameController implements Runnable {
 				b.reduceLifetime(dt);
 				if( b.getExpiration() <= 0 ) {
 					// yay, points!
+
+					int oldLevel = calculateLevel(model.getMaxScore());
 					model.addPoints(b.getValue());
+					int newLevel = calculateLevel(model.getMaxScore());
+					if (newLevel > oldLevel) {
+						view.notifyLevel();
+					}
+					
 					view.notifyScore(b, b.getValue());
 					itr.remove();
 					model.world.destroyBody(b.getBody());
