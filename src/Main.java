@@ -21,11 +21,23 @@ public class Main {
 		JFrame frame = new JFrame("Derp");
 
 		if (FULL_SCREEN) {
+
 			frame.setExtendedState(Frame.MAXIMIZED_BOTH);
 			frame.setUndecorated(true);
+
+			GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+
+			try {
+				gd.setFullScreenWindow(frame);
+			} catch (Exception e) {
+				//what should I do here?
+			}
+
 		} else {
+			
 			frame.setSize(800,500);
 			frame.setLocation(100,100);
+
 		}
 
 		frame.setContentPane(view);
