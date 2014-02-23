@@ -19,7 +19,7 @@ public class Main {
 		//Setup view and frame
 		GameView view = new GameView(model, game);
 		game.addView(view);
-		JFrame frame = new JFrame("Derp");
+		JFrame frame = new JFrame("PolyDrop");
 		frame.setContentPane(view);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.addKeyListener(view);

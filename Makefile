@@ -4,7 +4,6 @@ default:
 clean:
 	rm -f classes/*
 	rm -f leaphack.jar
-	rm -rf Derp.app
 
 run: test
 test:
