@@ -13,6 +13,7 @@ public class LeapController extends Listener implements Runnable {
 	static final double SPACE_WIDTH = 500f;
 	static final double SPACE_HEIGHT = 500f;
 	static final double FIST_THRESHOLD = Math.PI / 4f;
+	static final double Z_PAUSE_THRESHOLD = 175f;
 	
 	double handResumeX = 0, handResumeY = 0;
 	double handPauseX = 0, handPauseY = 0;
@@ -79,12 +80,12 @@ public class LeapController extends Listener implements Runnable {
 		long now = System.currentTimeMillis();
 		long dt = (lastUpdate < 0) ? 0 : now-lastUpdate;
 		
-		if (hand.fingers().count() <= 1 && Math.abs(handRoll) < FIST_THRESHOLD) {
+		if ((hand.fingers().count() <= 1 && Math.abs(handRoll) < FIST_THRESHOLD) || handPos.getZ() > Z_PAUSE_THRESHOLD) {
 			if(!game.paused){
 				game.pause();
 				return;
 			}
-		} else if(game.paused) {
+		} else if (game.paused) {
 			game.unpause();
 			return;
 		}
