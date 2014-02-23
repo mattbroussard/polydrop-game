@@ -188,7 +188,9 @@ public class GameView extends JComponent implements KeyListener{
 		
 		//Draw blocks
 		ArrayList<DrawableBody> blocks = model.getBlocks();
-		for(DrawableBody b : blocks) drawBody(b, g2);
+		synchronized (blocks) {
+			for(DrawableBody b : blocks) drawBody(b, g2);
+		}
 
 		//Draw score
 		resetTrans(g2);
