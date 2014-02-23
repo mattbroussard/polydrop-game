@@ -43,12 +43,14 @@ public class GameController implements Runnable {
 	public DrawableBody spawn() {
 
 		int sides = (int)Math.round(Math.random()*5) + 3;
-		float x = (float)(Math.random() * 10 - 5);
+		float x;
 
-		int distributions[] = {3,3,3,3,3,4,4,5,5,6,6,7,8,8,8};
+		int distributions[] = {3,3,3,7,3,4,4,5,5,6,6,7,8,8,8};
 		int newPoly = (int)(Math.random()*(distributions.length));
 		//return distributions[newPoly] == 4 ? new Square(model.world, x) : new PolyBody(model.world, x, distributions[newPoly], Colors.SHAPES[distributions[newPoly]-3]);
 		//long now = System.currentTimeMillis();
+		x = (float)(Math.random() * 12 - 6 );		
+
 		return new PolyBody(model.world, x, distributions[newPoly]);
 
 	}
@@ -106,9 +108,9 @@ public class GameController implements Runnable {
 				if(pos.y < -2) {
 					// Oh no! Lose points. :(
 					itr.remove();
+					view.notifyScore(b, -50);
 					model.world.destroyBody(b.getBody());
 					model.addPoints(-50);
-					view.notifyScore(b, -50);
 				}
 			}
 			
