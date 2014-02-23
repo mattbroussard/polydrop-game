@@ -22,6 +22,7 @@ public class GameController implements Runnable {
 	
 	final int timesToSpawn[] = {1000,700,500,300,250};
 	final int scoreNeededToLevel[] = {0,80,200,500,1000};
+	//final int scoreNeededToLevel[] = {0,0,0,0,0};
 	final int distributions[][] = {	{3,4,5},
 							 		{3,4,5,6,6},
 							 		{3,4,5,6,7,7},
@@ -101,9 +102,12 @@ public class GameController implements Runnable {
 		long platformPositionTime = System.currentTimeMillis();
 		while (true) {
 			
+			try { Thread.sleep(50); } catch (Exception e) {}
+
 			// Just spin if we're paused
 			if (isPaused() || model.isGameOver()) {
 				time = System.currentTimeMillis();
+				view.repaint();
 				continue;
 			}
 
@@ -177,8 +181,6 @@ public class GameController implements Runnable {
 				view.repaint();
 			}
 			time = now;
-			
-			try { Thread.sleep(50); } catch (Exception e) {}
 
 		}
 
