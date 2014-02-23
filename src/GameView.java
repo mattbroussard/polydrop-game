@@ -38,6 +38,7 @@ public class GameView extends JComponent implements KeyListener{
 	@Override
 	public void keyReleased(KeyEvent e) {
 		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) System.exit(0);
+		if(e.getKeyCode() == KeyEvent.VK_SPACE) controller.newGame();
 	}
 
 	@Override
@@ -242,11 +243,17 @@ public class GameView extends JComponent implements KeyListener{
 		//draw game over message if game over
 		if (gameOver) {
 			drawStringCentered(	"GAME OVER",
-								new Font("Monospace", 0, 250),
+								new Font("Monospace", 0, 200),
 								Colors.HEALTH_BAD,
 								g2,
 								this.getWidth()/2,
 								this.getHeight()/2);
+			drawStringCentered(		"Press [space] to play again",
+								new Font("Monospace", 0, 40),
+								Colors.PAUSED_TEXT,
+								g2,
+								this.getWidth()/2,
+								this.getHeight()*3/4);
 		}
 		
 	}

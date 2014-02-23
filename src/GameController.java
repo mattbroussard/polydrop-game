@@ -183,5 +183,13 @@ public class GameController implements Runnable {
 		model.platform.getBody().setAngularVelocity((float)(dtheta/dt*1000));		
 	}
 
+	public void newGame() {
+
+		if (!model.isGameOver()) return;
+
+		model = new GameModel();
+		view.model = model;
+
+	}
 
 }
