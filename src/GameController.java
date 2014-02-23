@@ -45,13 +45,19 @@ public class GameController implements Runnable {
 		int sides = (int)Math.round(Math.random()*5) + 3;
 		float x;
 
-		int distributions[] = {3,3,3,7,3,4,4,5,5,6,6,7,8,8,8};
-		int newPoly = (int)(Math.random()*(distributions.length));
+		int distributions[][] = {	{3,4,5},
+								 	{3,3,4,4,5,5,6},
+									{3,3,3,4,4,5,5,6,6,7},
+								 	{3,3,3,4,4,4,5,5,6,6,7,7,8},
+								 	{3,3,3,4,4,5,5,6,6,7,7,8,8}};
+		int level = model.getMaxScore() / 300;
+		if(level >= distributions.length) level = distributions.length-1;
+		int newPoly = (int)(Math.random()*(distributions[level].length));
 		//return distributions[newPoly] == 4 ? new Square(model.world, x) : new PolyBody(model.world, x, distributions[newPoly], Colors.SHAPES[distributions[newPoly]-3]);
 		//long now = System.currentTimeMillis();
 		x = (float)(Math.random() * 12 - 6 );		
 
-		return new PolyBody(model.world, x, distributions[newPoly]);
+		return new PolyBody(model.world, x, distributions[level][newPoly]);
 
 	}
 
