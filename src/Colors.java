@@ -19,4 +19,7 @@ public class Colors {
 	public static final Color PLATFORM = Color.WHITE;
 	public static final Color SCORE = Color.WHITE;
 
+	public static final Color REWARD = Color.GREEN;
+	public static final Color PENALTY = Color.RED;
+
 }
