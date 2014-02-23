@@ -44,7 +44,7 @@ public class GameController implements Runnable {
 
 		int sides = (int)Math.round(Math.random()*5) + 3;
 		Color[] colors = { Color.BLUE, Color.RED, Color.MAGENTA, Color.YELLOW, Color.ORANGE, Color.BLACK };
-		float x = (float)(Math.random() * 14 - 7);
+		float x = (float)(Math.random() * 10 - 5);
 		return sides == 4 ? new Square(model.world, x) : new PolyBody(model.world, x, sides, colors[sides-3]);
 
 	}
