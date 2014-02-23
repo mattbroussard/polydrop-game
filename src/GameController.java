@@ -17,7 +17,12 @@ public class GameController implements Runnable {
 	float platformOffsetx = 0f;
 	float platformOffsety = 0f; // used to un-pause smoothly
 
+	float platformDeltax = 0f;
+
 	final int scoreNeededToLevel[] = {0,100,300,1000,3000};
+	
+	final int timesToSpawn[] = {1000,900,750,600,500};
+	final int scoreNeededToLevel[] = {0,80,200,500,1000};
 	final int distributions[][] = {	{3,4,5},
 							 		{3,4,5,6,6},
 							 		{3,4,5,6,7,7},
@@ -88,14 +93,14 @@ public class GameController implements Runnable {
 		while (true) {
 			
 			// Just spin if we're paused
-			if (isPaused()) {
+			if (isPaused() || model.isGameOver()) {
 				time = System.currentTimeMillis();
 				continue;
 			}
 
 			// drop block every 2 seconds
 			long now = System.currentTimeMillis();
-			if(now - squareSpawnTime >= 2*1000) {
+			if(now - squareSpawnTime >= 2*timesToSpawn[calculateLevel(model.getMaxScore())]) {
 				DrawableBody db = spawn();
 				synchronized (model.blockList) {
 					model.blockList.add(db);
@@ -171,7 +176,7 @@ public class GameController implements Runnable {
 	}
 
 	public synchronized void updatePlatformPosition(double handx, double handy, double theta, double dt) {
-		if (isPaused()) return;
+		if (isPaused() || model.isGameOver()) return;
 		//model.platform.getBody().setTransform(model.platform.getBody().getPosition(), (float) theta);
 		double dtheta = theta - model.platform.getBody().getAngle();
 		float dx = (16*(float)handx - 8) /*+ platformOffsetx */- model.platform.getBody().getPosition().x;
