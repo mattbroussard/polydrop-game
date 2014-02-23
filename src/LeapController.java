@@ -33,7 +33,7 @@ public class LeapController extends Listener implements Runnable {
 	@Override
 	public void onFocusLost(Controller c) {
 
-		game.pause(0, 1);
+		game.pause();
 
 	}
 
@@ -43,7 +43,7 @@ public class LeapController extends Listener implements Runnable {
 		HandList hands = frame.hands();
 		
 		if (hands.count()==0) {
-			game.pause(0, 0);
+			game.pause();
 			return;
 		}
 
@@ -66,7 +66,7 @@ public class LeapController extends Listener implements Runnable {
 		double handRoll = handNorm.roll();
 
 		if (hand.fingers().count() <= 1 && Math.abs(handRoll) < FIST_THRESHOLD) {
-			game.pause(handX, handY);
+			game.pause();
 		} else {
 			game.unpause();
 		}
