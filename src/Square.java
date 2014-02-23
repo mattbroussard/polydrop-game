@@ -13,7 +13,7 @@ public class Square implements DrawableBody {
 		BodyDef bdef = new BodyDef();
 		bdef.type = BodyType.DYNAMIC;
 		bdef.position.set(x,10);
-		body = model.world.createBody(bdef);
+		body = world.createBody(bdef);
 		
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(.5f, .5f);
