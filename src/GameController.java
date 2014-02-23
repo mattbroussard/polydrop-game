@@ -13,7 +13,7 @@ public class GameController implements Runnable {
 	GameModel model;
 	GameView view;
 	boolean paused = false;
-	
+
 	float platformOffsetx = 0f;
 	float platformOffsety = 0f; // used to un-pause smoothly
 
@@ -37,9 +37,11 @@ public class GameController implements Runnable {
 		view = v;
 	}
 	
-	public synchronized void pause(double handx, double handy){
+	public synchronized void pause() {
+		/*
 		platformOffsetx = (16*(float)handx - 8);
 		platformOffsety = (10*(float)handy);
+		*/
 		paused = true;
 		if (view != null) view.repaint();
 	}
@@ -153,8 +155,8 @@ public class GameController implements Runnable {
 		if (isPaused()) return;
 		//model.platform.getBody().setTransform(model.platform.getBody().getPosition(), (float) theta);
 		double dtheta = theta - model.platform.getBody().getAngle();
-		float dx = (16*(float)handx - 8) + platformOffsetx - model.platform.getBody().getPosition().x;
-		float dy = (10*(float)handy)     + platformOffsety - model.platform.getBody().getPosition().y;
+		float dx = (16*(float)handx - 8) /*+ platformOffsetx */- model.platform.getBody().getPosition().x;
+		float dy = (10*(float)handy)     /*+ platformOffsety */- model.platform.getBody().getPosition().y;
 		model.platform.getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
 		model.platform.getBody().setAngularVelocity((float)(dtheta/dt*1000));		
 	}
