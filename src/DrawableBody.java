@@ -8,5 +8,6 @@ public interface DrawableBody {
 	public Fixture getFixture();
 	public Color getColor();
 	public int getValue();
+	public long getExpiration();
 
 }
