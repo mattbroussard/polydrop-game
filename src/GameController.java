@@ -92,7 +92,7 @@ public class GameController implements Runnable {
 				Vec2 pos = block.getBody().getPosition();
 				if(pos.y < -5) {
 					itr.remove();
-					model.addPoints(-1);
+					model.addPoints(-1 * block.getValue());
 				}
 			}
 			System.out.println("Number of blocks = " + model.blockList.size());
