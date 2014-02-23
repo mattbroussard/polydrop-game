@@ -2,6 +2,7 @@
 import org.jbox2d.dynamics.*;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.*;
+import java.util.Iterator;
 
 public class GameController implements Runnable {
 	
@@ -69,12 +70,13 @@ public class GameController implements Runnable {
 			time = now;
 
 			// remove blocks that have fallen
-			itr = model.blockList.Iterator();
+			Iterator<DrawableBody> itr = model.blockList.iterator();
 			while( itr.hasNext() ) {
-				block = itr.next();
+				DrawableBody block = itr.next();
 				Vec2 pos = block.getBody().getPosition();
-				if(pos.y < -10) {
+				if(pos.y < -5) {
 					itr.remove();
+					model.addPoints(-1);
 				}
 			}
 			System.out.println("Number of blocks = " + model.blockList.size());
@@ -86,10 +88,8 @@ public class GameController implements Runnable {
 	}
 
 	public synchronized void updatePlatformPosition(double x, double y, double theta) {
-
 		if (isPaused()) return;
 		model.platform.getBody().setTransform(new Vec2((float)(16*x-8), (float)(10*y)), (float) theta);
-		
 	}
 
 
