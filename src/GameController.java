@@ -20,7 +20,7 @@ public class GameController implements Runnable {
 	double platformDeltax = 0;
 	double platformDeltay = 0;
 	
-	final int timesToSpawn[] = {1000,900,750,600,500};
+	final int timesToSpawn[] = {1000,700,500,300,250};
 	final int scoreNeededToLevel[] = {0,80,200,500,1000};
 	final int distributions[][] = {	{3,4,5},
 							 		{3,4,5,6,6},
@@ -193,6 +193,7 @@ public class GameController implements Runnable {
 		model.platform.getBody().setAngularVelocity((float)(dtheta/dt*1000));		
 	}
 
+	/*
 	private Vec2 calculateVelocity(double handx, double handy, double dt) {
 		handx = (16*handx - 8);
 		handy = (10*handy);
@@ -221,6 +222,7 @@ public class GameController implements Runnable {
 		System.out.println();
 		return new Vec2(vx, vy);
 	}
+	*/
 
 	public void newGame() {
 

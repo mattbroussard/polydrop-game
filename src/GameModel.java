@@ -38,7 +38,7 @@ public class GameModel {
 	}
 
 	public void reduceHealth() {
-		this.health -= 10;
+		this.health -= 5;
 		this.gameOver = (this.health <= 0);
 	}
 
