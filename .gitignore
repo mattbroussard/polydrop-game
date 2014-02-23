@@ -8,3 +8,4 @@ lib/*.jar
 lib/*.dll
 lib/*.dylib
 *.log
+*.app

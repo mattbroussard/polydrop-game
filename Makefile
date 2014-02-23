@@ -4,6 +4,7 @@ default:
 clean:
 	rm -f classes/*
 	rm -f leaphack.jar
+	rm -rf Derp.app
 
 run: test
 test:
@@ -11,5 +12,10 @@ test:
 
 go: default test
 
-jar:
-	jar cvfM leaphack.jar META-INF classes/*
+#ugly hack
+jar: clean default
+	cd classes; \
+		mv ../META-INF ./; \
+		jar cvfM leaphack.jar META-INF *.class; \
+		mv META-INF ../; \
+		mv leaphack.jar ../
