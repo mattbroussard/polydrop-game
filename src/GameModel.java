@@ -15,6 +15,7 @@ public class GameModel {
 	Body body;
 	
 	int score = 0;
+	int maxScore = score;
 
 	public GameModel() {
 		world = new World(GRAVITY);
@@ -24,9 +25,14 @@ public class GameModel {
 	public int getScore() {
 		return score;
 	}
+	
+	public int getMaxScore(){
+		return maxScore;
+	}
 
 	public void addPoints(int p) {
 		score += p;
+		if(score > maxScore) maxScore = score;
 	}
 
 	public Platform getPlatform(){
