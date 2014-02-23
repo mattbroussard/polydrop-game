@@ -16,8 +16,9 @@ public class GameController implements Runnable {
 
 	float platformOffsetx = 0f;
 	float platformOffsety = 0f; // used to un-pause smoothly
-
-	final int scoreNeededToLevel[] = {0,100,300,1000,3000};
+	
+	final int timesToSpawn[] = {1000,900,750,600,500};
+	final int scoreNeededToLevel[] = {0,80,200,500,1000};
 	final int distributions[][] = {	{3,4,5},
 							 		{3,4,5,6,6},
 							 		{3,4,5,6,7,7},
@@ -94,7 +95,7 @@ public class GameController implements Runnable {
 
 			// drop block every 2 seconds
 			long now = System.currentTimeMillis();
-			if(now - squareSpawnTime >= 2*1000) {
+			if(now - squareSpawnTime >= 2*timesToSpawn[calculateLevel(model.getMaxScore())]) {
 				DrawableBody db = spawn();
 				model.blockList.add(db);
 				squareSpawnTime = now;
