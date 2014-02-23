@@ -16,11 +16,11 @@ public class Square implements DrawableBody {
 		body = world.createBody(bdef);
 		
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(.25f, .25f);
+		shape.setAsBox(.40f, .40f);
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.shape = shape;
 		fixtureDef.density = 1;
-		fixtureDef.friction = 0.3f;
+		fixtureDef.friction = 0.9f;
 		this.fixture = body.createFixture(fixtureDef);
 
 		this.color = Color.red;
