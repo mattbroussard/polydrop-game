@@ -2,6 +2,8 @@
 import org.jbox2d.dynamics.*;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.*;
+
+import java.util.Arrays;
 import java.util.Iterator;
 
 import java.awt.Color;
@@ -11,8 +13,17 @@ public class GameController implements Runnable {
 	GameModel model;
 	GameView view;
 	boolean paused = false;
+	
 	float platformOffsetx = 0f;
 	float platformOffsety = 0f; // used to un-pause smoothly
+
+	final int scoreNeededToLevel[] = {0,100,300,1000,3000};
+	final int distributions[][] = {	{3,4,5},
+							 		{3,4,5,6,6},
+							 		{3,4,5,6,7,7},
+							 		{3,4,5,6,7,8,8},
+							 		{3,4,5,6,7,8},
+							 		{3,4,5,6,7,8}};
 
 	Thread t;
 
@@ -41,16 +52,23 @@ public class GameController implements Runnable {
 		return paused;
 	}
 	
+	public int calculateLevel(int score) {
+		int level = Arrays.binarySearch(scoreNeededToLevel, score);
+		if(level >= 0) return level;
+		else{
+			level += 1;
+			level *= -1;
+			level -= 1;
+		}
+		return level;
+	}
+
 	public DrawableBody spawn() {
 		int sides = (int)Math.round(Math.random()*5) + 3;
 		float x;
 
-		int distributions[][] = {	{3,4,5},
-								 	{3,3,4,4,5,5,6},
-									{3,3,3,4,4,5,5,6,6,7},
-								 	{3,3,3,4,4,4,5,5,6,6,7,7,8},
-								 	{3,3,3,4,4,5,5,6,6,7,7,8,8}};
-		int level = model.getMaxScore() / 300;
+//		int level = Arrays.binarySearch(scoreNeededToLevel, model.getMaxScore());
+		int level = calculateLevel(model.getMaxScore());
 		if(level >= distributions.length) level = distributions.length-1;
 		int newPoly = (int)(Math.random()*(distributions[level].length));
 		//return distributions[newPoly] == 4 ? new Square(model.world, x) : new PolyBody(model.world, x, distributions[newPoly], Colors.SHAPES[distributions[newPoly]-3]);
@@ -77,7 +95,6 @@ public class GameController implements Runnable {
 			if(now - squareSpawnTime >= 2*1000) {
 				DrawableBody db = spawn();
 				model.blockList.add(db);
-				//model.addPoints(db.getValue());
 				squareSpawnTime = now;
 			}
 			
@@ -94,7 +111,14 @@ public class GameController implements Runnable {
 				b.reduceLifetime(dt);
 				if( b.getExpiration() <= 0 ) {
 					// yay, points!
+
+					int oldLevel = calculateLevel(model.getMaxScore());
 					model.addPoints(b.getValue());
+					int newLevel = calculateLevel(model.getMaxScore());
+					if (newLevel > oldLevel) {
+						view.notifyLevel();
+					}
+					
 					view.notifyScore(b, b.getValue());
 					itr.remove();
 					model.world.destroyBody(b.getBody());
