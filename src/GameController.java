@@ -106,9 +106,9 @@ public class GameController implements Runnable {
 				if(pos.y < -2) {
 					// Oh no! Lose points. :(
 					itr.remove();
+					view.notifyScore(b, -50);
 					model.world.destroyBody(b.getBody());
 					model.addPoints(-50);
-					view.notifyScore(b, -50);
 				}
 			}
 			

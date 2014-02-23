@@ -51,7 +51,7 @@ public class PolyBody implements DrawableBody {
 		return this.fixture;
 	}
 
-	public int getValue() { return this.sides; }
+	public int getValue() { return this.sides*10; }
 
 	public void reduceLifetime(long dt) {
 		this.lifetime -= dt;

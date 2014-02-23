@@ -6,12 +6,15 @@ public class Colors {
 	//Colors inspired by Monokai: http://www.colourlovers.com/palette/1718713/Monokai
 
 	public static final Color[] SHAPES = {
-		new Color(102,217,239), //triangle
-		new Color(249,38,114), //square,
-		new Color(166,226,46), //pentagon
-		new Color(153,0,229), //hexagon
-		new Color(255,167,138), //heptagon
-		new Color(255,182,212) //octagon
+		new Color(130,174,216), //triangle, blue
+		new Color(249, 38,114), //square,   red
+		new Color( 34,179,129), //pentagon, green
+		//new Color(166,226,46), //pentagon
+		new Color(153,  0,229), //hexagon, purple
+		new Color(255,232,106), //heptagon, yellow
+		//new Color(255,167,138), //heptagon
+		new Color(243,114,89), //octagon, orange
+		//new Color(255,182,212) //octagon
 	};
 
 	public static final Color BACKGROUND = new Color(39,40,34);
