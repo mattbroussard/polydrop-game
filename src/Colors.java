@@ -19,10 +19,16 @@ public class Colors {
 
 	public static final Color BACKGROUND = new Color(39,40,34);
 	public static final Color PAUSED = new Color(128,128,128);
+	public static final Color PAUSED_TEXT = new Color(150,150,150);
 	public static final Color PLATFORM = Color.WHITE;
 	public static final Color SCORE = Color.WHITE;
 
 	public static final Color REWARD = Color.GREEN;
 	public static final Color PENALTY = Color.RED;
+
+	public static final Color HEALTH = Color.WHITE;
+	public static final Color HEALTH_GOOD = Color.GREEN;
+	public static final Color HEALTH_MID = Color.YELLOW;
+	public static final Color HEALTH_BAD = Color.RED;
 
 }

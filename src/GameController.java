@@ -84,6 +84,7 @@ public class GameController implements Runnable {
 	public void run() {
 		long squareSpawnTime = System.currentTimeMillis();
 		long time = System.currentTimeMillis();
+		long healthTime = System.currentTimeMillis();
 		long platformPositionTime = System.currentTimeMillis();
 		while (true) {
 			
@@ -97,54 +98,72 @@ public class GameController implements Runnable {
 			long now = System.currentTimeMillis();
 			if(now - squareSpawnTime >= 2*timesToSpawn[calculateLevel(model.getMaxScore())]) {
 				DrawableBody db = spawn();
-				model.blockList.add(db);
+				synchronized (model.blockList) {
+					model.blockList.add(db);
+				}
 				squareSpawnTime = now;
 			}
 			
+			// restore health
+			now = System.currentTimeMillis();
+			if(now - healthTime >= 0.5*1000) {
+				model.increaseHealth();
+				healthTime = now;
+			}
+
 			// physics update
 			now = System.currentTimeMillis();
 			model.world.step((now-time)/1000f, 6, 2);
 			model.platform.getBody().setLinearVelocity(new Vec2(0.0f, 0.0f));
 			model.platform.getBody().setAngularVelocity(0);
 			
-			Iterator<DrawableBody> itr = model.blockList.iterator();
-			while( itr.hasNext() ) {
-				DrawableBody b = itr.next();
-				long dt = now - time;
-				b.reduceLifetime(dt);
-				if( b.getExpiration() <= 0 ) {
-					// yay, points!
+			synchronized (model.blockList) {
 
-					int oldLevel = calculateLevel(model.getMaxScore());
-					model.addPoints(b.getValue());
-					int newLevel = calculateLevel(model.getMaxScore());
-					if (newLevel > oldLevel) {
-						view.notifyLevel();
+				//update lifetimes and points
+				Iterator<DrawableBody> itr = model.blockList.iterator();
+				while( itr.hasNext() ) {
+					DrawableBody b = itr.next();
+					long dt = now - time;
+					b.reduceLifetime(dt);
+					if( b.getExpiration() <= 0 ) {
+						// yay, points!
+
+						int oldLevel = calculateLevel(model.getMaxScore());
+						model.addPoints(b.getValue());
+						int newLevel = calculateLevel(model.getMaxScore());
+						if (newLevel > oldLevel) {
+							view.notifyLevel();
+						}
+						
+						view.notifyScore(b, b.getValue());
+						itr.remove();
+						model.world.destroyBody(b.getBody());
 					}
-					
-					view.notifyScore(b, b.getValue());
-					itr.remove();
-					model.world.destroyBody(b.getBody());
+				}
+
+			}
+
+			synchronized (model.blockList) {
+				// remove blocks that have fallen
+				Iterator<DrawableBody> itr = model.blockList.iterator();
+				while( itr.hasNext() ) {
+					DrawableBody b = itr.next();
+					Vec2 pos = b.getBody().getPosition();
+					if(pos.y < -2) {
+						// Oh no! Lose points. :(
+						itr.remove();
+						model.reduceHealth();
+						view.notifyScore(b, -50);
+						model.world.destroyBody(b.getBody());
+						model.addPoints(-50);
+					}
 				}
 			}
+			
 			if (view!=null) {
 				view.repaint();
 			}
 			time = now;
-
-			// remove blocks that have fallen
-			itr = model.blockList.iterator();
-			while( itr.hasNext() ) {
-				DrawableBody b = itr.next();
-				Vec2 pos = b.getBody().getPosition();
-				if(pos.y < -2) {
-					// Oh no! Lose points. :(
-					itr.remove();
-					view.notifyScore(b, -50);
-					model.world.destroyBody(b.getBody());
-					model.addPoints(-50);
-				}
-			}
 			
 			try { Thread.sleep(50); } catch (Exception e) {}
 

@@ -121,14 +121,14 @@ public class GameView extends JComponent implements KeyListener{
 		String msg = String.format("%s%d", (scoreDelta>=0?"+":""), scoreDelta);
 
 		Notification n = new Notification(pos.x, pos.y, exp, msg, 30, c);
-		notifs.addFirst(n);
+		synchronized (notifs) { notifs.addFirst(n); }
 
 	}
 
 	public void notifyLevel() {
 
 		Notification n = new Notification(-1.0f, 5.0f, System.currentTimeMillis() + NOTIFICATION_TIME, "Level Up!", 60, Colors.REWARD);
-		notifs.addFirst(n);
+		synchronized (notifs) { notifs.addFirst(n); }
 
 	}
 
@@ -141,6 +141,15 @@ public class GameView extends JComponent implements KeyListener{
 	public double convertGameY(double y) {
 
 		return ((y / -10.0f) * this.getHeight()) + this.getHeight();
+
+	}
+
+	public void drawStringCentered(String s, Font f, Color c, Graphics2D g2, int x, int y) {
+
+		g2.setFont(f);
+		g2.setColor(c);
+		int w = getFontMetrics(f).stringWidth(s);
+		g2.drawString(s, x - w/2, y);
 
 	}
 
@@ -160,6 +169,16 @@ public class GameView extends JComponent implements KeyListener{
 		g2.setColor(bg);
 		g2.fillRect(0,0,this.getWidth(),this.getHeight());
 
+		//draw paused message if paused
+		if (paused) {
+			drawStringCentered(	"PAUSED",
+								new Font("Monospace", 0, 250),
+								Colors.PAUSED_TEXT,
+								g2,
+								this.getWidth()/2,
+								this.getHeight()/2);
+		}
+
 		//Prepare to draw bodies
 		transformForBodies(g2);
 
@@ -169,32 +188,52 @@ public class GameView extends JComponent implements KeyListener{
 		
 		//Draw blocks
 		ArrayList<DrawableBody> blocks = model.getBlocks();
-		for(DrawableBody b : blocks) drawBody(b, g2);
+		synchronized (blocks) {
+			for(DrawableBody b : blocks) drawBody(b, g2);
+		}
 
 		//Draw score
 		resetTrans(g2);
-		String pausedString = paused ? " [paused]" : "";
-		String score = String.format("Score: %d%s", model.getScore(), pausedString);
+		String score = "Score: "+model.getScore();
 		g2.setFont(new Font("Monospace", 0, 80));
 		g2.setColor(Colors.SCORE);
 		g2.drawString(score, 40, 80);
 
-		//Prune old score notifications
-		long now = System.currentTimeMillis();
-		while (notifs.peekLast() != null && notifs.peekLast().expiry < now)
-			notifs.removeLast();
-
-		//Draw score notifications
+		//Draw health bar
 		resetTrans(g2);
-		for (GameView.Notification n : notifs) {
-			double x = convertGameX(n.x);
-			double progress = ((double)(NOTIFICATION_TIME-n.expiry+now) / (double)NOTIFICATION_TIME);
-			double dy = progress * NOTIFICATION_DISTANCE;
-			double y = convertGameY(n.y + dy);
-			g2.setColor(interpolateColor(n.color, Colors.BACKGROUND, progress));
-			g2.setFont(new Font("Monospace", 0, n.size));
-			g2.drawString(n.msg, (int)x, (int)y);
-			//System.out.printf("Drawing notif \"%s\" at (%d,%d).\n", n.msg, (int)x, (int)y);
+		double health = (double)model.getHealth() / 100.0f;
+		int healthWidth = 200;
+		int healthHeight = 30;
+		int healthX = this.getWidth() - 40 - healthWidth;
+		int healthMid = healthX + (int)(health * healthWidth);
+		int healthY = 40;
+		g2.setColor(Colors.HEALTH);
+		g2.fillRect(healthX, healthY, healthWidth, healthHeight);
+		Color healthColor = Colors.HEALTH_GOOD;
+		if (health < 0.6f) healthColor = Colors.HEALTH_MID;
+		if (health < 0.3f) healthColor = Colors.HEALTH_BAD;
+		g2.setColor(healthColor);
+		g2.fillRect(healthX, healthY, healthMid - healthX, healthHeight);
+
+		synchronized (notifs) {
+
+			//Prune old score notifications
+			long now = System.currentTimeMillis();
+			while (notifs.peekLast() != null && notifs.peekLast().expiry < now)
+				notifs.removeLast();
+
+			//Draw score and level-up notifications
+			resetTrans(g2);
+			for (GameView.Notification n : notifs) {
+				double x = convertGameX(n.x);
+				double progress = ((double)(NOTIFICATION_TIME-n.expiry+now) / (double)NOTIFICATION_TIME);
+				double dy = progress * NOTIFICATION_DISTANCE;
+				double y = convertGameY(n.y + dy);
+				Color color = interpolateColor(n.color, Colors.BACKGROUND, progress);
+				drawStringCentered(n.msg, new Font("Monospace", 0, n.size), color, g2, (int)x, (int)y);
+				//System.out.printf("Drawing notif \"%s\" at (%d,%d).\n", n.msg, (int)x, (int)y);
+			}
+
 		}
 		
 	}
