@@ -84,13 +84,11 @@ public class GameController implements Runnable {
 			while( itr.hasNext() ) {
 				DrawableBody b = itr.next();
 				long dt = now - time;
-				System.out.println("dt = "+ dt);
 				b.reduceLifetime(dt);
-				System.out.println("lifetime = " + b.getExpiration());
-				System.out.println("number in list "+ model.blockList.size());
 				if( b.getExpiration() <= 0 ) {
 					model.addPoints(b.getValue());
 					itr.remove();
+					model.world.destroyBody(b.getBody());
 				}
 			}
 			if (view!=null) {
@@ -101,11 +99,12 @@ public class GameController implements Runnable {
 			// remove blocks that have fallen
 			itr = model.blockList.iterator();
 			while( itr.hasNext() ) {
-				DrawableBody block = itr.next();
-				Vec2 pos = block.getBody().getPosition();
+				DrawableBody b = itr.next();
+				Vec2 pos = b.getBody().getPosition();
 				if(pos.y < -5) {
 					itr.remove();
-					model.addPoints(-1 * block.getValue());
+					model.world.destroyBody(b.getBody());
+					model.addPoints(-1 * b.getValue());
 				}
 			}
 			
