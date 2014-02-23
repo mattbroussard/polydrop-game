@@ -44,6 +44,7 @@ public class GameController implements Runnable {
 	public void run() {
 		long squareSpawnTime = System.currentTimeMillis();
 		long time = System.currentTimeMillis();
+		long platformPositionTime = System.currentTimeMillis();
 		while (true) {
 			
 			// Just spin if we're paused
@@ -74,11 +75,13 @@ public class GameController implements Runnable {
 
 	}
 
-	public synchronized void updatePlatformPosition(double x, double y, double theta) {
+	public synchronized void updatePlatformPosition(double x, double y, double theta, double dt) {
 
 		if (isPaused()) return;
-		model.platform.getBody().setTransform(new Vec2((float)(16*x-8), (float)(10*y)), (float) theta);
-		
+		//model.platform.getBody().setTransform(new Vec2((float)(16*x-8), (float)(10*y)), (float) theta);
+		double dx = model.platform.getBody().getPosition().x - 16*x-8;
+		double dy = model.platform.getBody().getPosition().y - 10*y;
+		model.platform.getBody().setLinearVelocity(new Vec2((float)(16*x-8), (float)(10*y)));
 	}
 
 
