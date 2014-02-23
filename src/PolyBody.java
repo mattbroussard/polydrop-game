@@ -11,7 +11,7 @@ public class PolyBody implements DrawableBody {
 	private int sides;
 	private long lifetime = 5000; // milliseconds
 
-	public PolyBody(World world, float x, int sides, long timeCreated) {
+	public PolyBody(World world, float x, int sides) {
 		
 		BodyDef bdef = new BodyDef();
 		bdef.type = BodyType.DYNAMIC;
