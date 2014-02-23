@@ -54,16 +54,24 @@ public class GameView extends JComponent implements KeyListener{
 		g2.translate(8.0f * PRECISION_FACTOR, -10.0f * PRECISION_FACTOR);
 	}
 
+	public Color interpolateColor(Color a, Color c, double progress) {
+
+		double r = (c.getRed() - a.getRed()) * progress + a.getRed();
+		double g = (c.getGreen() - a.getGreen()) * progress + a.getGreen();
+		double b = (c.getBlue() - a.getBlue()) * progress + a.getBlue();
+
+		return new Color((int)r, (int)g, (int)b);
+
+	}
+
 	public Color expireColor(Color c, long expiry) {
 
-		long now = System.currentTimeMillis();
-		if (expiry == 0) return c;
-		if (expiry-now < 0) return Colors.BACKGROUND;
-		if (expiry-now > EXPIRATION_PERIOD) return c;
+		if (expiry > EXPIRATION_PERIOD) return c;
+		if (expiry < 0) return c;
+		if (expiry == 0) return null;
 
-		double ratio = (double)(expiry-now) / (double)EXPIRATION_PERIOD;
-
-		return Math.random() < ratio ? c : Colors.BACKGROUND;
+		double progress = (double)(EXPIRATION_PERIOD-expiry) / (double)EXPIRATION_PERIOD;
+		return interpolateColor(c, Colors.BACKGROUND, progress);
 
 	}
 
@@ -85,8 +93,12 @@ public class GameView extends JComponent implements KeyListener{
 		}
 		//System.out.println("end poly");
 
-		g2.setColor(expireColor(db.getColor(), db.getExpiration()));
-		g2.fillPolygon(poly);
+		Color c = expireColor(db.getColor(), db.getExpiration());
+
+		if (c!=null) {
+			g2.setColor(c);
+			g2.fillPolygon(poly);
+		}
 
 	}
 
