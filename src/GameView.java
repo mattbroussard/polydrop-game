@@ -16,7 +16,6 @@ public class GameView extends JComponent implements KeyListener{
 	
 	GameModel model;
 	GameController controller;
-	boolean pressedPause;
 
 	public GameView(GameModel m, GameController c) {
 
@@ -27,23 +26,15 @@ public class GameView extends JComponent implements KeyListener{
 	}
 
 	@Override
-	public void keyPressed(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_SPACE && !pressedPause){
-			controller.pause();
-			pressedPause = true;
-		}
-			
-	}
+	public void keyPressed(KeyEvent e) {}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_SPACE) pressedPause = false;
+		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) System.exit(0);
 	}
 
 	@Override
-	public void keyTyped(KeyEvent e) {
-		
-	}
+	public void keyTyped(KeyEvent e) {}
 	
 	public void resetTrans(Graphics2D g2) {
 		AffineTransform at = new AffineTransform();

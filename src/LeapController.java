@@ -1,4 +1,6 @@
 
+import org.jbox2d.common.Vec2;
+
 import com.leapmotion.leap.*;
 
 public class LeapController extends Listener implements Runnable {
@@ -10,6 +12,8 @@ public class LeapController extends Listener implements Runnable {
 
 	static final double SPACE_WIDTH = 500f;
 	static final double SPACE_HEIGHT = 500f;
+	
+	private long lastUpdate;
 
 	//normalizes a number n between a and b to be between 0 and 1. Clips if necessary.
 	private double normalize(double n, double a, double b) {
@@ -66,7 +70,12 @@ public class LeapController extends Listener implements Runnable {
 		Vector handNorm = hand.palmNormal();
 		double handRoll = handNorm.roll();
 
-		game.updatePlatformPosition(handX, handY, handRoll);
+
+		long now = System.currentTimeMillis();
+		long dt = (lastUpdate < 0) ? 0 : now-lastUpdate;
+		game.updatePlatformPosition(handX, handY, handRoll, dt);
+		//game.model.platform.getBody().setLinearVelocity(new Vec2(0.0f, 0.0f));
+		lastUpdate = now;
 
 	}
 
