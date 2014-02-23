@@ -10,11 +10,12 @@ import org.jbox2d.common.*;
 import org.jbox2d.collision.shapes.*;
 import java.awt.geom.*;
 
+import java.util.*;
+
 public class GameView extends JComponent implements KeyListener{
 	
 	GameModel model;
 	GameController controller;
-	boolean pressedRight;
 	boolean pressedPause;
 
 	public GameView(GameModel m, GameController c) {
@@ -27,10 +28,6 @@ public class GameView extends JComponent implements KeyListener{
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_RIGHT && !pressedRight){
-			pressedRight = true;
-			controller.movePlatformRight(10);
-		}
 		if(e.getKeyCode() == KeyEvent.VK_SPACE && !pressedPause){
 			controller.pause();
 			pressedPause = true;
@@ -40,7 +37,6 @@ public class GameView extends JComponent implements KeyListener{
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_RIGHT) pressedRight = false;
 		if(e.getKeyCode() == KeyEvent.VK_SPACE) pressedPause = false;
 	}
 
@@ -65,9 +61,10 @@ public class GameView extends JComponent implements KeyListener{
 		g2.translate(8.0f * PRECISION_FACTOR, -10.0f * PRECISION_FACTOR);
 	}
 
-	public void drawBody(Body body, Graphics2D g2) {
+	public void drawBody(DrawableBody db, Graphics2D g2) {
 
-		Fixture fix = (Fixture)body.getUserData();
+		Fixture fix = db.getFixture();
+		Body body = db.getBody();
 		PolygonShape shape = (PolygonShape) fix.getShape();
 
 		//System.out.printf("world vector of body origin is (%.3f, %.3f)\n", body.getPosition().x, body.getPosition().y);
@@ -82,7 +79,7 @@ public class GameView extends JComponent implements KeyListener{
 		}
 		//System.out.println("end poly");
 
-		g2.setColor(Color.GRAY);
+		g2.setColor(db.getColor());
 		g2.fillPolygon(poly);
 
 	}
@@ -91,15 +88,32 @@ public class GameView extends JComponent implements KeyListener{
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D)g;
 
+		boolean paused = controller.isPaused();
+
+		//Draw background
+		Color bg = paused ? Color.GRAY : Color.WHITE;
+		resetTrans(g2);
+		g2.setColor(bg);
+		g2.fillRect(0,0,this.getWidth(),this.getHeight());
+
+		//Prepare to draw bodies
 		transformForBodies(g2);
 
 		//Draw platform
 		Platform p = model.getPlatform();
 		drawBody(p, g2);
 		
-		for(Body b : model.blockList) drawBody(b, g2);
-		
+		//Draw blocks
+		ArrayList<DrawableBody> blocks = model.getBlocks();
+		for(DrawableBody b : blocks) drawBody(b, g2);
 
+		//Draw score
+		resetTrans(g2);
+		String pausedString = paused ? " [paused]" : "";
+		String score = String.format("Score: %d%s", model.getScore(), pausedString);
+		g2.setFont(new Font("Monospace", 0, 80));
+		g2.setColor(Color.BLACK);
+		g2.drawString(score, 40, 80);
 		
 	}
 
