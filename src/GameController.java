@@ -65,7 +65,7 @@ public class GameController implements Runnable {
 				continue;
 			}
 
-			// drop square every 2 seconds
+			// drop block every 2 seconds
 			long now = System.currentTimeMillis();
 			if(now - squareSpawnTime >= 2*1000) {
 				DrawableBody db = spawn();
@@ -79,13 +79,23 @@ public class GameController implements Runnable {
 			model.world.step((now-time)/1000f, 6, 2);
 			model.platform.getBody().setLinearVelocity(new Vec2(0.0f, 0.0f));
 			model.platform.getBody().setAngularVelocity(0);
+			
+			Iterator<DrawableBody> itr = model.blockList.iterator();
+			while( itr.hasNext() ) {
+				DrawableBody b = itr.next();
+				b.reduceLifetime(now - time);
+				if( b.getExpiration() <= 0 ) {
+					model.addPoints(b.getValue());
+					itr.remove();
+				}
+			}
 			if (view!=null) {
 				view.repaint();
 			}
 			time = now;
 
 			// remove blocks that have fallen
-			Iterator<DrawableBody> itr = model.blockList.iterator();
+			itr = model.blockList.iterator();
 			while( itr.hasNext() ) {
 				DrawableBody block = itr.next();
 				Vec2 pos = block.getBody().getPosition();
