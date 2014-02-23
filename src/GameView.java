@@ -82,7 +82,7 @@ public class GameView extends JComponent implements KeyListener{
 
 	}
 
-	public void drawBody(DrawableBody db, Graphics2D g2) {
+	public void drawBody(DrawableBody db, Graphics2D g2, boolean paused) {
 
 		Fixture fix = db.getFixture();
 		Body body = db.getBody();
@@ -100,7 +100,7 @@ public class GameView extends JComponent implements KeyListener{
 		}
 		//System.out.println("end poly");
 
-		Color c = controller.isPaused() ? Colors.BACKGROUND : expireColor(db.getColor(), db.getExpiration());
+		Color c = paused ? Colors.BACKGROUND : expireColor(db.getColor(), db.getExpiration());
 
 		if (c!=null) {
 			g2.setColor(c);
@@ -161,7 +161,8 @@ public class GameView extends JComponent implements KeyListener{
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
-		boolean paused = controller.isPaused();
+		boolean gameOver = model.isGameOver();
+		boolean paused = controller.isPaused() || gameOver;
 
 		//Draw background
 		Color bg = paused ? Colors.PAUSED : Colors.BACKGROUND;
@@ -170,7 +171,7 @@ public class GameView extends JComponent implements KeyListener{
 		g2.fillRect(0,0,this.getWidth(),this.getHeight());
 
 		//draw paused message if paused
-		if (paused) {
+		if (paused && !gameOver) {
 			drawStringCentered(	"PAUSED",
 								new Font("Monospace", 0, 250),
 								Colors.PAUSED_TEXT,
@@ -184,12 +185,12 @@ public class GameView extends JComponent implements KeyListener{
 
 		//Draw platform
 		Platform p = model.getPlatform();
-		drawBody(p, g2);
+		drawBody(p, g2, paused);
 		
 		//Draw blocks
 		ArrayList<DrawableBody> blocks = model.getBlocks();
 		synchronized (blocks) {
-			for(DrawableBody b : blocks) drawBody(b, g2);
+			for(DrawableBody b : blocks) drawBody(b, g2, paused);
 		}
 
 		//Draw score
@@ -202,6 +203,8 @@ public class GameView extends JComponent implements KeyListener{
 		//Draw health bar
 		resetTrans(g2);
 		double health = (double)model.getHealth() / 100.0f;
+		if (health > 1.0f) health = 1.0f;
+		if (health < 0.0f) health = 0.0f;
 		int healthWidth = 200;
 		int healthHeight = 30;
 		int healthX = this.getWidth() - 40 - healthWidth;
@@ -213,9 +216,7 @@ public class GameView extends JComponent implements KeyListener{
 		if (health < 0.6f) healthColor = Colors.HEALTH_MID;
 		if (health < 0.3f) healthColor = Colors.HEALTH_BAD;
 		g2.setColor(healthColor);
-		if (health > 0) {
-			g2.fillRect(healthX, healthY, healthMid - healthX, healthHeight);
-		}
+		g2.fillRect(healthX, healthY, healthMid - healthX, healthHeight);
 
 		synchronized (notifs) {
 
@@ -236,6 +237,16 @@ public class GameView extends JComponent implements KeyListener{
 				//System.out.printf("Drawing notif \"%s\" at (%d,%d).\n", n.msg, (int)x, (int)y);
 			}
 
+		}
+
+		//draw game over message if game over
+		if (gameOver) {
+			drawStringCentered(	"GAME OVER",
+								new Font("Monospace", 0, 250),
+								Colors.HEALTH_BAD,
+								g2,
+								this.getWidth()/2,
+								this.getHeight()/2);
 		}
 		
 	}
