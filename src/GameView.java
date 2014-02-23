@@ -128,7 +128,7 @@ public class GameView extends JComponent implements KeyListener{
 
 	public void notifyLevel() {
 
-		Notification n = new Notification(-1.0f, 5.0f, System.currentTimeMillis() + NOTIFICATION_TIME, "Level Up!", 60, Colors.REWARD);
+		Notification n = new Notification(0.0f, 5.0f, System.currentTimeMillis() + NOTIFICATION_TIME, "Level Up!", 60, Colors.REWARD);
 		synchronized (notifs) { notifs.addFirst(n); }
 
 	}

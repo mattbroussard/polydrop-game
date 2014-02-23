@@ -14,6 +14,9 @@ public class LeapController extends Listener implements Runnable {
 	static final double SPACE_HEIGHT = 500f;
 	static final double FIST_THRESHOLD = Math.PI / 4f;
 	
+	Vector pauseLocation = new Vector(0.0f,0.0f,0.0f);
+	Vector resumeLocation = new Vector(0.0f,0.0f,0.0f);;
+	
 	private long lastUpdate;
 
 	//normalizes a number n between a and b to be between 0 and 1. Clips if necessary.
@@ -41,13 +44,15 @@ public class LeapController extends Listener implements Runnable {
 	public void processFrame(Frame frame) {
 
 		HandList hands = frame.hands();
+		Hand hand = hands.frontmost();
 		
 		if (hands.count()==0) {
+			pauseLocation = hand.palmPosition();
 			game.pause();
 			return;
 		}
 
-		Hand hand = hands.frontmost();
+		
 		if (hand.id() != lastHand) {
 			for (Hand h : hands) {
 				if (h.id() == lastHand) {
@@ -61,19 +66,38 @@ public class LeapController extends Listener implements Runnable {
 		Vector handPos = hand.palmPosition();
 		double handX = normalize(handPos.getX(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f);
 		double handY = normalize(handPos.getY(), 0f, SPACE_HEIGHT);
+		/*
+		double handResumeX = normalize(resumeLocation.getX(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f);
+		double handResumeY = normalize(resumeLocation.getY(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f);
 
+		double handPauseX = normalize(resumeLocation.getX(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f);
+		double handPauseY = normalize(resumeLocation.getY(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f);
+		*/
 		Vector handNorm = hand.palmNormal();
 		double handRoll = handNorm.roll();
 
 		if (hand.fingers().count() <= 1 && Math.abs(handRoll) < FIST_THRESHOLD) {
+//<<<<<<< HEAD
 			game.pause(handX, handY);
-		} else {
-			game.unpause(handX, handY);
+		} else if(game.paused) {
+			game.unpause(handX, handY);/*
+=======
+			if(!game.paused){
+				pauseLocation = hand.palmPosition();
+				System.out.println("Pausing at "+pauseLocation.toString());
+				game.pause();				
+			}
+
+		} else if(game.paused) {
+			resumeLocation = hand.palmPosition();
+			System.out.println("Resuming at "+ resumeLocation.toString());
+			game.unpause();
+>>>>>>> ae84d27b60d546dce3a5bd72271647c027526873 */
 		}
 
 		long now = System.currentTimeMillis();
 		long dt = (lastUpdate < 0) ? 0 : now-lastUpdate;
-		game.updatePlatformPosition(handX, handY, handRoll, dt);
+		game.updatePlatformPosition(handX /*- handResumeX + handPauseX*/, handY /*- handResumeY + handPauseY*/, handRoll, dt);
 		//game.model.platform.getBody().setLinearVelocity(new Vec2(0.0f, 0.0f));
 		lastUpdate = now;
 

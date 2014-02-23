@@ -1,7 +1,6 @@
 .dropbox
 .DS_Store
 ._*
-Icon*
 Thumbs.db
 *.class
 leaphack.jar

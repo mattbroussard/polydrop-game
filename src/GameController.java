@@ -61,6 +61,7 @@ public class GameController implements Runnable {
 		platformDeltax = platformPrevx - (16*handx - 8);
 		platformDeltay = platformPrevy - (10*handy);
 		paused = false;
+		System.out.println("unpaused.");
 	}
 
 	public synchronized boolean isPaused() {
@@ -199,8 +200,9 @@ public class GameController implements Runnable {
 		System.out.println("old x, y = " + platformPrevx +" "+ platformPrevy);
 		System.out.println("del x, y = " + platformDeltax +" "+ platformDeltay);
 
-		double dx = handx + platformDeltax - (model.platform.getBody().getPosition().x);
-		double dy = handy + platformDeltay - (model.platform.getBody().getPosition().y);
+		double dx = handx - (model.platform.getBody().getPosition().x - platformPrevx);
+		double dy = handy - (model.platform.getBody().getPosition().y - platformPrevy);
+
 		System.out.println("handx = "+handx);
 		System.out.println("handy = "+handy);
 		System.out.println("platformDeltax = "+platformDeltax);
@@ -208,7 +210,6 @@ public class GameController implements Runnable {
 		System.out.println("dx = "+dx);
 		System.out.println("dx/dt = " + (dx/dt));
 		System.out.println("dx/dt*1000 = " + (dx/dt*1000));
-
 
 		System.out.println(handx + (model.platform.getBody().getPosition().x));
 		System.out.println((handx + model.platform.getBody().getPosition().x)/dt*1000);
