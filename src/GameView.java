@@ -20,7 +20,7 @@ public class GameView extends JComponent implements KeyListener{
 
 	final static int EXPIRATION_PERIOD = 2500;
 	final static double PRECISION_FACTOR = 1000f;
-	final static int NOTIFICATION_TIME = 3000;
+	final static int NOTIFICATION_TIME = 1250;
 	final static double NOTIFICATION_DISTANCE = 2f;
 
 	public GameView(GameModel m, GameController c) {
@@ -113,6 +113,8 @@ public class GameView extends JComponent implements KeyListener{
 
 		Vec2 pos = db.getBody().getPosition();
 		if (pos.y < 0) pos.set(pos.x, 0);
+		if (pos.x < -7.0f) pos.set(-7.0f, pos.y);
+		if (pos.x > 7.0f) pos.set(7.0f, pos.y);
 
 		Color c = scoreDelta >= 0 ? Colors.REWARD : Colors.PENALTY;
 		long exp = System.currentTimeMillis() + NOTIFICATION_TIME;
