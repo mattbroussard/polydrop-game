@@ -107,7 +107,7 @@ public class GameController implements Runnable {
 			// Just spin if we're paused
 			if (isPaused() || model.isGameOver()) {
 				time = System.currentTimeMillis();
-				view.repaint();
+				if (view!=null) view.repaint();
 				continue;
 			}
 
