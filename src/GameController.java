@@ -190,41 +190,11 @@ public class GameController implements Runnable {
 		if (isPaused() || model.isGameOver()) return;
 		//model.platform.getBody().setTransform(model.platform.getBody().getPosition(), (float) theta);
 		double dtheta = theta - model.platform.getBody().getAngle();
-		Vec2 vel = calculateVelocity(handx, handy, dt);
-		model.platform.getBody().setLinearVelocity(vel);
-		model.platform.getBody().setAngularVelocity((float)(dtheta/dt*1000));		
+		float dx = (16*(float)handx - 8) - model.platform.getBody().getPosition().x;
+		float dy = (10*(float)handy)     - model.platform.getBody().getPosition().y;
+		model.platform.getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
+		model.platform.getBody().setAngularVelocity((float)(dtheta/dt*1000));	
 	}
-
-	/*
-	private Vec2 calculateVelocity(double handx, double handy, double dt) {
-		handx = (16*handx - 8);
-		handy = (10*handy);
-		System.out.println("new x, y = " + handx + " " + handy);
-		System.out.println("old x, y = " + platformPrevx +" "+ platformPrevy);
-		System.out.println("del x, y = " + platformDeltax +" "+ platformDeltay);
-
-		double dx = handx - (model.platform.getBody().getPosition().x - platformPrevx);
-		double dy = handy - (model.platform.getBody().getPosition().y - platformPrevy);
-
-		System.out.println("handx = "+handx);
-		System.out.println("handy = "+handy);
-		System.out.println("platformDeltax = "+platformDeltax);
-		System.out.println("dt = "+dt);
-		System.out.println("dx = "+dx);
-		System.out.println("dx/dt = " + (dx/dt));
-		System.out.println("dx/dt*1000 = " + (dx/dt*1000));
-
-		System.out.println(handx + (model.platform.getBody().getPosition().x));
-		System.out.println((handx + model.platform.getBody().getPosition().x)/dt*1000);
-
-		float vx = (float)(dx/dt*1000);
-		float vy = (float)(dy/dt*1000);
-		
-		System.out.println("vx, vy = " + dx +" "+ dy);
-		System.out.println();
-		return new Vec2(vx, vy);
-	}
-	*/
 
 	public void newGame() {
 
