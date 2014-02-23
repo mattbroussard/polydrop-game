@@ -121,14 +121,14 @@ public class GameView extends JComponent implements KeyListener{
 		String msg = String.format("%s%d", (scoreDelta>=0?"+":""), scoreDelta);
 
 		Notification n = new Notification(pos.x, pos.y, exp, msg, 30, c);
-		notifs.addFirst(n);
+		synchronized (notifs) { notifs.addFirst(n); }
 
 	}
 
 	public void notifyLevel() {
 
 		Notification n = new Notification(-1.0f, 5.0f, System.currentTimeMillis() + NOTIFICATION_TIME, "Level Up!", 60, Colors.REWARD);
-		notifs.addFirst(n);
+		synchronized (notifs) { notifs.addFirst(n); }
 
 	}
 
@@ -179,22 +179,26 @@ public class GameView extends JComponent implements KeyListener{
 		g2.setColor(Colors.SCORE);
 		g2.drawString(score, 40, 80);
 
-		//Prune old score notifications
-		long now = System.currentTimeMillis();
-		while (notifs.peekLast() != null && notifs.peekLast().expiry < now)
-			notifs.removeLast();
+		synchronized (notifs) {
 
-		//Draw score notifications
-		resetTrans(g2);
-		for (GameView.Notification n : notifs) {
-			double x = convertGameX(n.x);
-			double progress = ((double)(NOTIFICATION_TIME-n.expiry+now) / (double)NOTIFICATION_TIME);
-			double dy = progress * NOTIFICATION_DISTANCE;
-			double y = convertGameY(n.y + dy);
-			g2.setColor(interpolateColor(n.color, Colors.BACKGROUND, progress));
-			g2.setFont(new Font("Monospace", 0, n.size));
-			g2.drawString(n.msg, (int)x, (int)y);
-			//System.out.printf("Drawing notif \"%s\" at (%d,%d).\n", n.msg, (int)x, (int)y);
+			//Prune old score notifications
+			long now = System.currentTimeMillis();
+			while (notifs.peekLast() != null && notifs.peekLast().expiry < now)
+				notifs.removeLast();
+
+			//Draw score notifications
+			resetTrans(g2);
+			for (GameView.Notification n : notifs) {
+				double x = convertGameX(n.x);
+				double progress = ((double)(NOTIFICATION_TIME-n.expiry+now) / (double)NOTIFICATION_TIME);
+				double dy = progress * NOTIFICATION_DISTANCE;
+				double y = convertGameY(n.y + dy);
+				g2.setColor(interpolateColor(n.color, Colors.BACKGROUND, progress));
+				g2.setFont(new Font("Monospace", 0, n.size));
+				g2.drawString(n.msg, (int)x, (int)y);
+				//System.out.printf("Drawing notif \"%s\" at (%d,%d).\n", n.msg, (int)x, (int)y);
+			}
+
 		}
 		
 	}
