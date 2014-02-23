@@ -9,7 +9,8 @@ public class PolyBody implements DrawableBody {
 	private Fixture fixture;
 	private Color color;
 	private int sides;
-	private long lifetime = 15*1000; // milliseconds
+	private long lifetime = 15*1000;// milliseconds
+	private float size;
 
 	public PolyBody(World world, float x, int sides) {
 		
@@ -21,6 +22,7 @@ public class PolyBody implements DrawableBody {
 		PolygonShape shape = new PolygonShape();
 		Vec2[] verts = new Vec2[sides];
 		float r = (float)(Math.random()*.3+.25);
+		size = r;
 		for (int i = 0; i < sides; i++) {
 			double theta = 2 * Math.PI / sides * i;
 			
@@ -51,8 +53,15 @@ public class PolyBody implements DrawableBody {
 		return this.fixture;
 	}
 
-	public int getValue() { return this.sides*10; }
 
+	public int getValue() {
+		return sides*10;		
+	}
+	
+	public float getSize(){
+		return size;
+	}
+	
 	public void reduceLifetime(long dt) {
 		this.lifetime -= dt;
 	}
