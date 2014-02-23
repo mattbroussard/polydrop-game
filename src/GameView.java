@@ -106,6 +106,10 @@ public class GameView extends JComponent implements KeyListener{
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D)g;
 
+		//enable antialiasing
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
 		boolean paused = controller.isPaused();
 
 		//Draw background
