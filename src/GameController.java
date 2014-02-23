@@ -21,6 +21,7 @@ public class GameController implements Runnable {
 	
 	final int timesToSpawn[] = {1000,900,750,600,500};
 	final int scoreNeededToLevel[] = {0,80,200,500,1000};
+	//final int scoreNeededToLevel[] = {0,0,0,0,0};
 	final int distributions[][] = {	{3,4,5},
 							 		{3,4,5,6,6},
 							 		{3,4,5,6,7,7},
