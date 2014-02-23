@@ -12,24 +12,34 @@ public class GameController implements Runnable {
 	
 	GameModel model;
 	GameView view;
-
 	boolean paused = false;
+	
+	float platformOffsetx = 0f;
+	float platformOffsety = 0f; // used to un-pause smoothly
+
+	final int scoreNeededToLevel[] = {0,100,300,1000,3000};
+	final int distributions[][] = {	{3,4,5},
+							 		{3,4,5,6,6},
+							 		{3,4,5,6,7,7},
+							 		{3,4,5,6,7,8,8},
+							 		{3,4,5,6,7,8},
+							 		{3,4,5,6,7,8}};
 
 	Thread t;
 
 	public GameController(GameModel m) {
 		model = m;
-
 		t = new Thread(this);
 		t.start();
-
 	}
 	
 	public void addView(GameView v) {
 		view = v;
 	}
 	
-	public synchronized void pause(){
+	public synchronized void pause(double handx, double handy){
+		platformOffsetx = (16*(float)handx - 8);
+		platformOffsety = (10*(float)handy);
 		paused = true;
 		if (view != null) view.repaint();
 	}
@@ -43,19 +53,20 @@ public class GameController implements Runnable {
 	}
 	
 	public int calculateLevel(int score) {
-		return score/300;
+		int level = Arrays.binarySearch(scoreNeededToLevel, score);
+		if(level >= 0) return level;
+		else{
+			level += 1;
+			level *= -1;
+			level -= 1;
+		}
+		return level;
 	}
 
 	public DrawableBody spawn() {
-
 		int sides = (int)Math.round(Math.random()*5) + 3;
 		float x;
-		int scoreNeededToLevel[] = {0,100,300,600,1500};
-		int distributions[][] = {	{3,4,5},
-								 	{3,4,5,6},
-									{3,4,5,6,7},
-								 	{3,4,5,6,7,8},
-								 	{3,3,3,4,4,5,6,7,7,8,8,8}};
+
 //		int level = Arrays.binarySearch(scoreNeededToLevel, model.getMaxScore());
 		int level = calculateLevel(model.getMaxScore());
 		if(level >= distributions.length) level = distributions.length-1;
@@ -65,7 +76,6 @@ public class GameController implements Runnable {
 		x = (float)(Math.random() * 12 - 6 );		
 
 		return new PolyBody(model.world, x, distributions[level][newPoly]);
-
 	}
 
 	public void run() {
@@ -143,8 +153,8 @@ public class GameController implements Runnable {
 		if (isPaused()) return;
 		//model.platform.getBody().setTransform(model.platform.getBody().getPosition(), (float) theta);
 		double dtheta = theta - model.platform.getBody().getAngle();
-		double dx = (16*handx - 8) - model.platform.getBody().getPosition().x;
-		double dy = (10*handy)     - model.platform.getBody().getPosition().y;
+		float dx = (16*(float)handx - 8) + platformOffsetx - model.platform.getBody().getPosition().x;
+		float dy = (10*(float)handy)     + platformOffsety - model.platform.getBody().getPosition().y;
 		model.platform.getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
 		model.platform.getBody().setAngularVelocity((float)(dtheta/dt*1000));		
 	}
