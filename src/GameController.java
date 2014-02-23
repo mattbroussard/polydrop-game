@@ -143,7 +143,6 @@ public class GameController implements Runnable {
 			}
 
 			synchronized (model.blockList) {
-
 				// remove blocks that have fallen
 				Iterator<DrawableBody> itr = model.blockList.iterator();
 				while( itr.hasNext() ) {
@@ -158,7 +157,6 @@ public class GameController implements Runnable {
 						model.addPoints(-50);
 					}
 				}
-
 			}
 			
 			if (view!=null) {

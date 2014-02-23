@@ -18,6 +18,8 @@ public class GameModel {
 	int maxScore = score;
 	int health = 100;
 
+	boolean gameOver = false;
+
 	public GameModel() {
 		world = new World(GRAVITY);
 		platform = new Platform(world);		
@@ -37,6 +39,7 @@ public class GameModel {
 
 	public void reduceHealth() {
 		this.health -= 10;
+		this.gameOver = (this.health <= 0);
 	}
 
 	public void increaseHealth() {
