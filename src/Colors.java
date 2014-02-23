@@ -6,7 +6,7 @@ public class Colors {
 	//Colors inspired by Monokai: http://www.colourlovers.com/palette/1718713/Monokai
 
 	public static final Color[] SHAPES = {
-		new Color(130,174,216), //triangle, blue
+		new Color(154,204,253), //triangle, blue
 		new Color(249, 38,114), //square,   red
 		new Color( 34,179,129), //pentagon, green
 		//new Color(166,226,46), //pentagon
