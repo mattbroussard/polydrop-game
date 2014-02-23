@@ -25,7 +25,6 @@ public class Platform implements DrawableBody {
 		fixtureDef.density = 1;
 		fixtureDef.friction = 2.0f;
 		this.fixture = body.createFixture(fixtureDef);
-		//body.setUserData(f); //make this better
 
 		this.color = Color.green;
 	}
