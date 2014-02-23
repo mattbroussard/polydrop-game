@@ -67,13 +67,11 @@ public class GameController implements Runnable {
 				DrawableBody db = spawn();
 				model.blockList.add(db);
 				model.addPoints(db.getValue());
-				System.out.println("creating new square");
 				squareSpawnTime = now;
 			}
 			
 			// physics update
 			now = System.currentTimeMillis();
-			System.out.println("platform velocity = " + model.platform.getBody().getLinearVelocity().toString());
 			model.world.step((now-time)/1000f, 6, 2);
 			model.platform.getBody().setLinearVelocity(new Vec2(0.0f, 0.0f));
 			model.platform.getBody().setAngularVelocity(0);
@@ -92,7 +90,6 @@ public class GameController implements Runnable {
 					model.addPoints(-1 * block.getValue());
 				}
 			}
-			System.out.println("Number of blocks = " + model.blockList.size());
 			
 			try { Thread.sleep(50); } catch (Exception e) {}
 
@@ -107,9 +104,7 @@ public class GameController implements Runnable {
 		double dx = (16*handx - 8) - model.platform.getBody().getPosition().x;
 		double dy = (10*handy)     - model.platform.getBody().getPosition().y;
 		model.platform.getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
-		model.platform.getBody().setAngularVelocity((float)(dtheta/dt*1000));
-		System.out.println("dx: "+dx+"\ndt: "+dt+"\ndxdt"+(float)(dx/dt));
-		
+		model.platform.getBody().setAngularVelocity((float)(dtheta/dt*1000));		
 	}
 
 
