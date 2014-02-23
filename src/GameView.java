@@ -16,14 +16,19 @@ public class GameView extends JComponent implements KeyListener{
 	
 	GameModel model;
 	GameController controller;
+	LinkedList<GameView.Notification> notifs;
 
 	final static int EXPIRATION_PERIOD = 2500;
+	final static double PRECISION_FACTOR = 1000f;
+	final static int NOTIFICATION_TIME = 3000;
+	final static double NOTIFICATION_DISTANCE = 2f;
 
 	public GameView(GameModel m, GameController c) {
 
 		super();
 		model = m;
 		controller = c;
+		notifs = new LinkedList<GameView.Notification>();
 
 	}
 
@@ -43,8 +48,6 @@ public class GameView extends JComponent implements KeyListener{
 		at.setToIdentity();
 		g2.setTransform(at);
 	}
-
-	final static double PRECISION_FACTOR = 1000f;
 
 	public void transformForBodies(Graphics2D g2) {
 		resetTrans(g2);
@@ -108,7 +111,27 @@ public class GameView extends JComponent implements KeyListener{
 
 	public void notifyScore(DrawableBody db, int scoreDelta) {
 
-		//..
+		Vec2 pos = db.getBody().getPosition();
+		if (pos.y < 0) pos.set(pos.x, 0);
+
+		Color c = scoreDelta >= 0 ? Colors.REWARD : Colors.PENALTY;
+		long exp = System.currentTimeMillis() + NOTIFICATION_TIME;
+		String msg = String.format("%s%d", (scoreDelta>=0?"+":""), scoreDelta);
+
+		Notification n = new Notification(pos.x, pos.y, exp, msg, c);
+		notifs.addFirst(n);
+
+	}
+
+	public double convertGameX(double x) {
+
+		return ((x + 8.0f) / 16.0f) * this.getWidth();
+
+	}
+
+	public double convertGameY(double y) {
+
+		return ((y / -10.0f) * this.getHeight()) + this.getHeight();
 
 	}
 
@@ -146,7 +169,40 @@ public class GameView extends JComponent implements KeyListener{
 		g2.setFont(new Font("Monospace", 0, 80));
 		g2.setColor(Colors.SCORE);
 		g2.drawString(score, 40, 80);
+
+		//Prune old score notifications
+		long now = System.currentTimeMillis();
+		while (notifs.peekLast() != null && notifs.peekLast().expiry < now)
+			notifs.removeLast();
+
+		//Draw score notifications
+		resetTrans(g2);
+		g2.setFont(new Font("Monospace", 0, 30));
+		for (GameView.Notification n : notifs) {
+			double x = convertGameX(n.x);
+			double progress = ((double)(NOTIFICATION_TIME-n.expiry+now) / (double)NOTIFICATION_TIME);
+			double dy = progress * NOTIFICATION_DISTANCE;
+			double y = convertGameY(n.y + dy);
+			g2.setColor(interpolateColor(n.color, Colors.BACKGROUND, progress));
+			g2.drawString(n.msg, (int)x, (int)y);
+			//System.out.printf("Drawing notif \"%s\" at (%d,%d).\n", n.msg, (int)x, (int)y);
+		}
 		
+	}
+
+	private class Notification {
+		double x;
+		double y;
+		long expiry;
+		String msg;
+		Color color;
+		public Notification(double x, double y, long expiry, String msg, Color color) {
+			this.x = x;
+			this.y = y;
+			this.expiry = expiry;
+			this.msg = msg;
+			this.color = color;
+		}
 	}
 
 }
