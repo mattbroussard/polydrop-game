@@ -19,9 +19,11 @@ public class PolyBody implements DrawableBody {
 		
 		PolygonShape shape = new PolygonShape();
 		Vec2[] verts = new Vec2[sides];
+		float r = (float)(Math.random()*.3+.25);
 		for (int i = 0; i < sides; i++) {
 			double theta = 2 * Math.PI / sides * i;
-			float r = 0.50f;
+			
+//			float r = 0.50f;
 			verts[i] = new Vec2((float)Math.cos(theta) * r, (float)Math.sin(theta) * r);
 		}
 		shape.set(verts, sides);

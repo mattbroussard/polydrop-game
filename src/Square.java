@@ -16,7 +16,8 @@ public class Square implements DrawableBody {
 		body = world.createBody(bdef);
 		
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(.40f, .40f);
+		float r = (float)(Math.random()*.3+.25);
+		shape.setAsBox(r, r);
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.shape = shape;
 		fixtureDef.density = 1;
