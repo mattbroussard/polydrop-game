@@ -2,6 +2,7 @@
 import org.jbox2d.dynamics.*;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.*;
+import java.util.Iterator;
 
 import java.awt.Color;
 
@@ -54,6 +55,7 @@ public class GameController implements Runnable {
 	public void run() {
 		long squareSpawnTime = System.currentTimeMillis();
 		long time = System.currentTimeMillis();
+		long platformPositionTime = System.currentTimeMillis();
 		while (true) {
 			
 			// Just spin if we're paused
@@ -73,24 +75,45 @@ public class GameController implements Runnable {
 			}
 			
 			// physics update
-			now = System.currentTimeMillis();			
+			now = System.currentTimeMillis();
+			System.out.println("platform velocity = " + model.platform.getBody().getLinearVelocity().toString());
 			model.world.step((now-time)/1000f, 6, 2);
-			if (view!=null) view.repaint();
+			model.platform.getBody().setLinearVelocity(new Vec2(0.0f, 0.0f));
+			model.platform.getBody().setAngularVelocity(0);
+			if (view!=null) {
+				view.repaint();
+			}
 			time = now;
 
+			// remove blocks that have fallen
+			Iterator<DrawableBody> itr = model.blockList.iterator();
+			while( itr.hasNext() ) {
+				DrawableBody block = itr.next();
+				Vec2 pos = block.getBody().getPosition();
+				if(pos.y < -5) {
+					itr.remove();
+					model.addPoints(-1);
+				}
+			}
+			System.out.println("Number of blocks = " + model.blockList.size());
+			
 			try { Thread.sleep(50); } catch (Exception e) {}
 
 		}
 
 	}
 
-	public synchronized void updatePlatformPosition(double x, double y, double theta) {
-
+	public synchronized void updatePlatformPosition(double handx, double handy, double theta, double dt) {
 		if (isPaused()) return;
-		model.platform.getBody().setTransform(new Vec2((float)(16*x-8), (float)(10*y)), (float) theta);
+		//model.platform.getBody().setTransform(model.platform.getBody().getPosition(), (float) theta);
+		double dtheta = theta - model.platform.getBody().getAngle();
+		double dx = (16*handx - 8) - model.platform.getBody().getPosition().x;
+		double dy = (10*handy)     - model.platform.getBody().getPosition().y;
+		model.platform.getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
+		model.platform.getBody().setAngularVelocity((float)(dtheta/dt*1000));
+		System.out.println("dx: "+dx+"\ndt: "+dt+"\ndxdt"+(float)(dx/dt));
 		
 	}
-
 
 
 }
