@@ -70,7 +70,7 @@ public class GameController implements Runnable {
 			if(now - squareSpawnTime >= 2*1000) {
 				DrawableBody db = spawn();
 				model.blockList.add(db);
-				model.addPoints(db.getValue());
+				//model.addPoints(db.getValue());
 				squareSpawnTime = now;
 			}
 			
@@ -83,7 +83,11 @@ public class GameController implements Runnable {
 			Iterator<DrawableBody> itr = model.blockList.iterator();
 			while( itr.hasNext() ) {
 				DrawableBody b = itr.next();
-				b.reduceLifetime(now - time);
+				long dt = now - time;
+				System.out.println("dt = "+ dt);
+				b.reduceLifetime(dt);
+				System.out.println("lifetime = " + b.getExpiration());
+				System.out.println("number in list "+ model.blockList.size());
 				if( b.getExpiration() <= 0 ) {
 					model.addPoints(b.getValue());
 					itr.remove();

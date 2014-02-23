@@ -9,7 +9,7 @@ public class PolyBody implements DrawableBody {
 	private Fixture fixture;
 	private Color color;
 	private int sides;
-	private long lifetime = 20*1000; // milliseconds
+	private long lifetime = 15*1000; // milliseconds
 
 	public PolyBody(World world, float x, int sides) {
 		
