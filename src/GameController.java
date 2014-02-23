@@ -10,24 +10,25 @@ public class GameController implements Runnable {
 	
 	GameModel model;
 	GameView view;
-
 	boolean paused = false;
+	float platformOffsetx = 0f;
+	float platformOffsety = 0f; // used to un-pause smoothly
 
 	Thread t;
 
 	public GameController(GameModel m) {
 		model = m;
-
 		t = new Thread(this);
 		t.start();
-
 	}
 	
 	public void addView(GameView v) {
 		view = v;
 	}
 	
-	public synchronized void pause(){
+	public synchronized void pause(double handx, double handy){
+		platformOffsetx = (16*(float)handx - 8);
+		platformOffsety = (10*(float)handy);
 		paused = true;
 		if (view != null) view.repaint();
 	}
@@ -41,7 +42,6 @@ public class GameController implements Runnable {
 	}
 	
 	public DrawableBody spawn() {
-
 		int sides = (int)Math.round(Math.random()*5) + 3;
 		float x;
 
@@ -58,7 +58,6 @@ public class GameController implements Runnable {
 		x = (float)(Math.random() * 12 - 6 );		
 
 		return new PolyBody(model.world, x, distributions[level][newPoly]);
-
 	}
 
 	public void run() {
@@ -130,8 +129,8 @@ public class GameController implements Runnable {
 		if (isPaused()) return;
 		//model.platform.getBody().setTransform(model.platform.getBody().getPosition(), (float) theta);
 		double dtheta = theta - model.platform.getBody().getAngle();
-		double dx = (16*handx - 8) - model.platform.getBody().getPosition().x;
-		double dy = (10*handy)     - model.platform.getBody().getPosition().y;
+		float dx = (16*(float)handx - 8) + platformOffsetx - model.platform.getBody().getPosition().x;
+		float dy = (10*(float)handy)     + platformOffsety - model.platform.getBody().getPosition().y;
 		model.platform.getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
 		model.platform.getBody().setAngularVelocity((float)(dtheta/dt*1000));		
 	}

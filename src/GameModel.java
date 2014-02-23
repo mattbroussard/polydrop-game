@@ -16,6 +16,7 @@ public class GameModel {
 	
 	int score = 0;
 	int maxScore = score;
+	int health = 100;
 
 	public GameModel() {
 		world = new World(GRAVITY);
@@ -28,6 +29,10 @@ public class GameModel {
 	
 	public int getMaxScore(){
 		return maxScore;
+	}
+
+	public int getHealth() {
+		return health;
 	}
 
 	public void addPoints(int p) {
