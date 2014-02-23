@@ -21,7 +21,7 @@ public class PolyBody implements DrawableBody {
 		Vec2[] verts = new Vec2[sides];
 		for (int i = 0; i < sides; i++) {
 			double theta = 2 * Math.PI / sides * i;
-			float r = 0.75f;
+			float r = 0.25f;
 			verts[i] = new Vec2((float)Math.cos(theta) * r, (float)Math.sin(theta) * r);
 		}
 		shape.set(verts, sides);

@@ -22,10 +22,6 @@ public class GameController implements Runnable {
 		t.start();
 
 	}
-
-	public DrawableBody spawnSquare(float x) {		
-		return new Square(model.world, x);
-	}
 	
 	public void addView(GameView v) {
 		view = v;
@@ -48,7 +44,8 @@ public class GameController implements Runnable {
 
 		int sides = (int)Math.round(Math.random()*5) + 3;
 		Color[] colors = { Color.BLUE, Color.RED, Color.MAGENTA, Color.YELLOW, Color.ORANGE, Color.BLACK };
-		return sides == 4 ? new Square(model.world, 0) : new PolyBody(model.world, 0, sides, colors[sides-3]);
+		float x = (float)(Math.random() * 14 - 7);
+		return sides == 4 ? new Square(model.world, x) : new PolyBody(model.world, x, sides, colors[sides-3]);
 
 	}
 
