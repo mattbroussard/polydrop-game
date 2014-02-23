@@ -35,6 +35,14 @@ public class GameModel {
 		return health;
 	}
 
+	public void reduceHealth() {
+		this.health -= 10;
+	}
+
+	public void increaseHealth() {
+		this.health += 1;
+	}
+
 	public void addPoints(int p) {
 		score += p;
 		if(score > maxScore) maxScore = score;
