@@ -17,7 +17,7 @@ public class GameView extends JComponent implements KeyListener{
 	GameModel model;
 	GameController controller;
 
-	final static int EXPIRATION_PERIOD = 5000;
+	final static int EXPIRATION_PERIOD = 2500;
 
 	public GameView(GameModel m, GameController c) {
 
@@ -93,7 +93,7 @@ public class GameView extends JComponent implements KeyListener{
 		}
 		//System.out.println("end poly");
 
-		Color c = expireColor(db.getColor(), db.getExpiration());
+		Color c = controller.isPaused() ? Colors.BACKGROUND : expireColor(db.getColor(), db.getExpiration());
 
 		if (c!=null) {
 			g2.setColor(c);
