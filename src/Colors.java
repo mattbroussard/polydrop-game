@@ -16,9 +16,7 @@ public class Colors {
 
 	public static final Color BACKGROUND = new Color(39,40,34);
 	public static final Color PAUSED = new Color(128,128,128);
-
 	public static final Color PLATFORM = Color.WHITE;
-
 	public static final Color SCORE = Color.WHITE;
 
 }

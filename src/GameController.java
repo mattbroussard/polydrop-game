@@ -88,7 +88,9 @@ public class GameController implements Runnable {
 				long dt = now - time;
 				b.reduceLifetime(dt);
 				if( b.getExpiration() <= 0 ) {
+					// yay, points!
 					model.addPoints(b.getValue());
+					view.notifyScore(b, b.getValue());
 					itr.remove();
 					model.world.destroyBody(b.getBody());
 				}
@@ -103,10 +105,12 @@ public class GameController implements Runnable {
 			while( itr.hasNext() ) {
 				DrawableBody b = itr.next();
 				Vec2 pos = b.getBody().getPosition();
-				if(pos.y < -5) {
+				if(pos.y < -2) {
+					// Oh no! Lose points. :(
 					itr.remove();
 					model.world.destroyBody(b.getBody());
-					model.addPoints(-1 * b.getValue());
+					model.addPoints(-50);
+					view.notifyScore(b, -50);
 				}
 			}
 			
