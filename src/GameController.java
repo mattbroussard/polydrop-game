@@ -90,9 +90,12 @@ public class GameController implements Runnable {
 		long platformPositionTime = System.currentTimeMillis();
 		while (true) {
 			
+			try { Thread.sleep(50); } catch (Exception e) {}
+
 			// Just spin if we're paused
 			if (isPaused() || model.isGameOver()) {
 				time = System.currentTimeMillis();
+				view.repaint();
 				continue;
 			}
 
@@ -166,8 +169,6 @@ public class GameController implements Runnable {
 				view.repaint();
 			}
 			time = now;
-			
-			try { Thread.sleep(50); } catch (Exception e) {}
 
 		}
 
