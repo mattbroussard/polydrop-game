@@ -14,6 +14,13 @@ public class GameController implements Runnable {
 	GameView view;
 
 	boolean paused = false;
+	final int scoreNeededToLevel[] = {0,100,300,1000,3000};
+	final int distributions[][] = {	{3,4,5},
+							 		{3,4,5,6,6},
+							 		{3,4,5,6,7,7},
+							 		{3,4,5,6,7,8,8},
+							 		{3,4,5,6,7,8},
+							 		{3,4,5,6,7,8}};
 
 	Thread t;
 
@@ -43,19 +50,21 @@ public class GameController implements Runnable {
 	}
 	
 	public int calculateLevel(int score) {
-		return score/300;
+		int level = Arrays.binarySearch(scoreNeededToLevel, score);
+		if(level >= 0) return level;
+		else{
+			level += 1;
+			level *= -1;
+			level -= 1;
+		}
+		return level;
 	}
 
 	public DrawableBody spawn() {
 
 		int sides = (int)Math.round(Math.random()*5) + 3;
 		float x;
-		int scoreNeededToLevel[] = {0,100,300,600,1500};
-		int distributions[][] = {	{3,4,5},
-								 	{3,4,5,6},
-									{3,4,5,6,7},
-								 	{3,4,5,6,7,8},
-								 	{3,3,3,4,4,5,6,7,7,8,8,8}};
+
 //		int level = Arrays.binarySearch(scoreNeededToLevel, model.getMaxScore());
 		int level = calculateLevel(model.getMaxScore());
 		if(level >= distributions.length) level = distributions.length-1;
