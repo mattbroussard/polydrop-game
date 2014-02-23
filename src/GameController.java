@@ -45,7 +45,7 @@ public class GameController implements Runnable {
 		int sides = (int)Math.round(Math.random()*5) + 3;
 		float x = (float)(Math.random() * 10 - 5);
 
-		int distributions[] = {3,3,3,3,3,4,4,5,5,6,6,7,8,8,8};
+		int distributions[] = {3,3,3,3,6,4,4,5,5,6,6,7,8,8,8};
 		int newPoly = (int)(Math.random()*(distributions.length));
 		//return distributions[newPoly] == 4 ? new Square(model.world, x) : new PolyBody(model.world, x, distributions[newPoly], Colors.SHAPES[distributions[newPoly]-3]);
 		//long now = System.currentTimeMillis();
