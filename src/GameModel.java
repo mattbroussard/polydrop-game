@@ -43,7 +43,7 @@ public class GameModel {
 	}
 
 	public void increaseHealth() {
-		this.health += 1;
+		this.health = Math.min(health + 1, 100);
 	}
 
 	public void addPoints(int p) {
@@ -59,5 +59,8 @@ public class GameModel {
 		return blockList;
 	}
 	
+	public boolean isGameOver() {
+		return this.gameOver;
+	}
 
 }

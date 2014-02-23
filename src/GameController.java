@@ -17,6 +17,8 @@ public class GameController implements Runnable {
 	float platformOffsetx = 0f;
 	float platformOffsety = 0f; // used to un-pause smoothly
 
+	float platformDeltax = 0f;
+
 	final int scoreNeededToLevel[] = {0,100,300,1000,3000};
 	final int distributions[][] = {	{3,4,5},
 							 		{3,4,5,6,6},
@@ -88,7 +90,7 @@ public class GameController implements Runnable {
 		while (true) {
 			
 			// Just spin if we're paused
-			if (isPaused()) {
+			if (isPaused() || model.isGameOver()) {
 				time = System.currentTimeMillis();
 				continue;
 			}
@@ -171,7 +173,7 @@ public class GameController implements Runnable {
 	}
 
 	public synchronized void updatePlatformPosition(double handx, double handy, double theta, double dt) {
-		if (isPaused()) return;
+		if (isPaused() || model.isGameOver()) return;
 		//model.platform.getBody().setTransform(model.platform.getBody().getPosition(), (float) theta);
 		double dtheta = theta - model.platform.getBody().getAngle();
 		float dx = (16*(float)handx - 8) /*+ platformOffsetx */- model.platform.getBody().getPosition().x;
