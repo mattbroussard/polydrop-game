@@ -22,8 +22,8 @@ public class Platform implements DrawableBody {
 		shape.setAsBox(4, 1);
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.shape = shape;
-		fixtureDef.density=1;
-		fixtureDef.friction=0.3f;
+		fixtureDef.density = 1;
+		fixtureDef.friction = 0.3f;
 		this.fixture = body.createFixture(fixtureDef);
 		//body.setUserData(f); //make this better
 

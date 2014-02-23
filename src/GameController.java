@@ -64,6 +64,17 @@ public class GameController implements Runnable {
 			if (view!=null) view.repaint();
 			time = now;
 
+			// remove blocks that have fallen
+			itr = model.blockList.Iterator();
+			while( itr.hasNext() ) {
+				block = itr.next();
+				Vec2 pos = block.getBody().getPosition();
+				if(pos.y < -10) {
+					itr.remove();
+				}
+			}
+			System.out.println("Number of blocks = " + model.blockList.size());
+			
 			try { Thread.sleep(50); } catch (Exception e) {}
 
 		}
