@@ -82,7 +82,7 @@ public class GameView extends JComponent implements KeyListener{
 		boolean paused = controller.isPaused();
 
 		//Draw background
-		Color bg = paused ? Color.GRAY : Color.WHITE;
+		Color bg = paused ? Colors.PAUSED : Colors.BACKGROUND;
 		resetTrans(g2);
 		g2.setColor(bg);
 		g2.fillRect(0,0,this.getWidth(),this.getHeight());
@@ -103,7 +103,7 @@ public class GameView extends JComponent implements KeyListener{
 		String pausedString = paused ? " [paused]" : "";
 		String score = String.format("Score: %d%s", model.getScore(), pausedString);
 		g2.setFont(new Font("Monospace", 0, 80));
-		g2.setColor(Color.BLACK);
+		g2.setColor(Colors.SCORE);
 		g2.drawString(score, 40, 80);
 		
 	}
