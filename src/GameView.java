@@ -144,6 +144,15 @@ public class GameView extends JComponent implements KeyListener{
 
 	}
 
+	public void drawStringCentered(String s, Font f, Color c, Graphics2D g2, int x, int y) {
+
+		g2.setFont(f);
+		g2.setColor(c);
+		int w = getFontMetrics(f).stringWidth(s);
+		g2.drawString(s, x - w/2, y);
+
+	}
+
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D)g;
@@ -160,6 +169,16 @@ public class GameView extends JComponent implements KeyListener{
 		g2.setColor(bg);
 		g2.fillRect(0,0,this.getWidth(),this.getHeight());
 
+		//draw paused message if paused
+		if (paused) {
+			drawStringCentered(	"PAUSED",
+								new Font("Monospace", 0, 250),
+								Colors.PAUSED_TEXT,
+								g2,
+								this.getWidth()/2,
+								this.getHeight()/2);
+		}
+
 		//Prepare to draw bodies
 		transformForBodies(g2);
 
@@ -173,8 +192,7 @@ public class GameView extends JComponent implements KeyListener{
 
 		//Draw score
 		resetTrans(g2);
-		String pausedString = paused ? " [paused]" : "";
-		String score = String.format("Score: %d%s", model.getScore(), pausedString);
+		String score = "Score: "+model.getScore();
 		g2.setFont(new Font("Monospace", 0, 80));
 		g2.setColor(Colors.SCORE);
 		g2.drawString(score, 40, 80);
@@ -186,16 +204,15 @@ public class GameView extends JComponent implements KeyListener{
 			while (notifs.peekLast() != null && notifs.peekLast().expiry < now)
 				notifs.removeLast();
 
-			//Draw score notifications
+			//Draw score and level-up notifications
 			resetTrans(g2);
 			for (GameView.Notification n : notifs) {
 				double x = convertGameX(n.x);
 				double progress = ((double)(NOTIFICATION_TIME-n.expiry+now) / (double)NOTIFICATION_TIME);
 				double dy = progress * NOTIFICATION_DISTANCE;
 				double y = convertGameY(n.y + dy);
-				g2.setColor(interpolateColor(n.color, Colors.BACKGROUND, progress));
-				g2.setFont(new Font("Monospace", 0, n.size));
-				g2.drawString(n.msg, (int)x, (int)y);
+				Color color = interpolateColor(n.color, Colors.BACKGROUND, progress);
+				drawStringCentered(n.msg, new Font("Monospace", 0, n.size), color, g2, (int)x, (int)y);
 				//System.out.printf("Drawing notif \"%s\" at (%d,%d).\n", n.msg, (int)x, (int)y);
 			}
 
