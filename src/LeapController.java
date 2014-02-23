@@ -66,9 +66,9 @@ public class LeapController extends Listener implements Runnable {
 		double handRoll = handNorm.roll();
 
 		if (hand.fingers().count() <= 1 && Math.abs(handRoll) < FIST_THRESHOLD) {
-			game.pause();
+			game.pause(handX, handY);
 		} else {
-			game.unpause();
+			game.unpause(handX, handY);
 		}
 
 		long now = System.currentTimeMillis();

@@ -14,10 +14,11 @@ public class GameController implements Runnable {
 	GameView view;
 	boolean paused = false;
 
-	float platformOffsetx = 0f;
-	float platformOffsety = 0f; // used to un-pause smoothly
+	double platformPrevx = 0;
+	double platformPrevy = 0; // used to un-pause smoothly
 
-	float platformDeltax = 0f;
+	double platformDeltax = 0;
+	double platformDeltay = 0;
 	
 	final int timesToSpawn[] = {1000,900,750,600,500};
 	final int scoreNeededToLevel[] = {0,80,200,500,1000};
@@ -41,15 +42,24 @@ public class GameController implements Runnable {
 	}
 	
 	public synchronized void pause() {
-		/*
-		platformOffsetx = (16*(float)handx - 8);
-		platformOffsety = (10*(float)handy);
-		*/
+		paused = true;
+		if (view != null) view.repaint();
+	}
+
+	public synchronized void pause(double handx, double handy) {
+		platformPrevx = (16*handx - 8);
+		platformPrevy = (10*handy);
 		paused = true;
 		if (view != null) view.repaint();
 	}
 
 	public synchronized void unpause() {
+		paused = false;
+	}
+
+	public synchronized void unpause(double  handx, double handy) {
+		platformDeltax = platformPrevx - (16*handx - 8);
+		platformDeltay = platformPrevy - (10*handy);
 		paused = false;
 	}
 
@@ -177,10 +187,38 @@ public class GameController implements Runnable {
 		if (isPaused() || model.isGameOver()) return;
 		//model.platform.getBody().setTransform(model.platform.getBody().getPosition(), (float) theta);
 		double dtheta = theta - model.platform.getBody().getAngle();
-		float dx = (16*(float)handx - 8) /*+ platformOffsetx */- model.platform.getBody().getPosition().x;
-		float dy = (10*(float)handy)     /*+ platformOffsety */- model.platform.getBody().getPosition().y;
-		model.platform.getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
+		Vec2 vel = calculateVelocity(handx, handy, dt);
+		model.platform.getBody().setLinearVelocity(vel);
 		model.platform.getBody().setAngularVelocity((float)(dtheta/dt*1000));		
+	}
+
+	private Vec2 calculateVelocity(double handx, double handy, double dt) {
+		handx = (16*handx - 8);
+		handy = (10*handy);
+		System.out.println("new x, y = " + handx + " " + handy);
+		System.out.println("old x, y = " + platformPrevx +" "+ platformPrevy);
+		System.out.println("del x, y = " + platformDeltax +" "+ platformDeltay);
+
+		double dx = handx + platformDeltax - (model.platform.getBody().getPosition().x);
+		double dy = handy + platformDeltay - (model.platform.getBody().getPosition().y);
+		System.out.println("handx = "+handx);
+		System.out.println("handy = "+handy);
+		System.out.println("platformDeltax = "+platformDeltax);
+		System.out.println("dt = "+dt);
+		System.out.println("dx = "+dx);
+		System.out.println("dx/dt = " + (dx/dt));
+		System.out.println("dx/dt*1000 = " + (dx/dt*1000));
+
+
+		System.out.println(handx + (model.platform.getBody().getPosition().x));
+		System.out.println((handx + model.platform.getBody().getPosition().x)/dt*1000);
+
+		float vx = (float)(dx/dt*1000);
+		float vy = (float)(dy/dt*1000);
+		
+		System.out.println("vx, vy = " + dx +" "+ dy);
+		System.out.println();
+		return new Vec2(vx, vy);
 	}
 
 	public void newGame() {
