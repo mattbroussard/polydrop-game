@@ -213,7 +213,9 @@ public class GameView extends JComponent implements KeyListener{
 		if (health < 0.6f) healthColor = Colors.HEALTH_MID;
 		if (health < 0.3f) healthColor = Colors.HEALTH_BAD;
 		g2.setColor(healthColor);
-		g2.fillRect(healthX, healthY, healthMid - healthX, healthHeight);
+		if (health > 0) {
+			g2.fillRect(healthX, healthY, healthMid - healthX, healthHeight);
+		}
 
 		synchronized (notifs) {
 
