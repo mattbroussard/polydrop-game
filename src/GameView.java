@@ -17,6 +17,8 @@ public class GameView extends JComponent implements KeyListener{
 	GameModel model;
 	GameController controller;
 
+	final static int EXPIRATION_PERIOD = 5000;
+
 	public GameView(GameModel m, GameController c) {
 
 		super();
@@ -52,6 +54,19 @@ public class GameView extends JComponent implements KeyListener{
 		g2.translate(8.0f * PRECISION_FACTOR, -10.0f * PRECISION_FACTOR);
 	}
 
+	public Color expireColor(Color c, long expiry) {
+
+		long now = System.currentTimeMillis();
+		if (expiry == 0) return c;
+		if (expiry-now < 0) return Colors.BACKGROUND;
+		if (expiry-now > EXPIRATION_PERIOD) return c;
+
+		double ratio = (double)(expiry-now) / (double)EXPIRATION_PERIOD;
+
+		return Math.random() < ratio ? c : Colors.BACKGROUND;
+
+	}
+
 	public void drawBody(DrawableBody db, Graphics2D g2) {
 
 		Fixture fix = db.getFixture();
@@ -70,7 +85,7 @@ public class GameView extends JComponent implements KeyListener{
 		}
 		//System.out.println("end poly");
 
-		g2.setColor(db.getColor());
+		g2.setColor(expireColor(db.getColor(), db.getExpiration()));
 		g2.fillPolygon(poly);
 
 	}
