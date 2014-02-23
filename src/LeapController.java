@@ -32,15 +32,32 @@ public class LeapController extends Listener implements Runnable {
 
 	}
 
-	int n = 0;
+	int lastHand = -1;
 	public void processFrame(Frame frame) {
 
-		n++;
-		//System.out.printf("onFrame called %d\n", n);
-
 		HandList hands = frame.hands();
-		if (hands.count()==0) return;
+		
+		if (hands.count()==0) {
+			game.pause();
+			return;
+		}
+
 		Hand hand = hands.frontmost();
+		if (hand.id() != lastHand) {
+			for (Hand h : hands) {
+				if (h.id() == lastHand) {
+					hand = h;
+					break;
+				}
+			}
+		}
+		lastHand = hand.id();
+
+		if (hand.fingers().count() <= 1) {
+			game.pause();
+		} else {
+			game.unpause();
+		}
 
 		Vector handPos = hand.palmPosition();
 		double handX = normalize(handPos.getX(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f);

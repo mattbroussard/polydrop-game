@@ -7,7 +7,8 @@ public class GameController implements Runnable {
 	
 	GameModel model;
 	GameView view;
-	boolean paused;
+
+	boolean paused = false;
 
 	Thread t;
 
@@ -18,7 +19,6 @@ public class GameController implements Runnable {
 		t.start();
 
 	}
-	
 
 	public DrawableBody spawnSquare(float x) {		
 		return new Square(model.world, x);
@@ -28,32 +28,36 @@ public class GameController implements Runnable {
 		view = v;
 	}
 	
-	public synchronized void movePlatformRight(double d) {
-	//	Platform p = model.getPlatform();
-	//	p.moveRight(d);
-		view.repaint();
-	}
-	
-	public synchronized void movePlatformLeft(double d) {
-		//model.getPlatform().moveLeft(d);
-		view.repaint();
-	}
-	
 	public synchronized void pause(){
-		paused = !paused;
+		paused = true;
+		if (view != null) view.repaint();
+	}
+
+	public synchronized void unpause() {
+		paused = false;
+	}
+
+	public synchronized boolean isPaused() {
+		return paused;
 	}
 	
-
-	//temp?
 	public void run() {
 		long squareSpawnTime = System.currentTimeMillis();
 		long time = System.currentTimeMillis();
 		while (true) {
 			
+			// Just spin if we're paused
+			if (isPaused()) {
+				time = System.currentTimeMillis();
+				continue;
+			}
+
 			// drop square every 2 seconds
 			long now = System.currentTimeMillis();
 			if(now - squareSpawnTime >= 2*1000) {
-				model.blockList.add(spawnSquare(0f));
+				Square s = new Square(model.world, 0);
+				model.blockList.add(s);
+				model.addPoints(1);
 				System.out.println("creating new square");
 				squareSpawnTime = now;
 			}
@@ -70,24 +74,13 @@ public class GameController implements Runnable {
 
 	}
 
-	//stub
 	public synchronized void updatePlatformPosition(double x, double y, double theta) {
-//		model.platform.setLinearVelocity(new Vec2((float)(16*x-8)/50, (float)(10*y)));
+
+		if (isPaused()) return;
 		model.platform.getBody().setTransform(new Vec2((float)(16*x-8), (float)(10*y)), (float) theta);
-		//theta = theta * (180f / Math.PI);
-		//System.out.printf("x=%.3f, y=%.3f, theta=%.3f\n", x, y, theta);
+		
 	}
 
-	public synchronized boolean collides(Block a, Block b) {
-		for(int i = 0; i < a.npoints; i++)
-			if(b.contains(a.xpoints[i], a.ypoints[i])){
-				System.out.println("Collision!");
-				return true;				
-			}
 
-		return false;
-	}
-	//public void pause() {}
-	//public void unpause() {}
 
 }

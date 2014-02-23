@@ -4,6 +4,8 @@ import javax.swing.*;
 
 public class Main {
 
+	static final boolean FULL_SCREEN = true;
+
 	public static void main(String[] args) {
 
 		//Setup model
@@ -17,8 +19,15 @@ public class Main {
 		GameView view = new GameView(model, game);
 		game.addView(view);
 		JFrame frame = new JFrame("Derp");
-		frame.setExtendedState(Frame.MAXIMIZED_BOTH);
-		frame.setUndecorated(true);
+
+		if (FULL_SCREEN) {
+			frame.setExtendedState(Frame.MAXIMIZED_BOTH);
+			frame.setUndecorated(true);
+		} else {
+			frame.setSize(800,500);
+			frame.setLocation(100,100);
+		}
+
 		frame.setContentPane(view);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.addKeyListener(view);
