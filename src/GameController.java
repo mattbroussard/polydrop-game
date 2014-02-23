@@ -18,8 +18,6 @@ public class GameController implements Runnable {
 	float platformOffsety = 0f; // used to un-pause smoothly
 
 	float platformDeltax = 0f;
-
-	final int scoreNeededToLevel[] = {0,100,300,1000,3000};
 	
 	final int timesToSpawn[] = {1000,900,750,600,500};
 	final int scoreNeededToLevel[] = {0,80,200,500,1000};
