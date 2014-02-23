@@ -170,9 +170,9 @@ public class GameController implements Runnable {
 						// Oh no! Lose points. :(
 						itr.remove();
 						model.reduceHealth();
-						view.notifyScore(b, -50);
+						view.notifyScore(b, -20);
 						model.world.destroyBody(b.getBody());
-						model.addPoints(-50);
+						model.addPoints(-20);
 					}
 				}
 			}
