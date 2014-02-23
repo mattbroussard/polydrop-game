@@ -9,6 +9,6 @@ public interface DrawableBody {
 	public Color getColor();
 	public int getValue();
 	public long getExpiration();
-	public void reduceLifetime();
+	public void reduceLifetime(long dt);
 
 }
