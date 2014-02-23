@@ -14,8 +14,13 @@ public class LeapController extends Listener implements Runnable {
 	static final double SPACE_HEIGHT = 500f;
 	static final double FIST_THRESHOLD = Math.PI / 4f;
 	
+	double handResumeX = 0, handResumeY = 0;
+	double handPauseX = 0, handPauseY = 0;
+	
 	Vector pauseLocation = new Vector(0.0f,0.0f,0.0f);
-	Vector resumeLocation = new Vector(0.0f,0.0f,0.0f);;
+	Vector resumeLocation = new Vector(0.0f,0.0f,0.0f);
+	
+	double dx = 0, dy = 0;
 	
 	private long lastUpdate;
 
@@ -64,34 +69,38 @@ public class LeapController extends Listener implements Runnable {
 		lastHand = hand.id();
 
 		Vector handPos = hand.palmPosition();
-		double handX = normalize(handPos.getX(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f);
-		double handY = normalize(handPos.getY(), 0f, SPACE_HEIGHT);
+		double handX = normalize(handPos.getX(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f)/* - dx*/; 
+		double handY = normalize(handPos.getY(), 0f, SPACE_HEIGHT) /*- dy*/;
+
 		
-		double handResumeX = normalize(resumeLocation.getX(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f);
-		double handResumeY = normalize(resumeLocation.getY(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f);
-
-		double handPauseX = normalize(resumeLocation.getX(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f);
-		double handPauseY = normalize(resumeLocation.getY(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f);
-
 		Vector handNorm = hand.palmNormal();
 		double handRoll = handNorm.roll();
-
+		
+		long now = System.currentTimeMillis();
+		long dt = (lastUpdate < 0) ? 0 : now-lastUpdate;
+		
 		if (hand.fingers().count() <= 1 && Math.abs(handRoll) < FIST_THRESHOLD) {
 			if(!game.paused){
-				pauseLocation = hand.palmPosition();
+//				pauseLocation =  handx;
+//				handPauseX = handX;
+//				handPauseY = handY;
 				System.out.println("Pausing at "+pauseLocation.toString());
-				game.pause();				
+				game.pause();
+				return;
 			}
 
 		} else if(game.paused) {
-			resumeLocation = hand.palmPosition();
+//			resumeLocation =  hand.palmPosition();
+//			handResumeX = normalize(resumeLocation.getX(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f);
+//			handResumeY = normalize(resumeLocation.getY(), 0f, SPACE_HEIGHT);
+//			dx = (handResumeX - handPauseX);
+//			dy = (handResumeY - handPauseY);
 			System.out.println("Resuming at "+ resumeLocation.toString());
 			game.unpause();
+			return;
 		}
-
-		long now = System.currentTimeMillis();
-		long dt = (lastUpdate < 0) ? 0 : now-lastUpdate;
-		game.updatePlatformPosition(handX - handResumeX + handPauseX, handY - handResumeY + handPauseY, handRoll, dt);
+		
+		game.updatePlatformPosition(handX, handY, handRoll, dt);
 		//game.model.platform.getBody().setLinearVelocity(new Vec2(0.0f, 0.0f));
 		lastUpdate = now;
 
