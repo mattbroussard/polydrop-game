@@ -9,3 +9,4 @@ lib/*.dll
 lib/*.dylib
 *.log
 *.app
+distrib
