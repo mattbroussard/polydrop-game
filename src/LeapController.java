@@ -10,6 +10,7 @@ public class LeapController extends Listener implements Runnable {
 
 	static final double SPACE_WIDTH = 500f;
 	static final double SPACE_HEIGHT = 500f;
+	static final double FIST_THRESHOLD = Math.PI / 4f;
 
 	//normalizes a number n between a and b to be between 0 and 1. Clips if necessary.
 	private double normalize(double n, double a, double b) {
@@ -53,18 +54,18 @@ public class LeapController extends Listener implements Runnable {
 		}
 		lastHand = hand.id();
 
-		if (hand.fingers().count() <= 1) {
-			game.pause();
-		} else {
-			game.unpause();
-		}
-
 		Vector handPos = hand.palmPosition();
 		double handX = normalize(handPos.getX(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f);
 		double handY = normalize(handPos.getY(), 0f, SPACE_HEIGHT);
 
 		Vector handNorm = hand.palmNormal();
 		double handRoll = handNorm.roll();
+
+		if (hand.fingers().count() <= 1 && Math.abs(handRoll) < FIST_THRESHOLD) {
+			game.pause();
+		} else {
+			game.unpause();
+		}
 
 		game.updatePlatformPosition(handX, handY, handRoll);
 

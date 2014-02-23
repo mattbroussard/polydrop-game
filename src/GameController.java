@@ -3,6 +3,8 @@ import org.jbox2d.dynamics.*;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.*;
 
+import java.awt.Color;
+
 public class GameController implements Runnable {
 	
 	GameModel model;
@@ -41,6 +43,14 @@ public class GameController implements Runnable {
 		return paused;
 	}
 	
+	public DrawableBody spawn() {
+
+		int sides = (int)Math.round(Math.random()*5) + 3;
+		Color[] colors = { Color.BLUE, Color.RED, Color.MAGENTA, Color.YELLOW, Color.ORANGE, Color.BLACK };
+		return sides == 4 ? new Square(model.world, 0) : new PolyBody(model.world, 0, sides, colors[sides-3]);
+
+	}
+
 	public void run() {
 		long squareSpawnTime = System.currentTimeMillis();
 		long time = System.currentTimeMillis();
@@ -55,9 +65,9 @@ public class GameController implements Runnable {
 			// drop square every 2 seconds
 			long now = System.currentTimeMillis();
 			if(now - squareSpawnTime >= 2*1000) {
-				Square s = new Square(model.world, 0);
-				model.blockList.add(s);
-				model.addPoints(1);
+				DrawableBody db = spawn();
+				model.blockList.add(db);
+				model.addPoints(db.getValue());
 				System.out.println("creating new square");
 				squareSpawnTime = now;
 			}

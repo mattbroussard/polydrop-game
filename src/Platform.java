@@ -41,4 +41,6 @@ public class Platform implements DrawableBody {
 	public Fixture getFixture() {
 		return this.fixture;
 	}
+
+	public int getValue() { return 0; }
 }

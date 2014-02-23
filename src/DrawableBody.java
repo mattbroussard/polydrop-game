@@ -7,5 +7,6 @@ public interface DrawableBody {
 	public Body getBody();
 	public Fixture getFixture();
 	public Color getColor();
+	public int getValue();
 
 }

@@ -3,27 +3,38 @@ import org.jbox2d.common.*;
 import org.jbox2d.collision.shapes.*;
 import java.awt.Color;
 
-public class Square implements DrawableBody {
+public class PolyBody implements DrawableBody {
 
 	private Body body;
 	private Fixture fixture;
 	private Color color;
+	private int sides;
 	
-	public Square(World world, float x) {
+	public PolyBody(World world, float x, int sides, Color c) {
+		
 		BodyDef bdef = new BodyDef();
 		bdef.type = BodyType.DYNAMIC;
 		bdef.position.set(x,10);
 		body = world.createBody(bdef);
 		
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(.5f, .5f);
+		Vec2[] verts = new Vec2[sides];
+		for (int i = 0; i < sides; i++) {
+			double theta = 2 * Math.PI / sides * i;
+			float r = 0.75f;
+			verts[i] = new Vec2((float)Math.cos(theta) * r, (float)Math.sin(theta) * r);
+		}
+		shape.set(verts, sides);
+
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.shape = shape;
 		fixtureDef.density = 1;
 		fixtureDef.friction = 0.3f;
 		this.fixture = body.createFixture(fixtureDef);
 
-		this.color = Color.red;
+		this.color = c;
+		this.sides = sides;
+
 	}
 
 	public Color getColor() {
@@ -38,5 +49,5 @@ public class Square implements DrawableBody {
 		return this.fixture;
 	}
 
-	public int getValue() { return 1; }
+	public int getValue() { return sides; }
 }
