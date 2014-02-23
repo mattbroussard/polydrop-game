@@ -2,6 +2,8 @@
 import org.jbox2d.dynamics.*;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.*;
+
+import java.util.Arrays;
 import java.util.Iterator;
 
 import java.awt.Color;
@@ -44,12 +46,13 @@ public class GameController implements Runnable {
 
 		int sides = (int)Math.round(Math.random()*5) + 3;
 		float x;
-
+		int scoreNeededToLevel[] = {0,100,300,600,1500};
 		int distributions[][] = {	{3,4,5},
-								 	{3,3,4,4,5,5,6},
-									{3,3,3,4,4,5,5,6,6,7},
-								 	{3,3,3,4,4,4,5,5,6,6,7,7,8},
-								 	{3,3,3,4,4,5,5,6,6,7,7,8,8}};
+								 	{3,4,5,6},
+									{3,4,5,6,7},
+								 	{3,4,5,6,7,8},
+								 	{3,3,3,4,4,5,6,7,7,8,8,8}};
+//		int level = Arrays.binarySearch(scoreNeededToLevel, model.getMaxScore());
 		int level = model.getMaxScore() / 300;
 		if(level >= distributions.length) level = distributions.length-1;
 		int newPoly = (int)(Math.random()*(distributions[level].length));
