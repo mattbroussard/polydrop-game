@@ -83,6 +83,7 @@ public class GameController implements Runnable {
 	public void run() {
 		long squareSpawnTime = System.currentTimeMillis();
 		long time = System.currentTimeMillis();
+		long healthTime = System.currentTimeMillis();
 		long platformPositionTime = System.currentTimeMillis();
 		while (true) {
 			
@@ -102,6 +103,13 @@ public class GameController implements Runnable {
 				squareSpawnTime = now;
 			}
 			
+			// restore health
+			now = System.currentTimeMillis();
+			if(now - healthTime >= 0.5*1000) {
+				model.increaseHealth();
+				healthTime = now;
+			}
+
 			// physics update
 			now = System.currentTimeMillis();
 			model.world.step((now-time)/1000f, 6, 2);
@@ -135,7 +143,6 @@ public class GameController implements Runnable {
 			}
 
 			synchronized (model.blockList) {
-
 				// remove blocks that have fallen
 				Iterator<DrawableBody> itr = model.blockList.iterator();
 				while( itr.hasNext() ) {
@@ -144,12 +151,12 @@ public class GameController implements Runnable {
 					if(pos.y < -2) {
 						// Oh no! Lose points. :(
 						itr.remove();
+						model.reduceHealth();
 						view.notifyScore(b, -50);
 						model.world.destroyBody(b.getBody());
 						model.addPoints(-50);
 					}
 				}
-
 			}
 			
 			if (view!=null) {
