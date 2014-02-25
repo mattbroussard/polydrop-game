@@ -20,13 +20,14 @@ public class GameController implements Runnable {
 	double platformDeltax = 0;
 	double platformDeltay = 0;
 	
-	final int timesToSpawn[] = {1000,700,500,300,250};
-	final int scoreNeededToLevel[] = {0,80,200,500,1000};
-	//final int scoreNeededToLevel[] = {0,0,0,0,0};
+	final int timesToSpawn[] = {1000,700,500,400,300,250,200,150};
+	final int scoreNeededToLevel[] = {0,80,200,500,1000,2000,3500,5500};
 	final int distributions[][] = {	{3,4,5},
 							 		{3,4,5,6,6},
 							 		{3,4,5,6,7,7},
 							 		{3,4,5,6,7,8,8},
+							 		{3,4,5,6,7,8},
+							 		{3,4,5,6,7,8},
 							 		{3,4,5,6,7,8},
 							 		{3,4,5,6,7,8}};
 

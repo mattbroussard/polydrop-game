@@ -200,6 +200,23 @@ public class GameView extends JComponent implements KeyListener{
 		g2.setFont(new Font("Monospace", 0, 80));
 		g2.setColor(Colors.SCORE);
 		g2.drawString(score, 40, 80);
+		
+		//Draw Level counter
+		int level = controller.calculateLevel(model.getMaxScore());
+		double pointsHave = model.getMaxScore();
+		double pointsNeeded = controller.scoreNeededToLevel[level+1];
+		double pointsForCurLevel = controller.scoreNeededToLevel[level];
+		Color circleColor = (controller.isPaused() || model.isGameOver()) ? Color.black : Color.gray;
+		g2.setColor(circleColor);
+		g2.fillOval(this.getWidth() - 400 , 20, 100, 100);
+		g2.setColor(Colors.SHAPES[level]);		
+		g2.fillArc(this.getWidth() - 395, 25, 90, 90, 0, (int)((pointsHave - pointsForCurLevel) / (pointsNeeded - pointsForCurLevel) * 360) ); 
+		g2.setColor(circleColor);
+		g2.fillOval(this.getWidth() - 385, 35, 70, 70);
+		g2.setColor(Colors.SHAPES[level]);
+		g2.setFont(new Font("Monospace", 0, 50));
+		g2.drawString(level+1+"", this.getWidth() - 362, 85);
+		
 
 		//Draw health bar
 		resetTrans(g2);
