@@ -22,6 +22,10 @@ public class GameView extends JComponent implements KeyListener{
 	final static double PRECISION_FACTOR = 1000f;
 	final static int NOTIFICATION_TIME = 1250;
 	final static double NOTIFICATION_DISTANCE = 2f;
+	
+	boolean startUnpause = false;
+	int countdown = 3;
+	double fontSize = 200;
 
 	public GameView(GameModel m, GameController c) {
 
@@ -125,6 +129,12 @@ public class GameView extends JComponent implements KeyListener{
 		synchronized (notifs) { notifs.addFirst(n); }
 
 	}
+	
+	public void unPaused(){
+		startUnpause = true;
+		countdown = 3;
+		fontSize = 200;
+	}
 
 	public void notifyLevel() {
 
@@ -180,7 +190,26 @@ public class GameView extends JComponent implements KeyListener{
 								this.getWidth()/2,
 								(int)(this.getHeight()*0.10));
 		}
+/*		if(startUnpause){
 
+			System.out.println("Starting unpause");
+			g.setFont(new Font("Monospace", 0, (int) fontSize));
+			System.out.println("Color: " +(int)(255 - (fontSize-200)*10));
+			g.setColor(new Color(255, 0,0,(int)(255 - (fontSize-200)*10)));
+			g.drawString(countdown+"", this.getWidth()/2, this.getHeight()/2);
+			//drawStringCentered(countdown+"",new Font("Monospace", 0, fontSize),new Color(256,0,0,(100+fontSize)), g2, (int)(this.getWidth()/2), (int)(this.getHeight()/2) );
+			fontSize += 1.3;
+			if(255 - (fontSize-200)*10 <= 1){
+				countdown--;
+				fontSize = 200;
+				if(countdown <= 0){
+					countdown = 3;
+					startUnpause = false;
+					paused = false;
+				}
+			}
+		}
+*/
 		//Prepare to draw bodies
 		transformForBodies(g2);
 

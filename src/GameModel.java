@@ -22,7 +22,7 @@ public class GameModel {
 
 	public GameModel() {
 		world = new World(GRAVITY);
-		platform = new Platform(world);		
+		platform = new Platform(world);	
 	}
 	
 	public int getScore() {

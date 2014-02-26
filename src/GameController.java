@@ -1,5 +1,6 @@
 
 import org.jbox2d.dynamics.*;
+
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.*;
 
@@ -7,6 +8,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import java.awt.Color;
+import java.util.ArrayList;
 
 public class GameController implements Runnable {
 	
@@ -20,7 +22,8 @@ public class GameController implements Runnable {
 	double platformDeltax = 0;
 	double platformDeltay = 0;
 	
-	final int timesToSpawn[] = {0,1000,600,400,300,250,200,150,150};
+//	final int timesToSpawn[] = {0,1000,600,400,300,250,200,150,150};
+	final int timesToSpawn[] = {0,1000,800,650,500,450,375,300,250};
 	final int scoreNeededToLevel[] = {0,80,200,500,1000,2000,3500,5500};
 	final int distributions[][] = {	{0}, //this will never run. Never on level '0'
 									{3,4,5},
@@ -33,6 +36,8 @@ public class GameController implements Runnable {
 							 		{3,4,5,6,7,8}};
 
 	Thread t;
+	
+	private ArrayList<Double> dxList = new ArrayList<Double>();
 
 	public GameController(GameModel m) {
 		model = m;
@@ -57,6 +62,7 @@ public class GameController implements Runnable {
 	}
 
 	public synchronized void unpause() {
+		view.unPaused();
 		paused = false;
 	}
 
@@ -92,8 +98,15 @@ public class GameController implements Runnable {
 		int newPoly = (int)(Math.random()*(distributions[level].length));
 		//return distributions[newPoly] == 4 ? new Square(model.world, x) : new PolyBody(model.world, x, distributions[newPoly], Colors.SHAPES[distributions[newPoly]-3]);
 		//long now = System.currentTimeMillis();
-		x = (float)(Math.random() * 12 - 6 );		
-
+		
+		if(getDx() <  .05 ) //Player is not moving that much
+		{
+			x = (float)(Math.random() * 2 - 6);
+			if(Math.random() > .5) x *= -1;
+		}else{
+			x = (float)(Math.random() * 12 - 6 );
+		}
+		System.out.println("spawing at "+x);
 		return new PolyBody(model.world, x, distributions[level][newPoly]);
 	}
 
@@ -196,6 +209,17 @@ public class GameController implements Runnable {
 		float dy = (10*(float)handy)     - model.platform.getBody().getPosition().y;
 		model.platform.getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
 		model.platform.getBody().setAngularVelocity((float)(dtheta/dt*1000));	
+		dxList.add((double) Math.abs(dx));
+		if(dxList.size() > 10) dxList.remove(0);
+	}
+	
+	public double getDx(){
+		double dx = 0;
+		for(Double d : dxList){
+			dx += d;
+		}
+		System.out.println("DX: "+dx/dxList.size());
+		return dx/dxList.size();
 	}
 
 	public void newGame() {
