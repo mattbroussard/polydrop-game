@@ -204,18 +204,20 @@ public class GameView extends JComponent implements KeyListener{
 		//Draw Level counter
 		int level = controller.calculateLevel(model.getMaxScore());
 		double pointsHave = model.getMaxScore();
-		double pointsNeeded = controller.scoreNeededToLevel[level+1];
-		double pointsForCurLevel = controller.scoreNeededToLevel[level];
+		double pointsNeeded = controller.scoreNeededToLevel[level];
+		double pointsForCurLevel = controller.scoreNeededToLevel[level-1];
+		if(level >= controller.scoreNeededToLevel.length) level = controller.scoreNeededToLevel.length;
 		Color circleColor = (controller.isPaused() || model.isGameOver()) ? Color.black : Color.gray;
 		g2.setColor(circleColor);
 		g2.fillOval(this.getWidth() - 400 , 20, 100, 100);
-		g2.setColor(Colors.SHAPES[level]);		
-		g2.fillArc(this.getWidth() - 395, 25, 90, 90, 0, (int)((pointsHave - pointsForCurLevel) / (pointsNeeded - pointsForCurLevel) * 360) ); 
+		g2.setColor(Colors.SHAPES[(level+1)%(Colors.SHAPES.length)]);
+		int arcAngle = (int)((pointsHave - pointsForCurLevel) / (pointsNeeded - pointsForCurLevel) * 360);
+		g2.fillArc(this.getWidth() - 395, 25, 90, 90, 90 - arcAngle, arcAngle); 
 		g2.setColor(circleColor);
 		g2.fillOval(this.getWidth() - 385, 35, 70, 70);
-		g2.setColor(Colors.SHAPES[level]);
+		g2.setColor(Colors.SHAPES[(level+1)%(Colors.SHAPES.length)]);
 		g2.setFont(new Font("Monospace", 0, 50));
-		g2.drawString(level+1+"", this.getWidth() - 362, 85);
+		g2.drawString(level+"", this.getWidth() - 362, 85);
 		
 
 		//Draw health bar
