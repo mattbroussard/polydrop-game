@@ -174,11 +174,11 @@ public class GameView extends JComponent implements KeyListener{
 		//draw paused message if paused
 		if (paused && !gameOver) {
 			drawStringCentered(	"PAUSED",
-								new Font("Monospace", 0, 250),
+								new Font("Monospace", 0, 80),
 								Colors.PAUSED_TEXT,
 								g2,
 								this.getWidth()/2,
-								this.getHeight()/2);
+								(int)(this.getHeight()*0.10));
 		}
 
 		//Prepare to draw bodies
