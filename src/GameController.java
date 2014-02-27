@@ -213,12 +213,12 @@ public class GameController implements Runnable {
 		if(dxList.size() > 10) dxList.remove(0);
 	}
 	
-	public double getDx(){
+	public synchronized double getDx(){
 		double dx = 0;
 		for(Double d : dxList){
 			dx += d;
 		}
-		System.out.println("DX: "+dx/dxList.size());
+		//System.out.println("DX: "+dx/dxList.size());
 		return dx/dxList.size();
 	}
 
