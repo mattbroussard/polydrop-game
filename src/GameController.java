@@ -22,6 +22,8 @@ public class GameController implements Runnable {
 	double platformDeltax = 0;
 	double platformDeltay = 0;
 	
+	int hands;
+	
 //	final int timesToSpawn[] = {0,1000,600,400,300,250,200,150,150};
 	final int timesToSpawn[] = {0,1000,800,650,500,450,375,300,250};
 	final int scoreNeededToLevel[] = {0,80,200,500,1000,2000,3500,5500};
@@ -43,6 +45,10 @@ public class GameController implements Runnable {
 		model = m;
 		t = new Thread(this);
 		t.start();
+	}
+	
+	public void setHands(int h){
+		hands = h;
 	}
 	
 	public void addView(GameView v) {
@@ -209,6 +215,26 @@ public class GameController implements Runnable {
 		float dy = (10*(float)handy)     - model.platform.getBody().getPosition().y;
 		model.platform.getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
 		model.platform.getBody().setAngularVelocity((float)(dtheta/dt*1000));	
+		dxList.add((double) Math.abs(dx));
+		if(dxList.size() > 10) dxList.remove(0);
+	}
+	
+	public synchronized void updatePlatformPosition(double rhandx, double rhandy, double rtheta, double lhandx, double lhandy, double ltheta, double dt) {
+		if (isPaused() || model.isGameOver()) return;
+		//model.platform.getBody().setTransform(model.platform.getBody().getPosition(), (float) theta);
+		double dtheta = rtheta - model.rp.getBody().getAngle();
+		float dx = (16*(float)rhandx - 8) - model.rp.getBody().getPosition().x;
+		float dy = (10*(float)rhandy)     - model.rp.getBody().getPosition().y;
+		model.rp.getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
+		model.rp.getBody().setAngularVelocity((float)(dtheta/dt*1000));	
+		dxList.add((double) Math.abs(dx));
+		if(dxList.size() > 10) dxList.remove(0);
+		
+		dtheta = ltheta - model.lp.getBody().getAngle();
+		dx = (16*(float)lhandx - 8) - model.lp.getBody().getPosition().x;
+		dy = (10*(float)lhandy)     - model.lp.getBody().getPosition().y;
+		model.lp.getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
+		model.lp.getBody().setAngularVelocity((float)(dtheta/dt*1000));	
 		dxList.add((double) Math.abs(dx));
 		if(dxList.size() > 10) dxList.remove(0);
 	}

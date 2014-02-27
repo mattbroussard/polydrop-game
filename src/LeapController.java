@@ -52,6 +52,8 @@ public class LeapController extends Listener implements Runnable {
 		HandList hands = frame.hands();
 		Hand hand = hands.frontmost();
 		
+		game.setHands(hands.count());
+		
 		if (hands.count()==0) {
 			pauseLocation = hand.palmPosition();
 			game.pause();

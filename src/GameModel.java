@@ -10,6 +10,8 @@ public class GameModel {
 
 	ArrayList<DrawableBody> blockList = new ArrayList<DrawableBody>();
 	Platform platform;
+	Platform rp;
+	Platform lp;
 
 	World world;
 	Body body;
