@@ -217,17 +217,20 @@ public class GameView extends JComponent implements KeyListener{
 */
 		
 		//Draw red flash on bottom of screen if player loses points
-		if(recentPointLoss){
-			if(pointLossAlpha + 20 >= 80) recentPointLoss = false;
-			else pointLossAlpha += 20;
-			
-		}else{
-			if(pointLossAlpha >= 20) pointLossAlpha -= 20;
+		float maxPointLossAlpha = 80; 
+		if(recentPointLoss) {
+			pointLossAlpha = (int)maxPointLossAlpha;
+			recentPointLoss = false;
 		}
-		System.out.println("Color: "+pointLossAlpha);
-		for(int i = 1 ; i < 35; i++){
-			g.setColor(new Color(255,0,0,(int)(pointLossAlpha/35.0*(35-i))));
-			g.fillRect(0, this.getHeight()-i, this.getWidth(), i);
+		else {
+			pointLossAlpha = Math.max(pointLossAlpha - 5, 0);
+		}
+		float pointLossTimeFactor = pointLossAlpha/maxPointLossAlpha;
+		float heightOfRedBar = 75;
+		for(int i = 1 ; i < heightOfRedBar; i++){
+			float alpha = (1 - i/heightOfRedBar)*pointLossTimeFactor;
+			g.setColor(new Color(1, 0 , 0, alpha));
+			g.fillRect(0, this.getHeight()-i, this.getWidth(), 1);
 		}
 
 		//Prepare to draw bodies
