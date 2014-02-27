@@ -23,6 +23,9 @@ public class GameView extends JComponent implements KeyListener{
 	final static int NOTIFICATION_TIME = 1250;
 	final static double NOTIFICATION_DISTANCE = 2f;
 	
+	GradientPaint pointLossGradient;
+	boolean recentPointLoss = false;
+	int pointLossAlpha = 0;
 	boolean startUnpause = false;
 	int countdown = 3;
 	double fontSize = 200;
@@ -115,6 +118,8 @@ public class GameView extends JComponent implements KeyListener{
 	}
 
 	public void notifyScore(DrawableBody db, int scoreDelta) {
+		
+		recentPointLoss = true;
 
 		Vec2 pos = db.getBody().getPosition();
 		if (pos.y < 0) pos.set(pos.x, 0);
@@ -210,6 +215,21 @@ public class GameView extends JComponent implements KeyListener{
 			}
 		}
 */
+		
+		//Draw red flash on bottom of screen if player loses points
+		if(recentPointLoss){
+			if(pointLossAlpha + 20 >= 80) recentPointLoss = false;
+			else pointLossAlpha += 20;
+			
+		}else{
+			if(pointLossAlpha >= 20) pointLossAlpha -= 20;
+		}
+		System.out.println("Color: "+pointLossAlpha);
+		for(int i = 1 ; i < 35; i++){
+			g.setColor(new Color(255,0,0,(int)(pointLossAlpha/35.0*(35-i))));
+			g.fillRect(0, this.getHeight()-i, this.getWidth(), i);
+		}
+
 		//Prepare to draw bodies
 		transformForBodies(g2);
 
