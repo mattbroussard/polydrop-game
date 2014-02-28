@@ -50,9 +50,101 @@ public class LeapController extends Listener implements Runnable {
 	public void processFrame(Frame frame) {
 
 		HandList hands = frame.hands();
-		Hand hand = hands.frontmost();
+		Hand rightHand = null;
+		Hand leftHand = null;
+		
+		game.setHands(hands.count());
 		
 		if (hands.count()==0) {
+			rightHand = hands.frontmost();
+			pauseLocation = rightHand.palmPosition();
+			game.pause();
+			return;
+		}else if(hands.count() > 1){
+			rightHand = hands.get(0);
+			leftHand = hands.get(1);
+		}else{
+			rightHand = hands.frontmost();
+		}
+
+		
+/*		if (rightHand.id() != lastHand) {
+			for (Hand h : hands) {
+				if (h.id() == lastHand) {
+					rightHand = h;
+					break;
+				}
+			}
+		}*/
+		long now = System.currentTimeMillis();
+		long dt = (lastUpdate < 0) ? 0 : now-lastUpdate;
+		
+		game.setHands(hands.count());
+
+		if(hands.count() > 1){
+			lastHand = rightHand.id();
+
+			Vector rightHandPos = rightHand.palmPosition();
+			double rightHandX = normalize(rightHandPos.getX(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f); 
+			double rightHandY = normalize(rightHandPos.getY(), 0f, SPACE_HEIGHT);
+
+			
+			Vector RightHandNorm = rightHand.palmNormal();
+			double rightHandRoll = RightHandNorm.roll();
+			
+			Vector leftHandPos = leftHand.palmPosition();
+			double leftHandX = normalize(leftHandPos.getX(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f); 
+			double leftHandY = normalize(leftHandPos.getY(), 0f, SPACE_HEIGHT);
+
+			
+			Vector leftHandNorm = leftHand.palmNormal();
+			double leftHandRoll = leftHandNorm.roll();
+		
+			
+			if ((rightHand.fingers().count() <= 1 && Math.abs(rightHandRoll) < FIST_THRESHOLD) || rightHandPos.getZ() > Z_PAUSE_THRESHOLD) {
+				if ((leftHand.fingers().count() <= 1 && Math.abs(leftHandRoll) < FIST_THRESHOLD) || leftHandPos.getZ() > Z_PAUSE_THRESHOLD){
+					if(!game.paused){
+						game.pause();
+						return;
+					}					
+				}
+
+			} else if (game.paused) {
+				game.unpause();
+				return;
+			}
+			
+			//game.updatePlatformPosition(handX, handY, handRoll, dt);
+			game.updatePlatformPosition(rightHandX, rightHandY, rightHandRoll, leftHandX, leftHandY, leftHandRoll, dt);
+			//game.model.platform.getBody().setLinearVelocity(new Vec2(0.0f, 0.0f));
+			lastUpdate = now;
+		}else{
+			lastHand = rightHand.id();
+
+			Vector handPos = rightHand.palmPosition();
+			double handX = normalize(handPos.getX(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f); 
+			double handY = normalize(handPos.getY(), 0f, SPACE_HEIGHT);
+
+			
+			Vector handNorm = rightHand.palmNormal();
+			double handRoll = handNorm.roll();
+			
+			if ((rightHand.fingers().count() <= 1 && Math.abs(handRoll) < FIST_THRESHOLD) || handPos.getZ() > Z_PAUSE_THRESHOLD) {
+				if(!game.paused){
+					game.pause();
+					return;
+				}
+			} else if (game.paused) {
+				game.unpause();
+				return;
+			}
+			
+			game.updatePlatformPosition(handX, handY, handRoll, dt);
+			//game.model.platform.getBody().setLinearVelocity(new Vec2(0.0f, 0.0f));
+			lastUpdate = now;
+		}
+		
+/*		if (hands.count()==0) {
 			pauseLocation = hand.palmPosition();
 			game.pause();
 			return;
@@ -92,7 +184,7 @@ public class LeapController extends Listener implements Runnable {
 		
 		game.updatePlatformPosition(handX, handY, handRoll, dt);
 		//game.model.platform.getBody().setLinearVelocity(new Vec2(0.0f, 0.0f));
-		lastUpdate = now;
+		lastUpdate = now;*/
 
 	}
 
