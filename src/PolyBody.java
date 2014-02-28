@@ -12,8 +12,7 @@ public class PolyBody implements DrawableBody {
 	private long lifetime = 10*1000;// milliseconds
 	private float size;
 
-	public PolyBody(World world, float x, int sides) {
-		
+	public PolyBody(World world, float x, int sides) {		
 		BodyDef bdef = new BodyDef();
 		bdef.type = BodyType.DYNAMIC;
 		bdef.position.set(x,10);
@@ -49,10 +48,15 @@ public class PolyBody implements DrawableBody {
 		return this.body;
 	}
 
+	/*
+	public void attach(PolyBody other) {
+		Fixture fix = other.getBody().getFixtureList();
+		body.createFixture(fix.getShape(), fix.getDensity());
+	} */
+
 	public Fixture getFixture() {
 		return this.fixture;
 	}
-
 
 	public int getValue() {
 		return sides*10;		
@@ -68,6 +72,10 @@ public class PolyBody implements DrawableBody {
 
 	public long getExpiration() {
 		return this.lifetime;
+	}
+
+	public int getNumSides() {
+		return this.sides;
 	}
 
 }
