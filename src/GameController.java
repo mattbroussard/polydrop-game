@@ -105,11 +105,23 @@ public class GameController implements Runnable {
 		//return distributions[newPoly] == 4 ? new Square(model.world, x) : new PolyBody(model.world, x, distributions[newPoly], Colors.SHAPES[distributions[newPoly]-3]);
 		//long now = System.currentTimeMillis();
 		
-		if(getDx() <  .05 ) //Player is not moving that much
+		if(getDx() <  .03 && Math.random() < .5 ) //Player is not moving that much
 		{
-			x = (float)(Math.random() * 2 - 6);
-			if(Math.random() > .5) x *= -1;
+			//Find the locations of the platform(s)
+			//While loops are inefficient, but okay for now
+			if(hands > 1 ){
+				float rpx = model.getRightPlatform().getBody().getPosition().x;
+				float lpx = model.getLeftPlatform().getBody().getPosition().x;
+				//Dont pick any numbers within rpx +- 2 or lpx +- 2
+				x = (float)(Math.random() * 14 - 7);
+				while(Math.abs(x-rpx) < 2 || Math.abs(x-lpx) < 2) x = (float)(Math.random() * 14 - 7);
+			}else{
+				float rpx = model.getRightPlatform().getBody().getPosition().x - 2;
+				x = (float)(Math.random() * 14 - 7);
+				while(Math.abs(rpx - x) < 4) x = (float)(Math.random() * 14 - 7);
+			}
 		}else{
+			
 			x = (float)(Math.random() * 12 - 6 );
 		}
 		System.out.println("spawing at "+x);
