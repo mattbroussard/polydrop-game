@@ -17,7 +17,7 @@ public class Platform implements DrawableBody {
 		body = world.createBody(bdef);
 		
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(4, 0.25f);
+		shape.setAsBox(2, 0.25f);
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.shape = shape;
 		fixtureDef.density = 1;

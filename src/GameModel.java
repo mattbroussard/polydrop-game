@@ -9,7 +9,7 @@ public class GameModel {
 	static final Vec2 GRAVITY = new Vec2(0.0f, -20f);
 
 	ArrayList<DrawableBody> blockList = new ArrayList<DrawableBody>();
-	Platform platform;
+//	Platform platform;
 	Platform rp;
 	Platform lp;
 
@@ -24,7 +24,8 @@ public class GameModel {
 
 	public GameModel() {
 		world = new World(GRAVITY);
-		platform = new Platform(world);	
+		rp = new Platform(world);
+		lp = new Platform(world);
 	}
 	
 	public int getScore() {
@@ -53,8 +54,11 @@ public class GameModel {
 		if(score > maxScore) maxScore = score;
 	}
 
-	public Platform getPlatform(){
-		return platform;
+	public Platform getRightPlatform(){
+		return rp;
+	}
+	public Platform getLeftPlatform(){
+		return lp;
 	}
 
 	public ArrayList<DrawableBody> getBlocks() {

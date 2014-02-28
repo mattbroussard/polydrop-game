@@ -152,8 +152,8 @@ public class GameController implements Runnable {
 			// physics update
 			now = System.currentTimeMillis();
 			model.world.step((now-time)/1000f, 6, 2);
-			model.platform.getBody().setLinearVelocity(new Vec2(0.0f, 0.0f));
-			model.platform.getBody().setAngularVelocity(0);
+/*			model.getRightPlatform().getBody().setLinearVelocity(new Vec2(0.0f, 0.0f));
+			model.getRightPlatform().getBody().setAngularVelocity(0);*/
 			
 			synchronized (model.blockList) {
 
@@ -209,12 +209,21 @@ public class GameController implements Runnable {
 
 	public synchronized void updatePlatformPosition(double handx, double handy, double theta, double dt) {
 		if (isPaused() || model.isGameOver()) return;
+		Platform rp = model.getRightPlatform();
+		Platform lp = model.getLeftPlatform();
 		//model.platform.getBody().setTransform(model.platform.getBody().getPosition(), (float) theta);
-		double dtheta = theta - model.platform.getBody().getAngle();
-		float dx = (16*(float)handx - 8) - model.platform.getBody().getPosition().x;
-		float dy = (10*(float)handy)     - model.platform.getBody().getPosition().y;
-		model.platform.getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
-		model.platform.getBody().setAngularVelocity((float)(dtheta/dt*1000));	
+		double dtheta = theta - rp.getBody().getAngle();
+		float dx = (16*(float)handx - 8) - rp.getBody().getPosition().x;
+		float dy = (10*(float)handy)     - rp.getBody().getPosition().y;
+		rp.getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
+		rp.getBody().setAngularVelocity((float)(dtheta/dt*1000));	
+		
+		dx = (float) ((16*(float)handx - 8) - (4*Math.cos(theta)) - lp.getBody().getPosition().x);
+		dy = (float)((10*(float)handy - 4*Math.sin(theta)) - lp.getBody().getPosition().y);	
+		dtheta = theta - lp.getBody().getAngle();
+		lp.getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
+		lp .getBody().setAngularVelocity((float)(dtheta/dt*1000));	
+		
 		dxList.add((double) Math.abs(dx));
 		if(dxList.size() > 10) dxList.remove(0);
 	}
