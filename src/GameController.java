@@ -219,7 +219,7 @@ public class GameController implements Runnable {
 
 	}
 
-	public synchronized void updatePlatformPosition(double handx, double handy, double theta, double dt) {
+/*	public synchronized void updatePlatformPosition(double handx, double handy, double theta, double dt) {
 		if (isPaused() || model.isGameOver()) return;
 		Platform rp = model.getRightPlatform();
 		Platform lp = model.getLeftPlatform();
@@ -238,7 +238,7 @@ public class GameController implements Runnable {
 		
 		dxList.add((double) Math.abs(dx));
 		if(dxList.size() > 10) dxList.remove(0);
-	}
+	}*/
 	
 	public synchronized void updatePlatformPosition(double rhandx, double rhandy, double rtheta, double lhandx, double lhandy, double ltheta, double dt) {
 		if (isPaused() || model.isGameOver()) return;
@@ -251,13 +251,23 @@ public class GameController implements Runnable {
 		dxList.add((double) Math.abs(dx));
 		if(dxList.size() > 10) dxList.remove(0);
 		
-		dtheta = ltheta - model.lp.getBody().getAngle();
-		dx = (16*(float)lhandx - 8) - model.lp.getBody().getPosition().x;
-		dy = (10*(float)lhandy)     - model.lp.getBody().getPosition().y;
-		model.lp.getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
-		model.lp.getBody().setAngularVelocity((float)(dtheta/dt*1000));	
-		dxList.add((double) Math.abs(dx));
-		if(dxList.size() > 10) dxList.remove(0);
+		if(lhandx == 0 && lhandy == 0 && ltheta == 0){
+			dx = (float) ((16*(float)rhandx - 8) - (4*Math.cos(rtheta)) - model.getLeftPlatform().getBody().getPosition().x);
+			dy = (float)((10*(float)rhandy - 4*Math.sin(rtheta)) - model.getLeftPlatform().getBody().getPosition().y);	
+			dtheta = rtheta - model.getLeftPlatform().getBody().getAngle();
+			model.getLeftPlatform().getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
+			model.getLeftPlatform() .getBody().setAngularVelocity((float)(dtheta/dt*1000));	
+		}else{
+			dtheta = ltheta - model.lp.getBody().getAngle();
+			dx = (16*(float)lhandx - 8) - model.lp.getBody().getPosition().x;
+			dy = (10*(float)lhandy)     - model.lp.getBody().getPosition().y;
+			model.lp.getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
+			model.lp.getBody().setAngularVelocity((float)(dtheta/dt*1000));		
+			dxList.add((double) Math.abs(dx));
+			if(dxList.size() > 10) dxList.remove(0);
+		}
+
+
 	}
 	
 	public synchronized double getDx(){

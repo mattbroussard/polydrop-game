@@ -139,7 +139,7 @@ public class LeapController extends Listener implements Runnable {
 				return;
 			}
 			
-			game.updatePlatformPosition(handX, handY, handRoll, dt);
+			game.updatePlatformPosition(handX, handY, handRoll, 0, 0, 0, dt);
 			//game.model.platform.getBody().setLinearVelocity(new Vec2(0.0f, 0.0f));
 			lastUpdate = now;
 		}
