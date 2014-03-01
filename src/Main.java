@@ -5,9 +5,15 @@ import java.awt.image.BufferedImage;
 
 public class Main {
 
-	static final boolean FULL_SCREEN = true;
-
 	public static void main(String[] args) {
+
+		//Parse any command-line arguments
+		boolean fullScreen = true;
+		for (String a : args) {
+			if (a.equals("--windowed"))
+				fullScreen = false;
+			//can add more options here
+		}
 
 		//Setup model
 		GameModel model = new GameModel();
@@ -28,14 +34,14 @@ public class Main {
 		view.setCursor(Toolkit.getDefaultToolkit().createCustomCursor(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), new Point(), "null"));
 
 		//Setup full screen window
-		if (FULL_SCREEN) {
+		if (fullScreen) {
 
 			frame.setExtendedState(Frame.MAXIMIZED_BOTH);
 			frame.setUndecorated(true);
 
 		} else {
 			
-			frame.setSize(800,500);
+			frame.setSize(800,600);
 			frame.setLocation(100,100);
 
 		}
