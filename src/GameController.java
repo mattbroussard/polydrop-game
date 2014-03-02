@@ -27,7 +27,7 @@ public class GameController implements Runnable {
 	
 	int hands;
 	
-//	final int timesToSpawn[] = {0,1000,600,400,300,250,200,150,150};
+    //final int timesToSpawn[] = {0,1000,600,400,300,250,200,150,150};
 	final int timesToSpawn[] = {0,1000,800,650,500,450,375,300,250};
 	final int scoreNeededToLevel[] = {0,80,200,500,1000,2000,3500,5500};
 	final int distributions[][] = {	{0}, //this will never run. Never on level '0'
@@ -60,18 +60,21 @@ public class GameController implements Runnable {
 	
 	public synchronized void pause() {
 		paused = true;
-		if (view != null) view.repaint();
+		if (view != null)
+			view.repaint();
 	}
 
 	public synchronized void pause(double handx, double handy) {
 		platformPrevx = (16*handx - 8);
 		platformPrevy = (10*handy);
 		paused = true;
-		if (view != null) view.repaint();
+		if (view != null)
+			view.repaint();
 	}
 
 	public synchronized void unpause() {
-		view.unPaused();
+		if (view != null)
+			view.unPaused();
 		paused = false;
 	}
 
@@ -144,7 +147,8 @@ public class GameController implements Runnable {
 			// Just spin if we're paused
 			if (isPaused() || model.isGameOver()) {
 				time = System.currentTimeMillis();
-				if (view!=null) view.repaint();
+				if (view!=null)
+					view.repaint();
 				continue;
 			}
 
@@ -168,7 +172,7 @@ public class GameController implements Runnable {
 			// physics update
 			now = System.currentTimeMillis();
 			model.world.step((now-time)/1000f, 6, 2);
-/*			model.getRightPlatform().getBody().setLinearVelocity(new Vec2(0.0f, 0.0f));
+			/*model.getRightPlatform().getBody().setLinearVelocity(new Vec2(0.0f, 0.0f));
 			model.getRightPlatform().getBody().setAngularVelocity(0);*/
 			
 			//update lifetimes and points
@@ -184,11 +188,13 @@ public class GameController implements Runnable {
 						model.addPoints(b.getValue());
 						int newLevel = calculateLevel(model.getMaxScore());
 						if (newLevel > oldLevel) {
-							view.notifyLevel();
+							if (view != null)
+								view.notifyLevel();
 							SoundManager.play("levelup");
 						}
 
-						view.notifyScore(b, b.getValue());
+						if (view != null)
+							view.notifyScore(b, b.getValue());
 						itr.remove();
 						model.world.destroyBody(b.getBody());
 						//SoundManager.play("pointGain");
@@ -206,7 +212,8 @@ public class GameController implements Runnable {
 						// Oh no! Lose points. :(
 						itr.remove();
 						model.reduceHealth();
-						view.notifyScore(b, -20);
+						if (view != null)
+							view.notifyScore(b, -20);
 						model.world.destroyBody(b.getBody());
 						model.addPoints(-20);
 						SoundManager.play("pointLoss");
@@ -214,9 +221,8 @@ public class GameController implements Runnable {
 				}
 			}
 			
-			if (view!=null) {
+			if (view!=null)
 				view.repaint();
-			}
 			time = now;
 		}
 	}
@@ -264,6 +270,7 @@ public class GameController implements Runnable {
 		if (!model.isGameOver())
 			return;
 		model = new GameModel();
-		view.model = model;
+		if (view != null)
+			view.model = model;
 	}
 }

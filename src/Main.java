@@ -22,13 +22,20 @@ public class Main {
 		GameController game = new GameController(model);
 		LeapController leap = new LeapController(game);
 
-		//Setup view and frame
-		GameView view = new GameView(model, game);
-		game.addView(view);
+		//Setup frame
 		JFrame frame = new JFrame("PolyDrop");
-		frame.setContentPane(view);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		//Setup view and frame's layout
+		GameView view = new GameView(model, game);
+		Container lay = frame.getContentPane();
+		lay.setLayout(new BoxLayout(lay, BoxLayout.Y_AXIS));
+		lay.setBackground(Colors.LETTERBOX);
+		lay.add(Box.createVerticalGlue());
+		lay.add(view);
+		lay.add(Box.createVerticalGlue());
 		frame.addKeyListener(view);
+		game.addView(view);
 
 		//Set cursor to invisible
 		view.setCursor(Toolkit.getDefaultToolkit().createCustomCursor(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), new Point(), "null"));
