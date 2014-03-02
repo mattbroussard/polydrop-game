@@ -17,7 +17,7 @@ import java.util.*;
  - move render layers into separate classes
  - refactor out view statefulness
  - new font
- - menu implementsmentation
+ - menu implementation
 
 */
 
