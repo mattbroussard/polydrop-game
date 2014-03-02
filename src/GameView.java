@@ -14,11 +14,10 @@ import java.util.*;
 
 /* Matt TODO:
 
- - letterboxing
  - move render layers into separate classes
  - refactor out view statefulness
  - new font
- - menu implementation
+ - menu implementsmentation
 
 */
 
@@ -294,6 +293,33 @@ public class GameView extends JComponent implements KeyListener{
 		}
 		
 	}
+
+	public Dimension getPreferredSize() {
+
+		Container parent = this.getParent();
+		if (parent == null) return null;
+
+		float parentRatio = (float)parent.getWidth() / (float)parent.getHeight();
+
+		if (parentRatio > 1.6f) {
+
+			//container is too wide, take its height
+			float ourWidth = 1.6f * parent.getHeight();
+			return new Dimension((int)Math.round(ourWidth), parent.getHeight());
+
+		} else {
+
+			//container is too tall, take its width
+			float ourHeight = (float)parent.getWidth() / 1.6f;
+			return new Dimension(parent.getWidth(), (int)Math.round(ourHeight));
+
+		}
+
+	}
+
+	//we always get what we want
+	public Dimension getMaximumSize() { return getPreferredSize(); }
+	public Dimension getMinimumSize() { return getPreferredSize(); }
 
 	//This class was made to avoid lots of places where we had:
 	// - awkward int/float casting
