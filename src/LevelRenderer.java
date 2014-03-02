@@ -3,22 +3,6 @@ import java.awt.Color;
 
 public class LevelRenderer {
 
-	/* public static void drawLevelIndicator(GraphicsWrapper g2, int level, float progress, boolean paused) {
-
-		g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
-
-		Color levelFGColor = paused ? Colors.PAUSED : Colors.SHAPES[(level+1)%(Colors.SHAPES.length)];
-		Color levelBGColor = paused ? Colors.BACKGROUND : Colors.PAUSED;
-		float levelAngle = progress * 360f;
-
-		g2.fillOval(14.375f, 0.125f, 1.25f, 1.25f, levelBGColor);
-		g2.fillArc(14.5f, 0.25f, 1.0f, 1.0f, 90.0f, -levelAngle, levelFGColor);
-		g2.fillOval(14.55f, 0.3f, 0.9f, 0.9f, levelBGColor);
-
-		g2.drawStringCentered(""+level, 0.5f, levelFGColor, 15f, 0.9f);
-
-	} */
-
 	public static void drawLevelIndicator(GraphicsWrapper g2, int level, float progress, boolean paused) {
 
 		g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
