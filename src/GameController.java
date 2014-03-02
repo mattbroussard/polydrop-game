@@ -60,18 +60,21 @@ public class GameController implements Runnable, ContactListener {
 	
 	public synchronized void pause() {
 		paused = true;
-		if (view != null) view.repaint();
+		if (view != null)
+			view.repaint();
 	}
 
 	public synchronized void pause(double handx, double handy) {
 		platformPrevx = (16*handx - 8);
 		platformPrevy = (10*handy);
 		paused = true;
-		if (view != null) view.repaint();
+		if (view != null)
+			view.repaint();
 	}
 
 	public synchronized void unpause() {
-		view.unPaused();
+		if (view != null)
+			view.unPaused();
 		paused = false;
 	}
 
@@ -143,7 +146,8 @@ public class GameController implements Runnable, ContactListener {
 			// Just spin if we're paused
 			if (isPaused() || model.isGameOver()) {
 				time = System.currentTimeMillis();
-				if (view!=null) view.repaint();
+				if (view!=null)
+					view.repaint();
 				continue;
 			}
 
@@ -183,10 +187,12 @@ public class GameController implements Runnable, ContactListener {
 						model.addPoints(b.getValue());
 						int newLevel = calculateLevel(model.getMaxScore());
 						if (newLevel > oldLevel) {
-							view.notifyLevel();
+							if (view != null)
+								view.notifyLevel();
 						}
 
-						view.notifyScore(b, b.getValue());
+						if (view != null)
+							view.notifyScore(b, b.getValue());
 						itr.remove();
 						model.world.destroyBody(b.getBody());
 					}
@@ -203,7 +209,8 @@ public class GameController implements Runnable, ContactListener {
 						// Oh no! Lose points. :(
 						itr.remove();
 						model.reduceHealth();
-						view.notifyScore(b, -20);
+						if (view != null)
+							view.notifyScore(b, -20);
 						model.world.destroyBody(b.getBody());
 						model.addPoints(-20);
 					}
@@ -212,9 +219,8 @@ public class GameController implements Runnable, ContactListener {
 
 
 			
-			if (view!=null) {
+			if (view!=null)
 				view.repaint();
-			}
 			time = now;
 
 		}
@@ -301,7 +307,8 @@ public class GameController implements Runnable, ContactListener {
 		if (!model.isGameOver()) return;
 
 		model = new GameModel();
-		view.model = model;
+		if (view != null)
+			view.model = model;
 
 	}
 
