@@ -74,8 +74,9 @@ public class GameController implements Runnable {
 
 	public float calculateLevelProgress() {
 		int curLevel = model.getLevel();
-		float progress = (scoreNeededToLevel[curLevel] - scoreNeededToLevel[curLevel-1])/((float)(scoreNeededToLevel[curLevel]));
-		return Math.max(progress, 0);
+		float progress = (float)(model.getScore()          - scoreNeededToLevel[curLevel-1]);
+		float total = (float)(scoreNeededToLevel[curLevel] - scoreNeededToLevel[curLevel-1]);
+		return Math.max(progress/total, 0);
 	}
 
 	public DrawableBody spawn() {
