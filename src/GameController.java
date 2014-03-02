@@ -15,15 +15,13 @@ import java.util.ArrayList;
 
 public class GameController implements Runnable {
 	
+	static final int FREE_PLAY = 0;
+	static final int ONE_HAND  = 1;
+	static final int TWO_HANDS = 2;
+
 	GameModel model;
 	GameView view;
 	boolean paused = false;
-
-	double platformPrevx = 0;
-	double platformPrevy = 0; // used to un-pause smoothly
-
-	double platformDeltax = 0;
-	double platformDeltay = 0;
 	
 	int hands;
 	
@@ -64,41 +62,20 @@ public class GameController implements Runnable {
 			view.repaint();
 	}
 
-	public synchronized void pause(double handx, double handy) {
-		platformPrevx = (16*handx - 8);
-		platformPrevy = (10*handy);
-		paused = true;
-		if (view != null)
-			view.repaint();
-	}
-
 	public synchronized void unpause() {
 		if (view != null)
 			view.unPaused();
 		paused = false;
 	}
 
-	public synchronized void unpause(double  handx, double handy) {
-		platformDeltax = platformPrevx - (16*handx - 8);
-		platformDeltay = platformPrevy - (10*handy);
-		paused = false;
-		System.out.println("unpaused.");
-	}
-
 	public synchronized boolean isPaused() {
 		return paused;
 	}
-	
-	public int calculateLevel(int score) {
-		int level = Arrays.binarySearch(scoreNeededToLevel, score);
-		if(level >= 0)
-			return level + 1;
-		else{
-			level += 1;
-			level *= -1;
-			level -= 1;
-		}
-		return level + 1;
+
+	public float calculateLevelProgress() {
+		int curLevel = model.getLevel();
+		float progress = (scoreNeededToLevel[curLevel] - scoreNeededToLevel[curLevel-1])/((float)(scoreNeededToLevel[curLevel]));
+		return Math.max(progress, 0);
 	}
 
 	public DrawableBody spawn() {
@@ -106,7 +83,7 @@ public class GameController implements Runnable {
 		float x;
 
         // int level = Arrays.binarySearch(scoreNeededToLevel, model.getMaxScore());
-		int level = calculateLevel(model.getMaxScore());
+		int level = model.getLevel();
 		if(level >= distributions.length) level = distributions.length-1;
 		int newPoly = (int)(Math.random()*(distributions[level].length));
 		//return distributions[newPoly] == 4 ? new Square(model.world, x) : new PolyBody(model.world, x, distributions[newPoly], Colors.SHAPES[distributions[newPoly]-3]);
@@ -154,7 +131,7 @@ public class GameController implements Runnable {
 
 			// drop block every 2 seconds
 			long now = System.currentTimeMillis();
-			if(now - squareSpawnTime >= 2*timesToSpawn[calculateLevel(model.getMaxScore())]) {
+			if(now - squareSpawnTime >= 2*timesToSpawn[model.getLevel()]) {
 				DrawableBody db = spawn();
 				synchronized (model.blockList) {
 					model.blockList.add(db);
@@ -184,20 +161,22 @@ public class GameController implements Runnable {
 					b.reduceLifetime(dt);
 					if( b.getExpiration() <= 0 ) {
 						// yay, points!
-						int oldLevel = calculateLevel(model.getMaxScore());
 						model.addPoints(b.getValue());
-						int newLevel = calculateLevel(model.getMaxScore());
-						if (newLevel > oldLevel) {
+						SoundManager.play("pointGain");
+						if (view != null)
+							view.notifyScore(b, b.getValue());
+						
+						// level up
+						if(model.getScore() >= scoreNeededToLevel[model.getLevel()]) {
+							model.levelUp();
 							if (view != null)
 								view.notifyLevel();
 							SoundManager.play("levelup");
 						}
 
-						if (view != null)
-							view.notifyScore(b, b.getValue());
+						// remove block
 						itr.remove();
 						model.world.destroyBody(b.getBody());
-						//SoundManager.play("pointGain");
 					}
 				}
 			}
