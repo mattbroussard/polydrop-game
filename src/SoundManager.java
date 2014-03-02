@@ -7,23 +7,18 @@ public class SoundManager {
 	private static HashMap<String, Clip> clips = new HashMap<String, Clip>();
 
 	private static void load(String clipName) throws Exception {
-		try {
-			File file = new File("res/" + clipName + ".wav");
-			AudioInputStream stream = AudioSystem.getAudioInputStream(file);
-			AudioFormat format = stream.getFormat();
-			
-			// specify what kind of line we want to create
-			DataLine.Info info = new DataLine.Info(Clip.class, format);
-			// create the line
-			Clip clip = (Clip)AudioSystem.getLine(info);
-			// load the samples from the stream
-			clip.open(stream);
-			clips.put(clipName, clip);
-			System.out.println("Loaded "+ clipName);
-		} catch(Exception e) {
-			e.printStackTrace();
-			throw e;
-		}
+		File file = new File("res/" + clipName + ".wav");
+		AudioInputStream stream = AudioSystem.getAudioInputStream(file);
+		AudioFormat format = stream.getFormat();
+		
+		// specify what kind of line we want to create
+		DataLine.Info info = new DataLine.Info(Clip.class, format);
+		// create the line
+		Clip clip = (Clip)AudioSystem.getLine(info);
+		// load the samples from the stream
+		clip.open(stream);
+		clips.put(clipName, clip);
+		System.out.println("Loaded "+ clipName);
 	}
 
 	public static void play(String clipName) {
@@ -32,7 +27,7 @@ public class SoundManager {
 				load(clipName);
 			} catch (Exception e) {
 				e.printStackTrace();
-				System.exit(1);
+				//System.exit(1);
 			}
 		}
 		Clip clip = clips.get(clipName);
