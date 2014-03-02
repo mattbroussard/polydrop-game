@@ -27,8 +27,8 @@ public class Colors {
 	public static final Color PENALTY = Color.RED;
 
 	public static final Color HEALTH = Color.WHITE;
-	public static final Color HEALTH_GOOD = Color.GREEN;
-	public static final Color HEALTH_MID = Color.YELLOW;
-	public static final Color HEALTH_BAD = Color.RED;
+	public static final Color HEALTH_GOOD = new Color(27,204,41);
+	public static final Color HEALTH_MID = new Color(255,210,0);
+	public static final Color HEALTH_BAD = new Color(255,47,0);
 
 }
