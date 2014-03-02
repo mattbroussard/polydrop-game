@@ -13,7 +13,7 @@ import java.util.Iterator;
 import java.awt.Color;
 import java.util.ArrayList;
 
-public class GameController implements Runnable, ContactListener {
+public class GameController implements Runnable {
 	
 	GameModel model;
 	GameView view;
@@ -88,7 +88,8 @@ public class GameController implements Runnable, ContactListener {
 	
 	public int calculateLevel(int score) {
 		int level = Arrays.binarySearch(scoreNeededToLevel, score);
-		if(level >= 0) return level + 1;
+		if(level >= 0)
+			return level + 1;
 		else{
 			level += 1;
 			level *= -1;
@@ -170,8 +171,8 @@ public class GameController implements Runnable, ContactListener {
 /*			model.getRightPlatform().getBody().setLinearVelocity(new Vec2(0.0f, 0.0f));
 			model.getRightPlatform().getBody().setAngularVelocity(0);*/
 			
+			//update lifetimes and points
 			synchronized (model.blockList) {
-				//update lifetimes and points
 				Iterator<DrawableBody> itr = model.blockList.iterator();
 				while( itr.hasNext() ) {
 					DrawableBody b = itr.next();
@@ -184,11 +185,13 @@ public class GameController implements Runnable, ContactListener {
 						int newLevel = calculateLevel(model.getMaxScore());
 						if (newLevel > oldLevel) {
 							view.notifyLevel();
+							SoundManager.play("levelup");
 						}
 
 						view.notifyScore(b, b.getValue());
 						itr.remove();
 						model.world.destroyBody(b.getBody());
+						//SoundManager.play("pointGain");
 					}
 				}
 			}
@@ -206,56 +209,17 @@ public class GameController implements Runnable, ContactListener {
 						view.notifyScore(b, -20);
 						model.world.destroyBody(b.getBody());
 						model.addPoints(-20);
+						SoundManager.play("pointLoss");
 					}
 				}
 			}
-
-
 			
 			if (view!=null) {
 				view.repaint();
 			}
 			time = now;
-
 		}
 	}
-
-	public void beginContact(Contact contact) {
-		System.out.println("beginContact");
-	}
-
-	public void endContact(Contact contact) {
-		System.out.println("endContact");		
-	}
-
-	public void preSolve(Contact contact, Manifold oldManifold) {
-		System.out.println("preSolve");
-	}
-
-	public void postSolve(Contact contact, ContactImpulse impulse) {
-		System.out.println("postSolve");
-	}
-
-/*	public synchronized void updatePlatformPosition(double handx, double handy, double theta, double dt) {
-		if (isPaused() || model.isGameOver()) return;
-		Platform rp = model.getRightPlatform();
-		Platform lp = model.getLeftPlatform();
-		//model.platform.getBody().setTransform(model.platform.getBody().getPosition(), (float) theta);
-		double dtheta = theta - rp.getBody().getAngle();
-		float dx = (16*(float)handx - 8) - rp.getBody().getPosition().x;
-		float dy = (10*(float)handy)     - rp.getBody().getPosition().y;
-		rp.getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
-		rp.getBody().setAngularVelocity((float)(dtheta/dt*1000));	
-		
-		dx = (float) ((16*(float)handx - 8) - (4*Math.cos(theta)) - lp.getBody().getPosition().x);
-		dy = (float)((10*(float)handy - 4*Math.sin(theta)) - lp.getBody().getPosition().y);	
-		dtheta = theta - lp.getBody().getAngle();
-		lp.getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
-		lp .getBody().setAngularVelocity((float)(dtheta/dt*1000));	
-		
-		dxList.add((double) Math.abs(dx));
-		if(dxList.size() > 10) dxList.remove(0);
-	}*/
 	
 	public synchronized void updatePlatformPosition(double rhandx, double rhandy, double rtheta, double lhandx, double lhandy, double ltheta, double dt) {
 		if (isPaused() || model.isGameOver()) return;
@@ -266,25 +230,25 @@ public class GameController implements Runnable, ContactListener {
 		model.rp.getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
 		model.rp.getBody().setAngularVelocity((float)(dtheta/dt*1000));	
 		dxList.add((double) Math.abs(dx));
-		if(dxList.size() > 10) dxList.remove(0);
+		if(dxList.size() > 10)
+			dxList.remove(0);
 		
-		if(lhandx == 0 && lhandy == 0 && ltheta == 0){
+		if(lhandx == 0 && lhandy == 0 && ltheta == 0) {
 			dx = (float) ((16*(float)rhandx - 8) - (4*Math.cos(rtheta)) - model.getLeftPlatform().getBody().getPosition().x);
 			dy = (float)((10*(float)rhandy - 4*Math.sin(rtheta)) - model.getLeftPlatform().getBody().getPosition().y);	
 			dtheta = rtheta - model.getLeftPlatform().getBody().getAngle();
 			model.getLeftPlatform().getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
 			model.getLeftPlatform() .getBody().setAngularVelocity((float)(dtheta/dt*1000));	
-		}else{
+		} else {
 			dtheta = ltheta - model.lp.getBody().getAngle();
 			dx = (16*(float)lhandx - 8) - model.lp.getBody().getPosition().x;
 			dy = (10*(float)lhandy)     - model.lp.getBody().getPosition().y;
 			model.lp.getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
 			model.lp.getBody().setAngularVelocity((float)(dtheta/dt*1000));		
 			dxList.add((double) Math.abs(dx));
-			if(dxList.size() > 10) dxList.remove(0);
+			if(dxList.size() > 10)
+				dxList.remove(0);
 		}
-
-
 	}
 	
 	public synchronized double getDx(){
@@ -297,12 +261,9 @@ public class GameController implements Runnable, ContactListener {
 	}
 
 	public void newGame() {
-
-		if (!model.isGameOver()) return;
-
+		if (!model.isGameOver())
+			return;
 		model = new GameModel();
 		view.model = model;
-
 	}
-
 }

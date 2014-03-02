@@ -8,7 +8,7 @@ public class SoundManager {
 
 	private static void load(String clipName) throws Exception {
 		try {
-			File file = new File(clipName + ".wav");
+			File file = new File("res/" + clipName + ".wav");
 			AudioInputStream stream = AudioSystem.getAudioInputStream(file);
 			AudioFormat format = stream.getFormat();
 			
