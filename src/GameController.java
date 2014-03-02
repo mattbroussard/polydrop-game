@@ -1,8 +1,11 @@
 
 import org.jbox2d.dynamics.*;
+import org.jbox2d.dynamics.contacts.*;
 
+import org.jbox2d.collision.Manifold;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.*;
+import org.jbox2d.callbacks.*;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -10,7 +13,7 @@ import java.util.Iterator;
 import java.awt.Color;
 import java.util.ArrayList;
 
-public class GameController implements Runnable {
+public class GameController implements Runnable, ContactListener {
 	
 	GameModel model;
 	GameView view;
@@ -98,7 +101,7 @@ public class GameController implements Runnable {
 		int sides = (int)Math.round(Math.random()*5) + 3;
 		float x;
 
-//		int level = Arrays.binarySearch(scoreNeededToLevel, model.getMaxScore());
+        // int level = Arrays.binarySearch(scoreNeededToLevel, model.getMaxScore());
 		int level = calculateLevel(model.getMaxScore());
 		if(level >= distributions.length) level = distributions.length-1;
 		int newPoly = (int)(Math.random()*(distributions[level].length));
@@ -168,7 +171,6 @@ public class GameController implements Runnable {
 			model.getRightPlatform().getBody().setAngularVelocity(0);*/
 			
 			synchronized (model.blockList) {
-
 				//update lifetimes and points
 				Iterator<DrawableBody> itr = model.blockList.iterator();
 				while( itr.hasNext() ) {
@@ -177,24 +179,22 @@ public class GameController implements Runnable {
 					b.reduceLifetime(dt);
 					if( b.getExpiration() <= 0 ) {
 						// yay, points!
-
 						int oldLevel = calculateLevel(model.getMaxScore());
 						model.addPoints(b.getValue());
 						int newLevel = calculateLevel(model.getMaxScore());
 						if (newLevel > oldLevel) {
 							view.notifyLevel();
 						}
-						
+
 						view.notifyScore(b, b.getValue());
 						itr.remove();
 						model.world.destroyBody(b.getBody());
 					}
 				}
-
 			}
 
+			// remove blocks that have fallen
 			synchronized (model.blockList) {
-				// remove blocks that have fallen
 				Iterator<DrawableBody> itr = model.blockList.iterator();
 				while( itr.hasNext() ) {
 					DrawableBody b = itr.next();
@@ -209,6 +209,8 @@ public class GameController implements Runnable {
 					}
 				}
 			}
+
+
 			
 			if (view!=null) {
 				view.repaint();
@@ -216,7 +218,22 @@ public class GameController implements Runnable {
 			time = now;
 
 		}
+	}
 
+	public void beginContact(Contact contact) {
+		System.out.println("beginContact");
+	}
+
+	public void endContact(Contact contact) {
+		System.out.println("endContact");		
+	}
+
+	public void preSolve(Contact contact, Manifold oldManifold) {
+		System.out.println("preSolve");
+	}
+
+	public void postSolve(Contact contact, ContactImpulse impulse) {
+		System.out.println("postSolve");
 	}
 
 /*	public synchronized void updatePlatformPosition(double handx, double handy, double theta, double dt) {
