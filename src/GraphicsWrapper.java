@@ -123,32 +123,38 @@ public class GraphicsWrapper {
 
 	}
 
-	public void fillOval(float x, float y, float w, float h, Color c) {
+	public void fillCircle(float x, float y, float radius, Color c) {
 		
 		float scale = getCurrentScale();
+
+		x -= radius;
+		y -= radius;
 
 		g2.setColor(c);
 		g2.fillOval(
 			(int)Math.round(x*scale),
 			(int)Math.round(y*scale),
-			(int)Math.round(w*scale),
-			(int)Math.round(h*scale)
+			(int)Math.round(2*radius*scale),
+			(int)Math.round(2*radius*scale)
 		);
 
 
 	}
 
 	//angles in degrees
-	public void fillArc(float x, float y, float w, float h, float startAngle, float endAngle, Color c) {
+	public void fillArc(float x, float y, float radius, float startAngle, float endAngle, Color c) {
 		
 		float scale = getCurrentScale();
+
+		x -= radius;
+		y -= radius;
 
 		g2.setColor(c);
 		g2.fillArc(
 			(int)Math.round(x*scale),
 			(int)Math.round(y*scale),
-			(int)Math.round(w*scale),
-			(int)Math.round(h*scale),
+			(int)Math.round(2*radius*scale),
+			(int)Math.round(2*radius*scale),
 			(int)Math.round(startAngle),
 			(int)Math.round(endAngle)
 		);
