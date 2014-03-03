@@ -238,6 +238,8 @@ public class GameView extends JComponent implements KeyListener{
 		Color levelBGColor = paused ? Colors.BACKGROUND : Colors.PAUSED;
 		float levelAngle = (float)(pointsHave - pointsForCurLevel) / (float)(pointsNeeded - pointsForCurLevel) * 360f;
 		g2.fillOval(14.375f, 0.125f, 1.25f, 1.25f, levelBGColor);
+		g2.fillArc(14.5f, 0.25f, 1.0f, 1.0f, 90.0f, 360, levelFGColor);
+		g2.fillOval(14.5f, 0.25f, 1.0f, 1.0f, new Color(39,40,34,150));
 		g2.fillArc(14.5f, 0.25f, 1.0f, 1.0f, 90.0f, -levelAngle, levelFGColor);
 		g2.fillOval(14.55f, 0.3f, 0.9f, 0.9f, levelBGColor);
 		g2.drawStringCentered(""+level, 0.5f, levelFGColor, 15f, 0.9f);
