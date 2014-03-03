@@ -1,8 +1,11 @@
 
 import org.jbox2d.dynamics.*;
+import org.jbox2d.dynamics.contacts.*;
 
+import org.jbox2d.collision.Manifold;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.*;
+import org.jbox2d.callbacks.*;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -12,19 +15,17 @@ import java.util.ArrayList;
 
 public class GameController implements Runnable {
 	
+	static final int FREE_PLAY = 0;
+	static final int ONE_HAND  = 1;
+	static final int TWO_HANDS = 2;
+
 	GameModel model;
 	GameView view;
 	boolean paused = false;
-
-	double platformPrevx = 0;
-	double platformPrevy = 0; // used to un-pause smoothly
-
-	double platformDeltax = 0;
-	double platformDeltay = 0;
 	
 	int hands;
 	
-//	final int timesToSpawn[] = {0,1000,600,400,300,250,200,150,150};
+    //final int timesToSpawn[] = {0,1000,600,400,300,250,200,150,150};
 	final int timesToSpawn[] = {0,1000,800,650,500,450,375,300,250};
 	final int scoreNeededToLevel[] = {0,80,200,500,1000,2000,3500,5500};
 	final int distributions[][] = {	{0}, //this will never run. Never on level '0'
@@ -57,49 +58,33 @@ public class GameController implements Runnable {
 	
 	public synchronized void pause() {
 		paused = true;
-		if (view != null) view.repaint();
-	}
-
-	public synchronized void pause(double handx, double handy) {
-		platformPrevx = (16*handx - 8);
-		platformPrevy = (10*handy);
-		paused = true;
-		if (view != null) view.repaint();
+		if (view != null)
+			view.repaint();
 	}
 
 	public synchronized void unpause() {
-		view.unPaused();
+		if (view != null)
+			view.unPaused();
 		paused = false;
-	}
-
-	public synchronized void unpause(double  handx, double handy) {
-		platformDeltax = platformPrevx - (16*handx - 8);
-		platformDeltay = platformPrevy - (10*handy);
-		paused = false;
-		System.out.println("unpaused.");
 	}
 
 	public synchronized boolean isPaused() {
 		return paused;
 	}
-	
-	public int calculateLevel(int score) {
-		int level = Arrays.binarySearch(scoreNeededToLevel, score);
-		if(level >= 0) return level + 1;
-		else{
-			level += 1;
-			level *= -1;
-			level -= 1;
-		}
-		return level + 1;
+
+	public float calculateLevelProgress() {
+		int curLevel = model.getLevel();
+		float progress = (float)(model.getScore()          - scoreNeededToLevel[curLevel-1]);
+		float total = (float)(scoreNeededToLevel[curLevel] - scoreNeededToLevel[curLevel-1]);
+		return Math.max(progress/total, 0);
 	}
 
 	public DrawableBody spawn() {
 		int sides = (int)Math.round(Math.random()*5) + 3;
 		float x;
 
-//		int level = Arrays.binarySearch(scoreNeededToLevel, model.getMaxScore());
-		int level = calculateLevel(model.getMaxScore());
+        // int level = Arrays.binarySearch(scoreNeededToLevel, model.getMaxScore());
+		int level = model.getLevel();
 		if(level >= distributions.length) level = distributions.length-1;
 		int newPoly = (int)(Math.random()*(distributions[level].length));
 		//return distributions[newPoly] == 4 ? new Square(model.world, x) : new PolyBody(model.world, x, distributions[newPoly], Colors.SHAPES[distributions[newPoly]-3]);
@@ -140,13 +125,14 @@ public class GameController implements Runnable {
 			// Just spin if we're paused
 			if (isPaused() || model.isGameOver()) {
 				time = System.currentTimeMillis();
-				if (view!=null) view.repaint();
+				if (view!=null)
+					view.repaint();
 				continue;
 			}
 
 			// drop block every 2 seconds
 			long now = System.currentTimeMillis();
-			if(now - squareSpawnTime >= 2*timesToSpawn[calculateLevel(model.getMaxScore())]) {
+			if(now - squareSpawnTime >= 2*timesToSpawn[model.getLevel()]) {
 				DrawableBody db = spawn();
 				synchronized (model.blockList) {
 					model.blockList.add(db);
@@ -164,12 +150,11 @@ public class GameController implements Runnable {
 			// physics update
 			now = System.currentTimeMillis();
 			model.world.step((now-time)/1000f, 6, 2);
-/*			model.getRightPlatform().getBody().setLinearVelocity(new Vec2(0.0f, 0.0f));
+			/*model.getRightPlatform().getBody().setLinearVelocity(new Vec2(0.0f, 0.0f));
 			model.getRightPlatform().getBody().setAngularVelocity(0);*/
 			
+			//update lifetimes and points
 			synchronized (model.blockList) {
-
-				//update lifetimes and points
 				Iterator<DrawableBody> itr = model.blockList.iterator();
 				while( itr.hasNext() ) {
 					DrawableBody b = itr.next();
@@ -177,24 +162,28 @@ public class GameController implements Runnable {
 					b.reduceLifetime(dt);
 					if( b.getExpiration() <= 0 ) {
 						// yay, points!
-
-						int oldLevel = calculateLevel(model.getMaxScore());
 						model.addPoints(b.getValue());
-						int newLevel = calculateLevel(model.getMaxScore());
-						if (newLevel > oldLevel) {
-							view.notifyLevel();
-						}
+						SoundManager.play("pointGain");
+						if (view != null)
+							view.notifyScore(b, b.getValue());
 						
-						view.notifyScore(b, b.getValue());
+						// level up
+						if(model.getScore() >= scoreNeededToLevel[model.getLevel()]) {
+							model.levelUp();
+							if (view != null)
+								view.notifyLevel();
+							SoundManager.play("levelup");
+						}
+
+						// remove block
 						itr.remove();
 						model.world.destroyBody(b.getBody());
 					}
 				}
-
 			}
 
+			// remove blocks that have fallen
 			synchronized (model.blockList) {
-				// remove blocks that have fallen
 				Iterator<DrawableBody> itr = model.blockList.iterator();
 				while( itr.hasNext() ) {
 					DrawableBody b = itr.next();
@@ -203,42 +192,20 @@ public class GameController implements Runnable {
 						// Oh no! Lose points. :(
 						itr.remove();
 						model.reduceHealth();
-						view.notifyScore(b, -20);
+						if (view != null)
+							view.notifyScore(b, -20);
 						model.world.destroyBody(b.getBody());
 						model.addPoints(-20);
+						SoundManager.play("pointLoss");
 					}
 				}
 			}
 			
-			if (view!=null) {
+			if (view!=null)
 				view.repaint();
-			}
 			time = now;
-
 		}
-
 	}
-
-/*	public synchronized void updatePlatformPosition(double handx, double handy, double theta, double dt) {
-		if (isPaused() || model.isGameOver()) return;
-		Platform rp = model.getRightPlatform();
-		Platform lp = model.getLeftPlatform();
-		//model.platform.getBody().setTransform(model.platform.getBody().getPosition(), (float) theta);
-		double dtheta = theta - rp.getBody().getAngle();
-		float dx = (16*(float)handx - 8) - rp.getBody().getPosition().x;
-		float dy = (10*(float)handy)     - rp.getBody().getPosition().y;
-		rp.getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
-		rp.getBody().setAngularVelocity((float)(dtheta/dt*1000));	
-		
-		dx = (float) ((16*(float)handx - 8) - (4*Math.cos(theta)) - lp.getBody().getPosition().x);
-		dy = (float)((10*(float)handy - 4*Math.sin(theta)) - lp.getBody().getPosition().y);	
-		dtheta = theta - lp.getBody().getAngle();
-		lp.getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
-		lp .getBody().setAngularVelocity((float)(dtheta/dt*1000));	
-		
-		dxList.add((double) Math.abs(dx));
-		if(dxList.size() > 10) dxList.remove(0);
-	}*/
 	
 	public synchronized void updatePlatformPosition(double rhandx, double rhandy, double rtheta, double lhandx, double lhandy, double ltheta, double dt) {
 		if (isPaused() || model.isGameOver()) return;
@@ -249,25 +216,25 @@ public class GameController implements Runnable {
 		model.rp.getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
 		model.rp.getBody().setAngularVelocity((float)(dtheta/dt*1000));	
 		dxList.add((double) Math.abs(dx));
-		if(dxList.size() > 10) dxList.remove(0);
+		if(dxList.size() > 10)
+			dxList.remove(0);
 		
-		if(lhandx == 0 && lhandy == 0 && ltheta == 0){
+		if(lhandx == 0 && lhandy == 0 && ltheta == 0) {
 			dx = (float) ((16*(float)rhandx - 8) - (4*Math.cos(rtheta)) - model.getLeftPlatform().getBody().getPosition().x);
 			dy = (float)((10*(float)rhandy - 4*Math.sin(rtheta)) - model.getLeftPlatform().getBody().getPosition().y);
 			dtheta = rtheta - model.getLeftPlatform().getBody().getAngle();
 			model.getLeftPlatform().getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
 			model.getLeftPlatform() .getBody().setAngularVelocity((float)(dtheta/dt*1000));	
-		}else{
+		} else {
 			dtheta = ltheta - model.lp.getBody().getAngle();
 			dx = (16*(float)lhandx - 8) - model.lp.getBody().getPosition().x;
 			dy = (10*(float)lhandy)     - model.lp.getBody().getPosition().y;
 			model.lp.getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
 			model.lp.getBody().setAngularVelocity((float)(dtheta/dt*1000));		
 			dxList.add((double) Math.abs(dx));
-			if(dxList.size() > 10) dxList.remove(0);
+			if(dxList.size() > 10)
+				dxList.remove(0);
 		}
-
-
 	}
 	
 	public synchronized double getDx(){
@@ -280,12 +247,10 @@ public class GameController implements Runnable {
 	}
 
 	public void newGame() {
-
-		if (!model.isGameOver()) return;
-
+		if (!model.isGameOver())
+			return;
 		model = new GameModel();
-		view.model = model;
-
+		if (view != null)
+			view.model = model;
 	}
-
 }

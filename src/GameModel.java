@@ -19,6 +19,7 @@ public class GameModel {
 	int score = 0;
 	int maxScore = score;
 	int health = 100;
+	int level = 1;
 
 	boolean gameOver = false;
 
@@ -69,4 +70,10 @@ public class GameModel {
 		return this.gameOver;
 	}
 
+	public void levelUp() {
+		this.level++;
+	}
+	public int getLevel() {
+		return this.level;
+	}
 }

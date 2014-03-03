@@ -17,6 +17,7 @@ public class Colors {
 		//new Color(255,182,212) //octagon
 	};
 
+	public static final Color LETTERBOX = new Color(39,40,34);
 	public static final Color BACKGROUND = new Color(39,40,34);
 	public static final Color PAUSED = new Color(128,128,128);
 	public static final Color PAUSED_TEXT = new Color(150,150,150);
@@ -30,5 +31,15 @@ public class Colors {
 	public static final Color HEALTH_GOOD = new Color(27,204,41);
 	public static final Color HEALTH_MID = new Color(255,210,0);
 	public static final Color HEALTH_BAD = new Color(255,47,0);
+
+	public static Color interpolateColor(Color a, Color c, double progress) {
+
+		double r = (c.getRed() - a.getRed()) * progress + a.getRed();
+		double g = (c.getGreen() - a.getGreen()) * progress + a.getGreen();
+		double b = (c.getBlue() - a.getBlue()) * progress + a.getBlue();
+
+		return new Color((int)r, (int)g, (int)b);
+
+	}
 
 }
