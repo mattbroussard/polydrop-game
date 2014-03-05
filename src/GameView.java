@@ -27,6 +27,8 @@ public class GameView extends JComponent implements KeyListener{
 	//I don't think these are used anymore except code commented by dallas in paintComponent?
 	boolean startUnpause = false;
 	int countdown = 3;
+	float pointLossX = 0;
+	
 
 	public GameView(GameModel m, GameController c) {
 
@@ -44,7 +46,7 @@ public class GameView extends JComponent implements KeyListener{
 
 	public void keyPressed(KeyEvent e) {}
 	public void keyTyped(KeyEvent e) {}
-
+	
 	public void notifyScore(DrawableBody db, int scoreDelta) {
 		
 		if (scoreDelta<0)
@@ -75,6 +77,10 @@ public class GameView extends JComponent implements KeyListener{
 
 	}
 
+	public void setPointLossX(float pointLossX){
+		this.pointLossX = pointLossX;
+	}
+	
 	public void paintComponent(Graphics graphics) {
 
 		super.paintComponent(graphics);
@@ -116,6 +122,7 @@ public class GameView extends JComponent implements KeyListener{
 		*/
 
 		//red flash/gradient on bottom
+
 		g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
 		float maxPointLossAlpha = 80;
 		if(recentPointLoss) {
@@ -127,11 +134,15 @@ public class GameView extends JComponent implements KeyListener{
 		}
 		float pointLossTimeFactor = pointLossAlpha/maxPointLossAlpha;
 		float heightOfRedBar = 1.0f;
-		float gradientStep = 0.01f;
+		float gradientStep = 0.05f;
 		for(float i = 0; i < heightOfRedBar; i += gradientStep){
 			float alpha = (1 - i/heightOfRedBar)*pointLossTimeFactor;
-			g2.fillRect(0, 10.0f-i, 16.0f, gradientStep, new Color(1,0,0,alpha));
+//			g2.fillRect(0, 10.0f-i, 16.0f, gradientStep, new Color(1,0,0,alpha));
+			g2.fillCircle((float)(pointLossX+8), 11.3f, 1+i, new Color(1,0,0,alpha));
 		}
+
+
+
 
 		//Draw platform
 		Platform rp = model.getRightPlatform();
