@@ -9,7 +9,7 @@ public class ImageManager {
 
 	private static void load(String name) throws Exception {
 
-		BufferedImage b = ImageIO.read(ImageManager.class.getSystemResource(name+".png"));
+		BufferedImage b = ImageIO.read(ImageManager.class.getResource(name+".png"));
 		cache.put(name, b);
 		System.out.println("Loaded image resource "+name);
 
