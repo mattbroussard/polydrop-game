@@ -9,7 +9,6 @@ public class SoundManager {
 
 	private static void load(String clipName) throws Exception {
 		URL url = SoundManager.class.getResource(clipName+".wav");
-		System.out.println(url);
 		AudioInputStream stream = AudioSystem.getAudioInputStream(url);
 		AudioFormat format = stream.getFormat();
 		
