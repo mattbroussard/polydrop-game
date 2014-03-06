@@ -218,12 +218,12 @@ public class GameView extends JComponent implements KeyListener{
 
 	public RadialMenu getActiveMenu() {
 
-		if (controller.isPaused())
-			return pausedMenu;
-		if (model.isGameOver())
-			return null; //In the future, this will be for a game over menu.
 		if (false)
 			return null; //In the future, this will be for a leaderboard menu.
+		if (model.isGameOver())
+			return null; //In the future, this will be for a game over menu.
+		if (controller.isPaused())
+			return pausedMenu;
 
 		return null;
 
