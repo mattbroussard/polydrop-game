@@ -168,7 +168,7 @@ public class GameController implements Runnable {
 							view.notifyScore(b, b.getValue());
 						
 						// level up
-						if(model.getScore() >= scoreNeededToLevel[model.getLevel()]) {
+						if(model.getLevel() < scoreNeededToLevel.length && model.getScore() >= scoreNeededToLevel[model.getLevel()]) {
 							model.levelUp();
 							if (view != null)
 								view.notifyLevel();
