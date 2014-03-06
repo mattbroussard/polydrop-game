@@ -32,6 +32,11 @@ public class Colors {
 	public static final Color HEALTH_MID = new Color(255,210,0);
 	public static final Color HEALTH_BAD = new Color(255,47,0);
 
+	public static final Color MENU_GAP = new Color(20,20,20,150);
+	public static final Color MENU_ITEM = new Color(180,180,180,150);
+	public static final Color MENU_ITEM_SELECTING = new Color(180,0,0,255);
+	public static final Color MENU_CURSOR = new Color(255,0,0,180);
+
 	public static Color interpolateColor(Color a, Color c, double progress) {
 
 		double r = (c.getRed() - a.getRed()) * progress + a.getRed();
