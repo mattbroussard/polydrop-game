@@ -195,6 +195,8 @@ public class GameController implements Runnable {
 					Vec2 pos = b.getBody().getPosition();
 					if(pos.y < -2) {
 						// Oh no! Lose points. :(
+						view.setPointLossX(pos.x);
+						System.out.println("pos: "+pos.x);
 						itr.remove();
 						model.reduceHealth();
 						if (view != null)
@@ -226,7 +228,7 @@ public class GameController implements Runnable {
 		
 		if(lhandx == 0 && lhandy == 0 && ltheta == 0) {
 			dx = (float) ((16*(float)rhandx - 8) - (4*Math.cos(rtheta)) - model.getLeftPlatform().getBody().getPosition().x);
-			dy = (float)((10*(float)rhandy - 4*Math.sin(rtheta)) - model.getLeftPlatform().getBody().getPosition().y);	
+			dy = (float)((10*(float)rhandy - 4*Math.sin(rtheta)) - model.getLeftPlatform().getBody().getPosition().y);
 			dtheta = rtheta - model.getLeftPlatform().getBody().getAngle();
 			model.getLeftPlatform().getBody().setLinearVelocity(new Vec2((float)(dx/dt*1000), (float)(dy/dt*1000)));
 			model.getLeftPlatform() .getBody().setAngularVelocity((float)(dtheta/dt*1000));	
