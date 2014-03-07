@@ -27,7 +27,7 @@ public class SoundManager {
 			try {
 				load(clipName);
 			} catch (Exception e) {
-				e.printStackTrace();
+				System.out.println("Couldn't load audior resource "+ clipName);
 				return;
 			}
 		}
