@@ -325,7 +325,7 @@ public class GameController implements Runnable {
 	}
 
 	public void newGame() {
-		if (!model.isGameOver())
+		if (!model.isGameOver() || usingUI)
 			return;
 		model = new GameModel();
 		if (view != null)
