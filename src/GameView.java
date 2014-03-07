@@ -8,18 +8,13 @@ import java.util.*;
 
 import org.jbox2d.common.*;
 
-/* Matt TODO:
-
- - refactor out view statefulness (particularly with red flash)
- - menu implementation
-
-*/
-
 public class GameView extends JComponent implements KeyListener{
 	
 	GameModel model;
 	GameController controller;
+	Leaderboard leaderboard;
 	LinkedList<Notification> notifs;
+	
 	
 	boolean recentPointLoss = false;
 	int pointLossAlpha = 0;
@@ -28,7 +23,25 @@ public class GameView extends JComponent implements KeyListener{
 	boolean startUnpause = false;
 	int countdown = 3;
 	float pointLossX = 0;
-	
+
+	boolean usingLeaderboard = false;
+
+	RadialMenu pausedMenu;
+	RadialMenu gameOverMenu;
+	RadialMenu leaderboardMenu;
+
+	static final int PAUSE_MENU_MODE_FREE = 0;
+	static final int PAUSE_MENU_MODE_DUAL = 1;
+	static final int PAUSE_MENU_MODE_SINGLE = 2;
+	static final int PAUSE_MENU_EXIT_GAME = 3;
+	static final int PAUSE_MENU_LEADERBOARD = 4;
+
+	static final int LEADERBOARD_MENU_CLEAR = 5;
+	static final int LEADERBOARD_MENU_EXIT = 6;
+
+	static final int GAMEOVER_MENU_NEWGAME = 7;
+	static final int GAMEOVER_MENU_EXIT_GAME = 8;
+	static final int GAMEOVER_MENU_LEADERBOARD = 9;
 
 	public GameView(GameModel m, GameController c) {
 
@@ -37,16 +50,39 @@ public class GameView extends JComponent implements KeyListener{
 		controller = c;
 		notifs = new LinkedList<Notification>();
 
+		//Construct paused menu
+		pausedMenu = new RadialMenu(8, 5.5f, this);
+		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_MODE_FREE, "Free Play", "freeMode", 60, 20, Colors.MENU_MODE_FREE_SELECTED, Colors.MENU_MODE_FREE_ACTIVE));
+		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_MODE_DUAL, "Two Hands", "dualMode", 80, 20, Colors.MENU_MODE_DUAL_SELECTED, Colors.MENU_MODE_DUAL_ACTIVE));
+		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_MODE_SINGLE, "One Hand", "singleMode", 100, 20, Colors.MENU_MODE_SINGLE_SELECTED, Colors.MENU_MODE_SINGLE_ACTIVE));
+		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_EXIT_GAME, "Exit Game", "exit", 250, 20));
+		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_LEADERBOARD, "High Scores", "leaderboard", 270, 20));
+
+		//Constuct game over menu
+		gameOverMenu = new RadialMenu(8, 11.5f, this);
+		gameOverMenu.addItem(new RadialMenuItem(GAMEOVER_MENU_NEWGAME, "New Game", "newGame", 100, 20));
+		gameOverMenu.addItem(new RadialMenuItem(GAMEOVER_MENU_EXIT_GAME, "Exit Game", "exit", 80, 20));
+		gameOverMenu.addItem(new RadialMenuItem(GAMEOVER_MENU_LEADERBOARD, "High Scores", "leaderboard", 60, 20));
+
+		//Construct leaderboard menu
+		leaderboardMenu = new RadialMenu(8, 11.5f, this);
+		leaderboardMenu.addItem(new RadialMenuItem(LEADERBOARD_MENU_EXIT, "Back", "menuReturn", 90, 20));
+		leaderboardMenu.addItem(new RadialMenuItem(LEADERBOARD_MENU_CLEAR, "Reset Scores", "clearLeaderboard", 70, 20));
+
 	}
 
 	public void keyReleased(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) System.exit(0);
+		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) controller.exitGame();
 		if(e.getKeyCode() == KeyEvent.VK_SPACE) controller.newGame();
 	}
 
 	public void keyPressed(KeyEvent e) {}
 	public void keyTyped(KeyEvent e) {}
 	
+	public void addLeaderboard(Leaderboard l) {
+		leaderboard = l;
+	}
+
 	public void notifyScore(DrawableBody db, int scoreDelta) {
 		
 		if (scoreDelta<0)
@@ -94,9 +130,8 @@ public class GameView extends JComponent implements KeyListener{
 		g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
 		g2.fillRect(0, 0, 16, 10, bg);
 
-		//draw paused message if paused
-		if (paused && !gameOver)
-			TextRenderer.drawPaused(g2);
+		//Draw FPS, if requested with --fps command line option
+		paintFPS(g2);
 
 		/*
 		//some code dallas added but commented? not ported to new graphics scheme.
@@ -121,8 +156,8 @@ public class GameView extends JComponent implements KeyListener{
 		}
 		*/
 
+		//TODO: in the future, it might be nice if this were in its own Renderer class like the other components.
 		//red flash/gradient on bottom
-
 		g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
 		float maxPointLossAlpha = 80;
 		if(recentPointLoss) {
@@ -137,33 +172,41 @@ public class GameView extends JComponent implements KeyListener{
 		float gradientStep = 0.05f;
 		for(float i = 0; i < heightOfRedBar; i += gradientStep){
 			float alpha = (1 - i/heightOfRedBar)*pointLossTimeFactor;
-//			g2.fillRect(0, 10.0f-i, 16.0f, gradientStep, new Color(1,0,0,alpha));
+			//g2.fillRect(0, 10.0f-i, 16.0f, gradientStep, new Color(1,0,0,alpha));
 			g2.fillCircle((float)(pointLossX+8), 11.3f, 1+i, new Color(1,0,0,alpha));
 		}
 
+		if (!usingLeaderboard) {
 
+			//Draw platform
+			Platform rp = model.getRightPlatform();
+			Platform lp = model.getLeftPlatform();
+			BodyRenderer.drawBody(lp, g2, paused);
+			BodyRenderer.drawBody(rp, g2, paused);
+			
+			//Draw blocks
+			ArrayList<DrawableBody> blocks = model.getBlocks();
+			synchronized (blocks) {
+				for (DrawableBody b : blocks)
+					BodyRenderer.drawBody(b, g2, paused);
+			}
+			
+			//draw paused message if paused
+			if (paused && !gameOver)
+				TextRenderer.drawPaused(g2);
+			
+			//draw game over message if game over
+			if (gameOver)
+				TextRenderer.drawGameOver(g2);
 
-
-		//Draw platform
-		Platform rp = model.getRightPlatform();
-		Platform lp = model.getLeftPlatform();
-		BodyRenderer.drawBody(lp, g2, paused);
-		BodyRenderer.drawBody(rp, g2, paused);
-		
-		//Draw blocks
-		ArrayList<DrawableBody> blocks = model.getBlocks();
-		synchronized (blocks) {
-			for (DrawableBody b : blocks)
-				BodyRenderer.drawBody(b, g2, paused);
 		}
-		
+
 		//Draw score
 		TextRenderer.drawScore(g2, model.getScore());
 
 		//Draw radial level indicator
 		LevelRenderer.drawLevelIndicator(g2, model.getLevel(), controller.calculateLevelProgress(), paused);
 
-		
 		//Draw health bar
 		HealthRenderer.drawHealthBar(g2, model.getHealth());
 
@@ -171,7 +214,6 @@ public class GameView extends JComponent implements KeyListener{
 		synchronized (notifs) {
 
 			//Prune old score notifications
-			long now = System.currentTimeMillis();
 			while (notifs.peekLast() != null && notifs.peekLast().expirationProgress() > 1.0f)
 				notifs.removeLast();
 
@@ -181,10 +223,103 @@ public class GameView extends JComponent implements KeyListener{
 
 		}
 
-		//draw game over message if game over
-		if (gameOver)
-			TextRenderer.drawGameOver(g2);
+
+		//draw the active menu, if there is one
+		RadialMenu menu = getActiveMenu();
+		if (menu != null)
+			menu.draw(g2);
+
+		//draw the leaderboard UI if we're using it
+		if (leaderboard != null && usingLeaderboard)
+			leaderboard.draw(g2);
 		
+	}
+
+	public void menuItemSelected(int id) {
+
+		SoundManager.play("menuChoice");
+
+		switch (id) {
+			case PAUSE_MENU_MODE_FREE:
+				pausedMenu.setActiveItem(PAUSE_MENU_MODE_FREE);
+
+				//temp
+				SoundManager.play("pointGain");
+				model.addPoints(10000);
+				
+				break;
+
+			case PAUSE_MENU_MODE_DUAL:
+				pausedMenu.setActiveItem(PAUSE_MENU_MODE_DUAL);
+
+				//temp
+				SoundManager.play("pointGain");
+				model.addPoints(10000);
+				
+				break;
+
+			case PAUSE_MENU_MODE_SINGLE:
+				pausedMenu.setActiveItem(PAUSE_MENU_MODE_SINGLE);
+
+				//temp
+				SoundManager.play("pointGain");
+				model.addPoints(10000);
+				
+				break;
+
+			case PAUSE_MENU_EXIT_GAME:
+			case GAMEOVER_MENU_EXIT_GAME:
+				controller.exitGame();
+				break;
+
+			case PAUSE_MENU_LEADERBOARD:
+			case GAMEOVER_MENU_LEADERBOARD:
+				controller.setUsingUI(true);
+				usingLeaderboard = true;
+				break;
+
+			case LEADERBOARD_MENU_CLEAR:
+				if (leaderboard != null)
+					leaderboard.clearLeaderboard();
+				break;
+
+			case LEADERBOARD_MENU_EXIT:
+				usingLeaderboard = false;
+				controller.setUsingUI(false);
+				break;
+
+			case GAMEOVER_MENU_NEWGAME:
+				controller.newGame();
+				break;
+
+			default:
+				return;
+		}
+
+	}
+
+	public RadialMenu getActiveMenu() {
+
+		if (usingLeaderboard)
+			return leaderboardMenu;
+		if (model.isGameOver())
+			return gameOverMenu;
+		if (controller.isPaused())
+			return pausedMenu;
+
+		return null;
+
+	}
+
+	//called by LeapController to indicate position of pointer.
+	public void pointerUpdate(double x, double y) {
+
+		RadialMenu m = getActiveMenu();
+		if (m == null)
+			return;
+
+		m.pointerUpdate((float)x, (float)y);
+
 	}
 
 	//To implement letterboxing and avoid unpleasant stretching, we tell the parent container what size we'd like to be
@@ -214,5 +349,24 @@ public class GameView extends JComponent implements KeyListener{
 	//we always get what we want
 	public Dimension getMaximumSize() { return getPreferredSize(); }
 	public Dimension getMinimumSize() { return getPreferredSize(); }
+
+	long lastPaint = 0;
+	int paintId = 0;
+	float fps = 0;
+	boolean showFPS = false; /* set from Main */
+	static final int FPS_SAMPLE = 10;
+	public void paintFPS(GraphicsWrapper g2) {
+
+		if (!showFPS) return;
+
+		paintId = (paintId + 1) % FPS_SAMPLE;
+		if (paintId == 0) {
+			long now = System.currentTimeMillis();
+			fps = FPS_SAMPLE * 1000f / (now - lastPaint);
+			lastPaint = now;
+		}
+		g2.drawString(String.format("%.1f fps", fps), 0.2f, Color.white, 15f, 9.6f);
+
+	}
 
 }

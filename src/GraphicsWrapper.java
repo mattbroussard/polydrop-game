@@ -2,6 +2,8 @@
 import java.awt.*;
 import java.awt.geom.*;
 import javax.swing.*;
+import java.util.*;
+import java.awt.image.*;
 
 //This class was made to avoid lots of places where we had:
 // - awkward int/float casting
@@ -17,17 +19,21 @@ public class GraphicsWrapper {
 	static final String FONT_NAME = "Arial";
 
 	private Graphics2D g2;
+	private LinkedList<Graphics2D> transformStack;
 	private JComponent canvas;
 	private int lastPrepare = -1;
 
 	public GraphicsWrapper(Graphics g, JComponent canvas) {
 	
 		this.g2 = (Graphics2D)g;
+		this.transformStack = new LinkedList<Graphics2D>();
+		this.transformStack.push(g2);
 		this.canvas = canvas;
 
 		//enable antialiasing
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
 		//reset transformation
 		prepare(TRANSFORM_STANDARD);
@@ -35,6 +41,9 @@ public class GraphicsWrapper {
 	}
 
 	public void prepare(int transformType) {
+
+		//get back to the original state on the transform stack
+		restore(Integer.MAX_VALUE);
 
 		//don't waste time resetting the transform if we don't have to
 		if (transformType == lastPrepare)
@@ -98,6 +107,24 @@ public class GraphicsWrapper {
 
 	}
 
+	public void drawImage(BufferedImage image, float x, float y) {
+
+		//TODO Matt: try a smooth image render hack like https://weblogs.java.net/blog/campbell/archive/2007/03/java_2d_tricker.html
+
+		float scale = getCurrentScale();
+
+		AffineTransform at = new AffineTransform();
+		at.setToIdentity();
+		at.concatenate(AffineTransform.getTranslateInstance(-image.getWidth()/2f, -image.getHeight()/2f));
+
+		g2.drawImage(image, at, null);
+
+	}
+
+	public void drawImage(String imgName, float x, float y) {
+		drawImage(ImageManager.getImage(imgName), x, y);
+	}
+
 	//Note: this mutates the polygon
 	public void fillPath(Path2D.Float poly, Color c) {
 		
@@ -141,8 +168,61 @@ public class GraphicsWrapper {
 
 	}
 
+	public void maskCircle(float x, float y, float radius) {
+
+		//Matt TODO: try the soft clipping hack described at https://weblogs.java.net/blog/2006/07/19/java-2d-trickery-soft-clipping
+
+		g2 = (Graphics2D)g2.create();
+		transformStack.push(g2);
+
+		float scale = getCurrentScale();
+
+		x -= radius;
+		y -= radius;
+
+		Area a = new Area(g2.getClip());
+		a.subtract(new Area(new Ellipse2D.Float(x*scale, y*scale, scale*radius*2, scale*radius*2)));
+		g2.setClip(a);
+
+	}
+
+	public void restore() {
+		restore(1);
+	}
+
+	public void restore(int n) {
+
+		for (int i = 0; i < n && transformStack.size() > 1; i++) {
+
+			g2.dispose();
+			transformStack.pop();
+			g2 = transformStack.peek();
+
+		}
+
+	}
+
+	public void setOrigin(float x, float y) {
+
+		float scale = getCurrentScale();
+
+		g2 = (Graphics2D)g2.create();
+		transformStack.push(g2);
+		g2.translate(scale*x, scale*y);
+
+	}
+
 	//angles in degrees
-	public void fillArc(float x, float y, float radius, float startAngle, float endAngle, Color c) {
+	public void rotate(float angle) {
+
+		g2 = (Graphics2D)g2.create();
+		transformStack.push(g2);
+		g2.rotate(angle / 180f * (float)Math.PI);
+
+	}
+
+	//angles in degrees
+	public void fillArc(float x, float y, float radius, float startAngle, float arcAngle, Color c) {
 		
 		float scale = getCurrentScale();
 
@@ -156,7 +236,7 @@ public class GraphicsWrapper {
 			(int)Math.round(2*radius*scale),
 			(int)Math.round(2*radius*scale),
 			(int)Math.round(startAngle),
-			(int)Math.round(endAngle)
+			(int)Math.round(arcAngle)
 		);
 
 	}

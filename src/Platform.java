@@ -10,7 +10,7 @@ public class Platform implements DrawableBody {
 	private Fixture fixture;
 	private Color color;
 	
-	public Platform(World world) {
+	public Platform(World world, Color debugColor) {
 		BodyDef bdef = new BodyDef();
 		bdef.type = BodyType.KINEMATIC;
 		bdef.position.set(0,2);
@@ -24,7 +24,11 @@ public class Platform implements DrawableBody {
 		fixtureDef.friction = 2.0f;
 		this.fixture = body.createFixture(fixtureDef);
 
-		this.color = Colors.PLATFORM;
+		this.color = debugColor;
+	}
+
+	public Platform(World w) {
+		this(w, Colors.PLATFORM);
 	}
 
 	public Color getColor() {

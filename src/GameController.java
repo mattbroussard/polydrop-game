@@ -15,13 +15,18 @@ import java.util.ArrayList;
 
 public class GameController implements Runnable {
 	
+	static final int PAUSE_DELAY = 100;
+	long pauseTimer = 0;
+
 	static final int FREE_PLAY = 0;
 	static final int ONE_HAND  = 1;
 	static final int TWO_HANDS = 2;
 
 	GameModel model;
 	GameView view;
+	Leaderboard leaderboard;
 	boolean paused = false;
+	boolean usingUI = false;
 	
 	int hands;
 	
@@ -44,28 +49,94 @@ public class GameController implements Runnable {
 
 	public GameController(GameModel m) {
 		model = m;
+		leaderboard = new Leaderboard(this);
 		t = new Thread(this);
 		t.start();
 	}
 	
+	public void exitGame() {
+
+		//For now, just exit. In the future, we may have cleanup things to do first.
+		System.exit(0);
+
+	}
+
 	public void setHands(int h){
 		hands = h;
 	}
 	
 	public void addView(GameView v) {
 		view = v;
+		v.addLeaderboard(leaderboard);
 	}
 	
-	public synchronized void pause() {
+	public void setUsingUI(boolean using) {
+		usingUI = using;
+		if (using && !isPaused() && !model.isGameOver())
+			pause(false);
+	}
+
+	public synchronized void pause(boolean delay) {
+
+		//don't pause until a short delay without unpause
+		if (!delay) {
+			pauseTimer = 0;
+		} else if (!isPaused() && pauseTimer == 0) {
+			pauseTimer = System.currentTimeMillis();
+			System.out.println("Started pause timer");
+			return;
+		} else if (pauseTimer < 0) {
+			pauseTimer = 0;
+			System.out.println("Cancelled unpause timer");
+			return;
+		} else if (System.currentTimeMillis()-pauseTimer < PAUSE_DELAY) {
+			return;
+		}
+
+		if (isPaused())
+			return;
+		pauseTimer = 0;
+
+		System.out.println("Actually pausing.");
 		paused = true;
 		if (view != null)
 			view.repaint();
+
 	}
 
-	public synchronized void unpause() {
+	public synchronized void unpause(boolean delay) {
+		
+		//don't allow accidental unpauses if the user is using UI things (such as leaderboard)
+		if (usingUI) {
+			if (!isPaused())
+				pause(false);
+			return;
+		}
+
+		//don't unpause until a short delay without pause
+		if (!delay) {
+			pauseTimer = 0;
+		} else if (isPaused() && pauseTimer == 0) {
+			pauseTimer = -System.currentTimeMillis();
+			System.out.println("Started unpause timer");
+			return;
+		} else if (pauseTimer > 0) {
+			pauseTimer = 0;
+			System.out.println("Cancelled pause timer");
+			return;
+		} else if (System.currentTimeMillis()+pauseTimer < PAUSE_DELAY) {
+			return;
+		}
+
+		if (!isPaused())
+			return;
+		pauseTimer = 0;
+
+		System.out.println("Actually unpausing.");
 		if (view != null)
 			view.unPaused();
 		paused = false;
+
 	}
 
 	public synchronized boolean isPaused() {
@@ -74,6 +145,11 @@ public class GameController implements Runnable {
 
 	public float calculateLevelProgress() {
 		int curLevel = model.getLevel();
+
+		//this prevents ArrayIndexOutOfBoundsExceptions
+		if (curLevel >= scoreNeededToLevel.length)
+			return 1;
+
 		float progress = (float)(model.getScore()          - scoreNeededToLevel[curLevel-1]);
 		float total = (float)(scoreNeededToLevel[curLevel] - scoreNeededToLevel[curLevel-1]);
 		return Math.max(progress/total, 0);
@@ -168,7 +244,7 @@ public class GameController implements Runnable {
 							view.notifyScore(b, b.getValue());
 						
 						// level up
-						if(model.getScore() >= scoreNeededToLevel[model.getLevel()]) {
+						if(model.getLevel() < scoreNeededToLevel.length && model.getScore() >= scoreNeededToLevel[model.getLevel()]) {
 							model.levelUp();
 							if (view != null)
 								view.notifyLevel();
@@ -255,7 +331,7 @@ public class GameController implements Runnable {
 	}
 
 	public void newGame() {
-		if (!model.isGameOver())
+		if (!model.isGameOver() || usingUI)
 			return;
 		model = new GameModel();
 		if (view != null)
