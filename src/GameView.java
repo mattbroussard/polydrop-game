@@ -59,22 +59,22 @@ public class GameView extends JComponent implements KeyListener{
 
 		//Construct paused menu
 		pausedMenu = new RadialMenu(8, 5.5f, this);
-		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_MODE_FREE, "freeMode", 60, 20));
-		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_MODE_DUAL, "dualMode", 80, 20));
-		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_MODE_SINGLE, "singleMode", 100, 20));
-		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_EXIT_GAME, "exit", 250, 20));
-		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_LEADERBOARD, "leaderboard", 270, 20));
+		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_MODE_FREE, "Free Play", "freeMode", 60, 20, Colors.MENU_MODE_FREE_SELECTED, Colors.MENU_MODE_FREE_ACTIVE));
+		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_MODE_DUAL, "Two Hands", "dualMode", 80, 20, Colors.MENU_MODE_DUAL_SELECTED, Colors.MENU_MODE_DUAL_ACTIVE));
+		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_MODE_SINGLE, "One Hand", "singleMode", 100, 20, Colors.MENU_MODE_SINGLE_SELECTED, Colors.MENU_MODE_SINGLE_ACTIVE));
+		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_EXIT_GAME, "Exit Game", "exit", 250, 20));
+		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_LEADERBOARD, "High Scores", "leaderboard", 270, 20));
 
 		//Constuct game over menu
 		gameOverMenu = new RadialMenu(8, 11.5f, this);
-		gameOverMenu.addItem(new RadialMenuItem(GAMEOVER_MENU_NEWGAME, "newGame", 100, 20));
-		gameOverMenu.addItem(new RadialMenuItem(GAMEOVER_MENU_EXIT_GAME, "exit", 80, 20));
-		gameOverMenu.addItem(new RadialMenuItem(GAMEOVER_MENU_LEADERBOARD, "leaderboard", 60, 20));
+		gameOverMenu.addItem(new RadialMenuItem(GAMEOVER_MENU_NEWGAME, "New Game", "newGame", 100, 20));
+		gameOverMenu.addItem(new RadialMenuItem(GAMEOVER_MENU_EXIT_GAME, "Exit Game", "exit", 80, 20));
+		gameOverMenu.addItem(new RadialMenuItem(GAMEOVER_MENU_LEADERBOARD, "High Scores", "leaderboard", 60, 20));
 
 		//Construct leaderboard menu
 		leaderboardMenu = new RadialMenu(8, 11.5f, this);
-		leaderboardMenu.addItem(new RadialMenuItem(LEADERBOARD_MENU_EXIT, "menuReturn", 90, 20));
-		leaderboardMenu.addItem(new RadialMenuItem(LEADERBOARD_MENU_CLEAR, "clearLeaderboard", 70, 20));
+		leaderboardMenu.addItem(new RadialMenuItem(LEADERBOARD_MENU_EXIT, "Back", "menuReturn", 90, 20));
+		leaderboardMenu.addItem(new RadialMenuItem(LEADERBOARD_MENU_CLEAR, "Reset Scores", "clearLeaderboard", 70, 20));
 
 	}
 
@@ -247,34 +247,57 @@ public class GameView extends JComponent implements KeyListener{
 
 		switch (id) {
 			case PAUSE_MENU_MODE_FREE:
-				model.addPoints(10000); //temp
+				pausedMenu.setActiveItem(PAUSE_MENU_MODE_FREE);
+
+				//temp
+				SoundManager.play("pointGain");
+				model.addPoints(10000);
+				
 				break;
+
 			case PAUSE_MENU_MODE_DUAL:
-				model.addPoints(10000); //temp
+				pausedMenu.setActiveItem(PAUSE_MENU_MODE_DUAL);
+
+				//temp
+				SoundManager.play("pointGain");
+				model.addPoints(10000);
+				
 				break;
+
 			case PAUSE_MENU_MODE_SINGLE:
-				model.addPoints(10000); //temp
+				pausedMenu.setActiveItem(PAUSE_MENU_MODE_SINGLE);
+
+				//temp
+				SoundManager.play("pointGain");
+				model.addPoints(10000);
+				
 				break;
+
 			case PAUSE_MENU_EXIT_GAME:
 			case GAMEOVER_MENU_EXIT_GAME:
 				controller.exitGame();
 				break;
+
 			case PAUSE_MENU_LEADERBOARD:
 			case GAMEOVER_MENU_LEADERBOARD:
 				controller.setUsingUI(true);
 				usingLeaderboard = true;
 				break;
+
 			case LEADERBOARD_MENU_CLEAR:
 				if (leaderboard != null)
 					leaderboard.clearLeaderboard();
 				break;
+
 			case LEADERBOARD_MENU_EXIT:
 				usingLeaderboard = false;
 				controller.setUsingUI(false);
 				break;
+
 			case GAMEOVER_MENU_NEWGAME:
 				controller.newGame();
 				break;
+
 			default:
 				return;
 		}

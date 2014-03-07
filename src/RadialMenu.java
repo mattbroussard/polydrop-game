@@ -10,6 +10,7 @@ public class RadialMenu {
 	ArrayList<RadialMenuItem> items;
 
 	RadialMenuItem selected = null;
+	int active = -1;
 	float selectExtent = 0;
 
 	static final float ITEM_GAP = 0.5f;
@@ -21,6 +22,10 @@ public class RadialMenu {
 		this.parent = parent;
 		items = new ArrayList<RadialMenuItem>();
 
+	}
+
+	public void setActiveItem(int id) {
+		active = id;
 	}
 
 	public void addItem(RadialMenuItem item) {
@@ -135,7 +140,7 @@ public class RadialMenu {
 				g2.fillArc(centerX, centerY, 3.8f, gapStart + ITEM_GAP, gapLength - 2*ITEM_GAP, Colors.MENU_GAP);
 				
 			float extent = item == selected ? selectExtent : 0;
-			Color color = item == selected ? Colors.MENU_ITEM_SELECTING : Colors.MENU_ITEM;
+			Color color = item == selected ? item.selectedColor : (active == item.id ? item.activeColor : Colors.MENU_ITEM);
 
 			//draw item slice
 			g2.maskCircle(centerX, centerY, 2.8f + extent);
@@ -147,7 +152,7 @@ public class RadialMenu {
 			float labelAngleRad = labelAngleDeg / 180.f * (float)Math.PI;
 			g2.setOrigin(centerX + (3.3f+extent)*(float)Math.cos(labelAngleRad), centerY - (3.3f+extent)*(float)Math.sin(labelAngleRad));
 			g2.rotate(90 - labelAngleDeg);
-			item.drawLabel(g2);
+			item.drawLabel(g2, item == selected);
 			g2.restore(2);
 
 		}

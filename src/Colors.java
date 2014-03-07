@@ -34,8 +34,16 @@ public class Colors {
 
 	public static final Color MENU_GAP = new Color(20,20,20,150);
 	public static final Color MENU_ITEM = new Color(180,180,180,150);
-	public static final Color MENU_ITEM_SELECTING = new Color(180,0,0,255);
+	public static final Color MENU_ITEM_SELECTED = new Color(180,0,0,255);
+	public static final Color MENU_TOOLTIP = new Color(255,255,255);
 	public static final Color MENU_CURSOR = new Color(255,0,0,180);
+
+	public static final Color MENU_MODE_SINGLE_SELECTED = new Color(255,200,200);
+	public static final Color MENU_MODE_DUAL_SELECTED = new Color(200,255,200);
+	public static final Color MENU_MODE_FREE_SELECTED = new Color(200,200,255);
+	public static final Color MENU_MODE_SINGLE_ACTIVE = new Color(255,150,150, 180);
+	public static final Color MENU_MODE_DUAL_ACTIVE = new Color(150,255,150, 180);
+	public static final Color MENU_MODE_FREE_ACTIVE = new Color(150,150,255, 180);
 
 	public static Color interpolateColor(Color a, Color c, double progress) {
 
