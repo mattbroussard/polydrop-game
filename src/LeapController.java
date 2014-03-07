@@ -47,7 +47,7 @@ public class LeapController extends Listener implements Runnable {
 	@Override
 	public void onFocusLost(Controller c) {
 
-		game.pause();
+		game.pause(false);
 
 	}
 
@@ -67,8 +67,10 @@ public class LeapController extends Listener implements Runnable {
 		if (primaryHand == null) {
 			//rightHand = hands.frontmost();
 			//pauseLocation = rightHand.palmPosition();
-			game.pause();
+			game.pause(true);
 			return;
+		} else {
+			game.unpause(true);
 		}
 		
 /*		if (rightHand.id() != lastHand) {
@@ -103,20 +105,6 @@ public class LeapController extends Listener implements Runnable {
 			
 			Vector leftHandNorm = leftHand.palmNormal();
 			double leftHandRoll = leftHandNorm.roll();
-		
-			//TODO: remove, already checked in getPreferredHand
-			if ((rightHand.fingers().count() <= 1 && Math.abs(rightHandRoll) < FIST_THRESHOLD) || rightHandPos.getZ() > Z_PAUSE_THRESHOLD) {
-				if ((leftHand.fingers().count() <= 1 && Math.abs(leftHandRoll) < FIST_THRESHOLD) || leftHandPos.getZ() > Z_PAUSE_THRESHOLD){
-					if(!game.paused){
-						game.pause();
-						return;
-					}					
-				}
-
-			} else if (game.paused) {
-				game.unpause();
-				return;
-			}
 			
 			//game.updatePlatformPosition(handX, handY, handRoll, dt);
 			game.updatePlatformPosition(rightHandX, rightHandY, rightHandRoll, leftHandX, leftHandY, leftHandRoll, dt);
@@ -135,24 +123,10 @@ public class LeapController extends Listener implements Runnable {
 			
 			Vector handNorm = rightHand.palmNormal();
 			double handRoll = handNorm.roll();
-
-			//TODO: remove already checked in getPreferredHand
-			if ((rightHand.fingers().count() <= 1 && Math.abs(handRoll) < FIST_THRESHOLD) || handPos.getZ() > Z_PAUSE_THRESHOLD) {
-				if(!game.paused){
-					game.pause();
-					return;
-				}
-			} else if (game.paused) {
-				game.unpause();
-				return;
-			}
 			
 			game.updatePlatformPosition(handX, handY, handRoll, 0, 0, 0, dt);
 			//game.model.platform.getBody().setLinearVelocity(new Vec2(0.0f, 0.0f));
 			lastUpdate = now;
-		} else {
-			game.pause();
-			return;
 		}
 		
 /*		if (hands.count()==0) {

@@ -15,6 +15,9 @@ import java.util.ArrayList;
 
 public class GameController implements Runnable {
 	
+	static final int PAUSE_DELAY = 100;
+	long pauseTimer = 0;
+
 	static final int FREE_PLAY = 0;
 	static final int ONE_HAND  = 1;
 	static final int TWO_HANDS = 2;
@@ -56,16 +59,60 @@ public class GameController implements Runnable {
 		view = v;
 	}
 	
-	public synchronized void pause() {
+	public synchronized void pause(boolean delay) {
+
+		//don't pause until a short delay without unpause
+		if (!delay) {
+			pauseTimer = 0;
+		} else if (!isPaused() && pauseTimer == 0) {
+			pauseTimer = System.currentTimeMillis();
+			System.out.println("Started pause timer");
+			return;
+		} else if (pauseTimer < 0) {
+			pauseTimer = 0;
+			System.out.println("Cancelled unpause timer");
+			return;
+		} else if (System.currentTimeMillis()-pauseTimer < PAUSE_DELAY) {
+			return;
+		}
+
+		if (isPaused())
+			return;
+		pauseTimer = 0;
+
+		System.out.println("Actually pausing.");
 		paused = true;
 		if (view != null)
 			view.repaint();
+
 	}
 
-	public synchronized void unpause() {
+	public synchronized void unpause(boolean delay) {
+		
+		//don't unpause until a short delay without pause
+		if (!delay) {
+			pauseTimer = 0;
+		} else if (isPaused() && pauseTimer == 0) {
+			pauseTimer = -System.currentTimeMillis();
+			System.out.println("Started unpause timer");
+			return;
+		} else if (pauseTimer > 0) {
+			pauseTimer = 0;
+			System.out.println("Cancelled pause timer");
+			return;
+		} else if (System.currentTimeMillis()+pauseTimer < PAUSE_DELAY) {
+			return;
+		}
+
+		if (!isPaused())
+			return;
+		pauseTimer = 0;
+
+		System.out.println("Actually unpausing.");
 		if (view != null)
 			view.unPaused();
 		paused = false;
+
 	}
 
 	public synchronized boolean isPaused() {
