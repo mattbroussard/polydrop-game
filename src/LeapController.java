@@ -311,7 +311,7 @@ public class LeapController extends Listener implements Runnable {
 				System.out.printf("Pointable id=%d failed length test.\n", p.id());
 				continue;
 			}
-			
+
 			//take the pointable we've seen the longest
 			if (best != null && best.timeVisible() > p.timeVisible()) {
 				System.out.printf("Pointable id=%d failed time visible test.\n", p.id());

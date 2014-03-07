@@ -276,6 +276,10 @@ public class GameController implements Runnable {
 						System.out.println("pos: "+pos.x);
 						itr.remove();
 						model.reduceHealth();
+						if(model.gameOver){
+							leaderboard.reportScore(model.getScore());
+							//return;
+						}
 						if (view != null)
 							view.notifyScore(b, -20);
 						model.world.destroyBody(b.getBody());
