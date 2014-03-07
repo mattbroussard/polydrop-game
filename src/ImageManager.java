@@ -21,7 +21,7 @@ public class ImageManager {
 			try {
 				load(name);
 			} catch (Exception e) {
-				e.printStackTrace();
+				System.out.println("Failed to load image resource "+name);
 				return new BufferedImage(1,1,BufferedImage.TYPE_INT_RGB);
 			}
 		}
