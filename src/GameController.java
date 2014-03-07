@@ -190,7 +190,13 @@ public class GameController implements Runnable {
 					Vec2 pos = b.getBody().getPosition();
 					if(pos.y < -2) {
 						// Oh no! Lose points. :(
-						view.setPointLossX(pos.x);
+						if(pos.x < -8){
+							view.setPointLossX(-8);
+						}else if(pos.x > 8){
+							view.setPointLossX(8);
+						}else{
+							view.setPointLossX(pos.x);
+						}
 						System.out.println("pos: "+pos.x);
 						itr.remove();
 						model.reduceHealth();
