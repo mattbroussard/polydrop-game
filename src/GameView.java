@@ -8,13 +8,6 @@ import java.util.*;
 
 import org.jbox2d.common.*;
 
-/* Matt TODO:
-
- - refactor out view statefulness (particularly with red flash)
- - menu implementation
-
-*/
-
 public class GameView extends JComponent implements KeyListener{
 	
 	GameModel model;
@@ -163,6 +156,7 @@ public class GameView extends JComponent implements KeyListener{
 		}
 		*/
 
+		//TODO: in the future, it might be nice if this were in its own Renderer class like the other components.
 		//red flash/gradient on bottom
 		g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
 		float maxPointLossAlpha = 80;
