@@ -173,6 +173,30 @@ public class LeapController extends Listener implements Runnable {
 
 	}
 
+	public boolean handUnusable(Hand h) {
+
+		//reject hands that are too far back
+		if (h.palmPosition().getZ() > Z_PAUSE_THRESHOLD) {
+			System.out.printf("Hand id=%d unusable! Failed Z threshold test.\n", h.id());
+			return true;
+		}
+		
+		//reject hands with 2 or fewer fingers (fists)
+		if (h.fingers().count() <= 2) {
+			System.out.printf("Hand id=%d unusable! Failed nFingers test.\n", h.id());
+			return true;
+		}
+		
+		//reject hands that are too slanted (they're likely to be fists)
+		if (Math.abs(h.palmNormal().roll()) > FIST_THRESHOLD) {
+			System.out.printf("Hand id=%d unusable! Failed fist slant test.\n", h.id());
+			return true;
+		}
+
+		return false;
+
+	}
+
 	//keep track of the most recently tracked hands and always track them.
 	//if we lose one or both, pick new ones using a simple heuristic.
 	static final int HAND_LEFT = 0;
@@ -184,13 +208,18 @@ public class LeapController extends Listener implements Runnable {
 			return null;
 
 		Hand pref = frame.hand(preferredHandIDs[which]);
-		if (pref.isValid())
+		if (pref.isValid() && !handUnusable(pref))
 			return pref;
 		preferredHandIDs[which] = -1;
 
 		Hand best = null;
 		for (Hand h : frame.hands()) {
 			
+			//if hand is designated unusable (fist, etc.) eliminate from consideration immediately
+			if (handUnusable(h)) {
+				continue;
+			}
+
 			//don't allow right and left to be the same hand
 			if (h.id() == preferredHandIDs[1-which]) {
 				System.out.printf("Hand id=%d failed uniqueness test for hand %d.\n", h.id(), which);
@@ -212,24 +241,6 @@ public class LeapController extends Listener implements Runnable {
 			//prefer frontmost hand
 			if (best != null && best.palmPosition().getZ() < h.palmPosition().getZ()) {
 				System.out.printf("Hand id=%d failed frontmost hand test.\n", h.id());
-				continue;
-			}
-			
-			//reject hands that are too far back
-			if (h.palmPosition().getZ() > Z_PAUSE_THRESHOLD) {
-				System.out.printf("Hand id=%d failed Z threshold test.\n", h.id());
-				continue;
-			}
-			
-			//reject hands with 2 or fewer fingers (fists)
-			if (h.fingers().count() <= 2) {
-				System.out.printf("Hand id=%d failed nFingers test.\n", h.id());
-				continue;
-			}
-			
-			//reject hands that are too slanted (they're likely to be fists)
-			if (Math.abs(h.palmNormal().roll()) > FIST_THRESHOLD) {
-				System.out.printf("Hand id=%d failed fist slant test.\n", h.id());
 				continue;
 			}
 
