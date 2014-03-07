@@ -9,4 +9,5 @@ lib/*.dll
 lib/*.dylib
 *.log
 *.app
+nopush
 distrib
