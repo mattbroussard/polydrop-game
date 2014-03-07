@@ -43,13 +43,13 @@ public class TextRenderer {
 			5
 		);
 
-		g2.drawStringCentered(
+		/* g2.drawStringCentered(
 			"Press [space] to play again",
 			0.3f,
 			Colors.PAUSED_TEXT,
 			8,
 			7.5f
-		);
+		); */
 
 	}
 

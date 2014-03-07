@@ -24,7 +24,9 @@ public class GameController implements Runnable {
 
 	GameModel model;
 	GameView view;
+	Leaderboard leaderboard;
 	boolean paused = false;
+	boolean usingUI = false;
 	
 	int hands;
 	
@@ -47,18 +49,33 @@ public class GameController implements Runnable {
 
 	public GameController(GameModel m) {
 		model = m;
+		leaderboard = new Leaderboard(this);
 		t = new Thread(this);
 		t.start();
 	}
 	
+	public void exitGame() {
+
+		//For now, just exit. In the future, we may have cleanup things to do first.
+		System.exit(0);
+
+	}
+
 	public void setHands(int h){
 		hands = h;
 	}
 	
 	public void addView(GameView v) {
 		view = v;
+		v.addLeaderboard(leaderboard);
 	}
 	
+	public void setUsingUI(boolean using) {
+		usingUI = using;
+		if (using && !isPaused() && !model.isGameOver())
+			pause(false);
+	}
+
 	public synchronized void pause(boolean delay) {
 
 		//don't pause until a short delay without unpause
@@ -89,6 +106,13 @@ public class GameController implements Runnable {
 
 	public synchronized void unpause(boolean delay) {
 		
+		//don't allow accidental unpauses if the user is using UI things (such as leaderboard)
+		if (usingUI) {
+			if (!isPaused())
+				pause(false);
+			return;
+		}
+
 		//don't unpause until a short delay without pause
 		if (!delay) {
 			pauseTimer = 0;
