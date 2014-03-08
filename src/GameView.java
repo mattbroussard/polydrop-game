@@ -35,13 +35,14 @@ public class GameView extends JComponent implements KeyListener{
 	static final int PAUSE_MENU_MODE_SINGLE = 2;
 	static final int PAUSE_MENU_EXIT_GAME = 3;
 	static final int PAUSE_MENU_LEADERBOARD = 4;
+	static final int PAUSE_MENU_MUTE = 5;
 
-	static final int LEADERBOARD_MENU_CLEAR = 5;
-	static final int LEADERBOARD_MENU_EXIT = 6;
+	static final int LEADERBOARD_MENU_CLEAR = 6;
+	static final int LEADERBOARD_MENU_EXIT = 7;
 
-	static final int GAMEOVER_MENU_NEWGAME = 7;
-	static final int GAMEOVER_MENU_EXIT_GAME = 8;
-	static final int GAMEOVER_MENU_LEADERBOARD = 9;
+	static final int GAMEOVER_MENU_NEWGAME = 8;
+	static final int GAMEOVER_MENU_EXIT_GAME = 9;
+	static final int GAMEOVER_MENU_LEADERBOARD = 10;
 
 	public GameView(GameModel m, GameController c) {
 
@@ -55,8 +56,9 @@ public class GameView extends JComponent implements KeyListener{
 		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_MODE_FREE, "Free Play", "freeMode", 60, 20, Colors.MENU_MODE_FREE_SELECTED, Colors.MENU_MODE_FREE_ACTIVE));
 		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_MODE_DUAL, "Two Hands", "dualMode", 80, 20, Colors.MENU_MODE_DUAL_SELECTED, Colors.MENU_MODE_DUAL_ACTIVE));
 		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_MODE_SINGLE, "One Hand", "singleMode", 100, 20, Colors.MENU_MODE_SINGLE_SELECTED, Colors.MENU_MODE_SINGLE_ACTIVE));
-		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_EXIT_GAME, "Exit Game", "exit", 250, 20));
-		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_LEADERBOARD, "High Scores", "leaderboard", 270, 20));
+		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_EXIT_GAME, "Exit Game", "exit", 240, 20));
+		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_LEADERBOARD, "High Scores", "leaderboard", 260, 20));
+		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_MUTE, "Mute", "mute", 280, 20));
 
 		//Constuct game over menu
 		gameOverMenu = new RadialMenu(8, 11.5f, this);
@@ -81,6 +83,7 @@ public class GameView extends JComponent implements KeyListener{
 	
 	public void addLeaderboard(Leaderboard l) {
 		leaderboard = l;
+		leaderboard.view = this;
 	}
 
 	public void notifyScore(DrawableBody db, int scoreDelta) {
@@ -223,21 +226,20 @@ public class GameView extends JComponent implements KeyListener{
 
 		}
 
+		//draw the leaderboard UI if we're using it
+		if (leaderboard != null && usingLeaderboard)
+			leaderboard.draw(g2);
 
 		//draw the active menu, if there is one
 		RadialMenu menu = getActiveMenu();
 		if (menu != null)
 			menu.draw(g2);
-
-		//draw the leaderboard UI if we're using it
-		if (leaderboard != null && usingLeaderboard)
-			leaderboard.draw(g2);
 		
 	}
 
 	public void menuItemSelected(int id) {
 
-		SoundManager.play("menuChoice");
+		
 
 		switch (id) {
 			case PAUSE_MENU_MODE_FREE:
@@ -264,6 +266,12 @@ public class GameView extends JComponent implements KeyListener{
 				//temp
 				SoundManager.play("pointGain");
 				model.addPoints(10000);
+				
+				break;
+			case PAUSE_MENU_MUTE:
+				SoundManager.mute();
+				String mute = SoundManager.isMute() ? "unmute" : "mute";
+				pausedMenu.getItem(id).changeIcon(mute);
 				
 				break;
 
@@ -295,6 +303,8 @@ public class GameView extends JComponent implements KeyListener{
 			default:
 				return;
 		}
+		
+		SoundManager.play("menuChoice");
 
 	}
 

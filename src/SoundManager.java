@@ -5,6 +5,9 @@ import javax.sound.sampled.*;
 import java.util.HashMap;
 
 public class SoundManager {
+	
+	private static boolean muted = false;
+	
 	private static HashMap<String, Clip> clips = new HashMap<String, Clip>();
 
 	private static void load(String clipName) throws Exception {
@@ -23,6 +26,9 @@ public class SoundManager {
 	}
 
 	public static void play(String clipName) {
+		if(muted){
+			return;
+		}
 		if(!clips.containsKey(clipName)) {
 			try {
 				load(clipName);
@@ -34,6 +40,13 @@ public class SoundManager {
 		Clip clip = clips.get(clipName);
 		clip.setFramePosition(0);
 		clip.start();
+	}
+	
+	public static void mute(){
+		muted = !muted;
+	}
+	public static boolean isMute(){
+		return muted;
 	}
 
 }

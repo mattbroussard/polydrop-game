@@ -34,6 +34,9 @@ public class RadialMenu {
 		Collections.sort(items);
 
 	}
+	public RadialMenuItem getItem(int id){
+		return items.get(id);
+	}
 
 	public float distance(float x1, float y1, float x2, float y2) {
 		return (float)Math.sqrt(Math.pow(x1-x2, 2) + Math.pow(y1-y2, 2));
@@ -58,12 +61,12 @@ public class RadialMenu {
 		float theta = (float)Math.atan2(-dy, dx) / (float)Math.PI * 180f;
 		if (theta < 0) theta += 360;
 
-		System.out.printf("pointer has r=%.3f, theta=%.3f\n", r, theta);
+		//System.out.printf("pointer has r=%.3f, theta=%.3f\n", r, theta);
 
 		//pointer isn't where there could be a selection
 		if (r < 2.8f || r > 4.5f) {
 
-			System.out.println("-- not selection candidate");
+			//System.out.println("-- not selection candidate");
 			selectExtent = 0;
 			selected = null;
 			return;
@@ -75,7 +78,7 @@ public class RadialMenu {
 		
 			if (r < x || theta < selected.startAngle || theta > selected.startAngle+selected.arcAngle) {
 				
-				System.out.println("-- selection cancelled");
+				//System.out.println("-- selection cancelled");
 				selected = null;
 				selectExtent = 0;
 				return;
@@ -87,14 +90,14 @@ public class RadialMenu {
 			if (selectExtent > 1.2f) {
 
 				parent.menuItemSelected(selected.id);
-				System.out.println("-- selection successful, callback would be called.");
+				//System.out.println("-- selection successful, callback would be called.");
 				selected = null;
 				selectExtent = 0;
 				return;
 
 			}
 
-			System.out.println("-- selection continues");
+			//System.out.println("-- selection continues");
 			return;
 
 		}
@@ -106,7 +109,7 @@ public class RadialMenu {
 
 				if (theta > candidate.startAngle && theta < candidate.startAngle+candidate.arcAngle) {
 
-					System.out.println("-- found a selection");
+					//System.out.println("-- found a selection");
 					selected = candidate;
 					selectExtent = r - 2.8f;
 					return;
@@ -115,7 +118,7 @@ public class RadialMenu {
 
 			}
 			
-			System.out.println("-- tried finding a selection, but failed.");
+			//System.out.println("-- tried finding a selection, but failed.");
 
 		}
 

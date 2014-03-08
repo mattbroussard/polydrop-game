@@ -276,19 +276,21 @@ public class GameController implements Runnable {
 						System.out.println("pos: "+pos.x);
 						itr.remove();
 						model.reduceHealth();
-						if(model.gameOver){
-							leaderboard.reportScore(model.getScore());
-							//return;
-						}
 						if (view != null)
 							view.notifyScore(b, -20);
 						model.world.destroyBody(b.getBody());
 						model.addPoints(-20);
 						SoundManager.play("pointLoss");
+						
 					}
 				}
 			}
-			
+
+			if(model.isGameOver()){
+				//reentrancy prevented by isGameOver spin check at top of loop
+				leaderboard.reportScore(model.getScore());
+			}
+
 			if (view!=null)
 				view.repaint();
 			time = now;

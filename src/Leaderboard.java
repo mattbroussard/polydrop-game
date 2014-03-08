@@ -3,52 +3,97 @@ import javax.swing.JOptionPane;
 import java.awt.Color;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import java.util.*;
 
 public class Leaderboard {
 	
-	Preferences prefs = Preferences.userRoot();//What should the parameter be?
-	
+	static final int N_ENTRIES = 10;
+
+	Preferences prefs = Preferences.userRoot();
+	ArrayList<Entry> topList = new ArrayList<Entry>();
 	
 	GameController controller;
-	String lastPlayerName = null;
+	GameView view;
 
 	public Leaderboard(GameController c) {
 		this.controller = c;
-		//TODO Dallas: implement
+		topList = new ArrayList<Entry>();
+		readPrefs();
 	}
 
-	public String promptForName(String defaultName) {
-		defaultName = (defaultName == null) ? "" : "defaultName";
+	public String promptForName(int score, int place) {
 		controller.setUsingUI(true);
-		String s = JOptionPane.showInputDialog("Congratulations on your high score! What is your name?", defaultName);
-		lastPlayerName = defaultName;
+		String msg = String.format("New high score of %d (placed #%d)!\nWhat is your name?", score, place);
+		String s = JOptionPane.showInputDialog(view, msg, "");
 		controller.setUsingUI(false);
 		return s;
 	}
 
-	public void reportScore(int score) {
-		for(int i = 0; i < 20; i++){
-			System.out.println("REPORT SCORE");
-		}
+	public void writePrefs() {
 
-		//final String name = lastPlayerName == null ? promptForName("") : lastPlayerName;
-		final String name = promptForName(lastPlayerName);
-		//TODO Dallas: implement
-		if(prefs.getInt(name, -1) == -1){//check to see if this person doesn't already has a score
-			prefs.putInt(lastPlayerName, score);
-		}else{
-			if(prefs.getInt(name, -1) > score){//replace the players old high score
-				prefs.remove(name);
-				prefs.putInt(name, score);
-			}
+		for (int i = 0; i < topList.size(); i++) {
+			Entry e = topList.get(i);
+			prefs.put("name_"+(i+1), e.name);
+			prefs.putInt("score_"+(i+1), e.score);
 		}
 
 	}
 
+	public void readPrefs() {
+
+		for (int i = 1; i <= N_ENTRIES; i++) {
+
+			String name = prefs.get("name_"+i, null);
+			int score = prefs.getInt("score_"+i, Integer.MIN_VALUE);
+			
+			if (name == null || score == Integer.MIN_VALUE)
+				break;
+
+			Entry e = new Entry(name, score);
+			topList.add(e);
+
+		}
+
+		//should already be sorted, but maybe someone tampered with the prefs file?
+		Collections.sort(topList);
+
+	}
+
+	public void reportScore(int score) {
+		
+		System.out.printf("reportScore(%d) called.\n", score);
+
+		Entry entry = new Entry(null, score);
+
+		int insertIndex = -Collections.binarySearch(topList, entry)-1;
+		if (insertIndex < N_ENTRIES) {
+			
+			String name = promptForName(score, insertIndex+1);
+			entry.name = name;
+
+			topList.add(insertIndex, entry);
+			while (topList.size() > N_ENTRIES)
+				topList.remove(topList.size()-1);
+
+		}
+
+		writePrefs();
+		System.out.println("end reportScore");
+
+	}
+
 	public void clearLeaderboard() {
-		//TODO Dallas: implement
+		
+		//prevent accidental clear
+		controller.setUsingUI(true);
+		int confirmation = JOptionPane.showConfirmDialog(view, "Are you sure you want to clear all high scores?", "Clear High Scores", JOptionPane.OK_CANCEL_OPTION);
+		controller.setUsingUI(false);
+		if (confirmation != JOptionPane.OK_OPTION)
+			return;
+
 		try {
 			prefs.clear();
+			topList = new ArrayList<Entry>();
 		} catch (BackingStoreException e) {
 			e.printStackTrace();
 		}
@@ -57,32 +102,30 @@ public class Leaderboard {
 
 	public void draw(GraphicsWrapper g2) {
 		
-		int[] topFive = {0,0,0,0,0};
-		String[] names = null;
-		try {
-			names = prefs.keys();
-		} catch (BackingStoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		for(int i = 0; i < names.length; i++){
-			int score = prefs.getInt(names[i], 0);
-			for(int j = 0; j < topFive.length; j++){
-				if(score > topFive[j]){		
-					topFive[j] = score;
-				}
+		if (topList.size()>0) {
+			for (int i = 0; i < topList.size(); i++) {
+				Entry e = topList.get(i);
+				String msg = String.format("#%d: %s - %d points", i+1, e.name, e.score);
+				g2.drawStringCentered(msg, 0.5f, Colors.LEADERBOARD, 8, 1.8f + 0.6f*i);
 			}
-		}
-		
-
-		//TODO Dallas: implement
-		for(int i = 0; i < topFive.length; i ++){
-			//g2.drawStringCentered("Placeholder!", 1, Color.white, 8, 5);
-			g2.drawStringCentered(topFive[i]+"", 1, Color.white, 8, (float) (3+.85*i));
-
+		} else {
+			g2.drawStringCentered("No High Scores", 1, Colors.LEADERBOARD, 8, 5);
 		}
 
 	}
-	
+	private class Entry implements Comparable<Entry> {
+		String name;
+		int score;
+		public Entry(String name, int score) {
+			this.name = name;
+			this.score = score;
+		}
+		public int compareTo(Entry other) {
+			return other.score - this.score; //intentionally backwards comparator
+		}
+		public boolean equals(Object other) {
+			return this == other;
+		}
+	}
 
 }

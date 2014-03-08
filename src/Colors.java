@@ -23,6 +23,7 @@ public class Colors {
 	public static final Color PAUSED_TEXT = new Color(150,150,150);
 	public static final Color PLATFORM = Color.WHITE;
 	public static final Color SCORE = Color.WHITE;
+	public static final Color LEADERBOARD = Color.WHITE;
 
 	public static final Color REWARD = Color.GREEN;
 	public static final Color PENALTY = Color.RED;

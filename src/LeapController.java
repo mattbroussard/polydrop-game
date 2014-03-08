@@ -177,19 +177,19 @@ public class LeapController extends Listener implements Runnable {
 
 		//reject hands that are too far back
 		if (h.palmPosition().getZ() > Z_PAUSE_THRESHOLD) {
-			System.out.printf("Hand id=%d unusable! Failed Z threshold test.\n", h.id());
+			////System.out.printf("Hand id=%d unusable! Failed Z threshold test.\n", h.id());
 			return true;
 		}
 		
 		//reject hands with 2 or fewer fingers (fists)
 		if (h.fingers().count() <= 2) {
-			System.out.printf("Hand id=%d unusable! Failed nFingers test.\n", h.id());
+			////System.out.printf("Hand id=%d unusable! Failed nFingers test.\n", h.id());
 			return true;
 		}
 		
 		//reject hands that are too slanted (they're likely to be fists)
 		if (Math.abs(h.palmNormal().roll()) > FIST_THRESHOLD) {
-			System.out.printf("Hand id=%d unusable! Failed fist slant test.\n", h.id());
+			////System.out.printf("Hand id=%d unusable! Failed fist slant test.\n", h.id());
 			return true;
 		}
 
@@ -222,25 +222,25 @@ public class LeapController extends Listener implements Runnable {
 
 			//don't allow right and left to be the same hand
 			if (h.id() == preferredHandIDs[1-which]) {
-				System.out.printf("Hand id=%d failed uniqueness test for hand %d.\n", h.id(), which);
+				////System.out.printf("Hand id=%d failed uniqueness test for hand %d.\n", h.id(), which);
 				continue;
 			}
 
 			//prefer leftmost hand if which=0
 			if (which == 0 && best != null && best.palmPosition().getX() < h.palmPosition().getX()) {
-				System.out.printf("Hand id=%d failed leftmost hand test.\n", h.id());
+				////System.out.printf("Hand id=%d failed leftmost hand test.\n", h.id());
 				continue;
 			}
 			
 			//prefer rightmost hand if which=1
 			if (which == 1 && best != null && best.palmPosition().getX() > h.palmPosition().getX()) {
-				System.out.printf("Hand id=%d failed rightmost hand test.\n", h.id());
+				////System.out.printf("Hand id=%d failed rightmost hand test.\n", h.id());
 				continue;
 			}
 			
 			//prefer frontmost hand
 			if (best != null && best.palmPosition().getZ() < h.palmPosition().getZ()) {
-				System.out.printf("Hand id=%d failed frontmost hand test.\n", h.id());
+				////System.out.printf("Hand id=%d failed frontmost hand test.\n", h.id());
 				continue;
 			}
 
@@ -278,7 +278,7 @@ public class LeapController extends Listener implements Runnable {
 
 			//don't take non-finger pointables
 			if (!p.isFinger()) {
-				System.out.printf("Pointable id=%d failed finger/tool test.\n", p.id());
+				////System.out.printf("Pointable id=%d failed finger/tool test.\n", p.id());
 				continue;
 			}
 			
@@ -290,13 +290,13 @@ public class LeapController extends Listener implements Runnable {
 			
 			//don't take thumbs if we can avoid it -- you can see them even when making a fist.
 			if (Math.abs(p.stabilizedTipPosition().yaw()) > THUMB_YAW_THRESHOLD || p.length() < THUMB_LENGTH_THRESHOLD) {
-				System.out.printf("Pointable id=%d failed thumb yaw/length test.\n", p.id());
+				////System.out.printf("Pointable id=%d failed thumb yaw/length test.\n", p.id());
 				continue;
 			}
 			
 			//if there are multiple hands, take the pointable on the hand closest to the x center
 			if (best != null && Math.abs(best.hand().palmPosition().getX()) < Math.abs(p.hand().palmPosition().getX())) {
-				System.out.printf("Pointable id=%d failed hand x-centrality test test.\n", p.id());
+				////System.out.printf("Pointable id=%d failed hand x-centrality test test.\n", p.id());
 				continue;
 			}
 			
@@ -308,13 +308,13 @@ public class LeapController extends Listener implements Runnable {
 			
 			//take the longest pointable
 			if (best != null && best.length() > p.length()) {
-				System.out.printf("Pointable id=%d failed length test.\n", p.id());
+				////System.out.printf("Pointable id=%d failed length test.\n", p.id());
 				continue;
 			}
 
 			//take the pointable we've seen the longest
 			if (best != null && best.timeVisible() > p.timeVisible()) {
-				System.out.printf("Pointable id=%d failed time visible test.\n", p.id());
+				////System.out.printf("Pointable id=%d failed time visible test.\n", p.id());
 				continue;
 			}
 
@@ -344,7 +344,7 @@ public class LeapController extends Listener implements Runnable {
 
 		//if we ran off the edge, don't consider this pointable
 		if (x == 0f || y == 0f || x == 1f || y == 1f) {
-			System.out.printf("rejecting preferred pointable id=%d because over/underflow\n", pointer.id());
+			////System.out.printf("rejecting preferred pointable id=%d because over/underflow\n", pointer.id());
 			return;
 		}
 

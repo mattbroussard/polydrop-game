@@ -41,6 +41,10 @@ public class RadialMenuItem implements Comparable<RadialMenuItem> {
 		if (flip) g2.restore();
 
 	}
+	
+	public void changeIcon(String icon){
+		this.icon = icon;
+	}
 
 	//this was added to allow the list of items to be sorted by startAngle
 	public int compareTo(RadialMenuItem other) {
