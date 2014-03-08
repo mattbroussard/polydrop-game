@@ -184,10 +184,13 @@ public class GameView extends JComponent implements KeyListener{
 		if (!usingLeaderboard) {
 
 			//Draw platform
-			Platform rp = model.getRightPlatform();
-			Platform lp = model.getLeftPlatform();
-			BodyRenderer.drawBody(lp, g2, paused);
-			BodyRenderer.drawBody(rp, g2, paused);
+			if (model.getGameMode() == GameController.ONE_HAND) {
+				BodyRenderer.drawBody(model.getPlatform(), g2, paused);
+			}
+			else if (model.getGameMode() == GameController.TWO_HANDS) {
+				BodyRenderer.drawBody(model.getRightPlatform(), g2, paused);
+				BodyRenderer.drawBody(model.getLeftPlatform(),  g2, paused);
+			}
 			
 			//Draw blocks
 			ArrayList<DrawableBody> blocks = model.getBlocks();

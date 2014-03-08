@@ -9,9 +9,10 @@ public class Platform implements DrawableBody {
 	private Body body;
 	private Fixture fixture;
 	private Color color;
+	private BodyDef bdef;
 	
 	public Platform(World world, Color debugColor) {
-		BodyDef bdef = new BodyDef();
+		bdef = new BodyDef();
 		bdef.type = BodyType.KINEMATIC;
 		bdef.position.set(0,2);
 		body = world.createBody(bdef);
@@ -49,5 +50,9 @@ public class Platform implements DrawableBody {
 
 	public long getExpiration() {
 		return -1000;
+	}
+
+	public BodyDef getBodyDef() {
+		return this.bdef;
 	}
 }

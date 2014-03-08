@@ -29,6 +29,7 @@ public class GameModel {
 		rp = new Platform(world);
 		lp = new Platform(world);
 		platform = new Platform(world);
+		setGameMode(GameController.ONE_HAND);
 	}
 
 	public int getGameMode() {
@@ -37,6 +38,16 @@ public class GameModel {
 
 	public void setGameMode(int newGameMode) {
 		gameMode = newGameMode;
+		if( gameMode == GameController.ONE_HAND ) {
+			world.destroyBody(rp.getBody());
+			world.destroyBody(lp.getBody());
+			world.createBody(platform.getBodyDef());
+		}
+		else if( gameMode == GameController.TWO_HANDS ) {
+			world.destroyBody(platform.getBody());
+			world.createBody(rp.getBodyDef());
+			world.createBody(lp.getBodyDef());
+		}
 	}
 	
 	public int getScore() {
@@ -65,6 +76,9 @@ public class GameModel {
 		if(score > maxScore) maxScore = score;
 	}
 
+	public Platform getPlatform() {
+		return platform;
+	}
 	public Platform getRightPlatform(){
 		return rp;
 	}
