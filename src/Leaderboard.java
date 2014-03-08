@@ -73,11 +73,19 @@ public class Leaderboard {
 		
 		System.out.printf("reportScore(%d) called.\n", score);
 
+		if (!isAllowedHighScore()) {
+			System.out.println("...but not allowed to be on leaderboard!");
+			SoundManager.play("gameOver");
+			return;
+		}
+
 		Entry entry = new Entry(null, score);
 
 		int insertIndex = -Collections.binarySearch(topList, entry)-1;
 		if (insertIndex < N_ENTRIES) {
 			
+			SoundManager.play("highScore");
+
 			String name = promptForName(score, insertIndex+1);
 			entry.name = name;
 
@@ -85,9 +93,12 @@ public class Leaderboard {
 			while (topList.size() > N_ENTRIES)
 				topList.remove(topList.size()-1);
 
+			writePrefs();
+
+		} else {
+			SoundManager.play("gameOver");
 		}
 
-		writePrefs();
 		System.out.println("end reportScore");
 
 	}

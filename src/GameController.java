@@ -298,7 +298,7 @@ public class GameController implements Runnable {
 				}
 			}
 
-			if(model.isGameOver() && leaderboard.isAllowedHighScore()){
+			if(model.isGameOver()){
 				//reentrancy prevented by isGameOver spin check at top of loop
 				leaderboard.reportScore(model.getScore());
 			}
