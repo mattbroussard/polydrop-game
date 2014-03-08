@@ -15,7 +15,7 @@ public class LeapController extends Listener implements Runnable {
 
 	static final double SPACE_WIDTH = 500f;
 	static final double SPACE_HEIGHT = 500f;
-	static final double FIST_ROLL_THRESHOLD = Math.PI / 6f;
+	static final double[] FIST_ROLL_THRESHOLDS = {Math.PI / 6f, Math.PI * 0.45f};
 	static final double THUMB_YAW_THRESHOLD = 65f / 180f * Math.PI;
 	static final double THUMB_LENGTH_THRESHOLD = 30;
 	static final double Z_PAUSE_THRESHOLD = 175f;
@@ -54,11 +54,20 @@ public class LeapController extends Listener implements Runnable {
 	int lastHand = -1;
 	public void processFrameForPlatform(Frame frame) {
 
-		HandList hands = frame.hands();
-/*		Hand rightHand = getPreferredHand(frame, HAND_RIGHT);
-		Hand leftHand = getPreferredHand(frame, HAND_LEFT);*/
+//		HandList hands = frame.hands();
+//		System.out.println("Number of hands = "+ hands.count());
+		Hand rightHand = getPreferredHand(frame, HAND_RIGHT);
+		Hand leftHand = getPreferredHand(frame, HAND_LEFT);
+		/*
 		Hand rightHand = handUnusable(hands.get(0)) ? null : hands.get(0);
+		if( rightHand == null ) {
+			System.out.println("rightHand failed");
+		}
 		Hand leftHand  = handUnusable(hands.get(1)) ? null : hands.get(1);
+		if( rightHand == null ) {
+			System.out.println("rightHand failed");
+		}
+		*/
 		Hand primaryHand = getPrimaryHand(leftHand, rightHand);
 /*		System.out.println("Right hand: "+rightHand.toString());
 		System.out.println("Left hand: "+leftHand.toString());*/
@@ -123,25 +132,39 @@ public class LeapController extends Listener implements Runnable {
 
 	}
 
+	private boolean withinPauseBounds(Hand h) {
+		double theta = Math.abs(h.palmNormal().roll());
+		if( theta > 90 ) {
+			theta = 180 - theta;
+		}
+		return theta < FIST_ROLL_THRESHOLDS[0] || theta > FIST_ROLL_THRESHOLDS[1];
+	}
+
 	public boolean handUnusable(Hand h) {
 		
 		//Check to see if hand is in frame
-		if(h.toString().equals("Invalid Hand")){
+		if(h.toString().equals("Invalid Hand")) {
+			System.out.println("\tInvalid Hand");
 			return true;
 		}
 		
 		//reject hands that are too far back
 		if (h.palmPosition().getZ() > Z_PAUSE_THRESHOLD) {
-			System.out.printf("Hand id=%d unusable! Failed Z threshold test.\n", h.id());
+			System.out.printf("\tHand id=%d unusable! Failed Z threshold test.\n", h.id());
 			return true;
 		}
 		
 		//reject hands with 2 or fewer fingers (fists)-- unless slanted enough that we think we're trying to do it
 		//had removed this, but was in end-hackathon good state so reviving
-		System.out.println("h.palmNormal().rool() = "+ h.palmNormal().roll());
-		if (h.fingers().count() <= 2 && Math.abs(h.palmNormal().roll()) < FIST_ROLL_THRESHOLD) {
-			System.out.printf("Hand id=%d unusable! Failed nFingers test.\n", h.id());
-			return true;
+		if (h.fingers().count() <= 2) {
+			if (game.isPaused()) {
+				System.out.printf("\tHand id=%d unusable! Failed nFingers test.\n", h.id());
+				return true;
+			}
+			else if (withinPauseBounds(h)) {
+				System.out.printf("\tHand id=%d unusable! Failed nFingers test.\n", h.id());
+				return true;
+			}
 		}
 		
 		//reject hands that are too slanted (they're likely to be fists)
