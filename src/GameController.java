@@ -32,6 +32,7 @@ public class GameController implements Runnable {
 	int hands;
 	
     //final int timesToSpawn[] = {0,1000,600,400,300,250,200,150,150};
+	final float timesToGainHealth[] = {0,1.5f,1,.75f,.5f,.4f,.35f,.3f,.25f}; //in seconds
 	final int timesToSpawn[] = {0,1000,800,650,500,450,375,300,250};
 	final int scoreNeededToLevel[] = {0,80,200,500,1000,2000,3500,5500};
 	final int distributions[][] = {	{0}, //this will never run. Never on level '0'
@@ -226,7 +227,7 @@ public class GameController implements Runnable {
 			
 			// restore health
 			now = System.currentTimeMillis();
-			if(now - healthTime >= 0.5*1000) {
+			if(now - healthTime >= 1000 * timesToGainHealth[model.getLevel()]) {
 				model.increaseHealth();
 				healthTime = now;
 			}
