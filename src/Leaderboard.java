@@ -14,11 +14,21 @@ public class Leaderboard {
 	
 	GameController controller;
 	GameView view;
+	
+	private boolean allowedHighScore = true;
 
 	public Leaderboard(GameController c) {
 		this.controller = c;
 		topList = new ArrayList<Entry>();
 		readPrefs();
+	}
+	
+	public void setAllowedHighScore(boolean b){
+		allowedHighScore = b;
+	}
+	
+	public boolean isAllowedHighScore(){
+		return allowedHighScore;
 	}
 
 	public String promptForName(int score, int place) {

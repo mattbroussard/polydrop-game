@@ -298,7 +298,7 @@ public class GameController implements Runnable {
 				}
 			}
 
-			if(model.isGameOver()){
+			if(model.isGameOver() && leaderboard.isAllowedHighScore()){
 				//reentrancy prevented by isGameOver spin check at top of loop
 				leaderboard.reportScore(model.getScore());
 			}
@@ -361,6 +361,8 @@ public class GameController implements Runnable {
 		if (!model.isGameOver() || usingUI)
 			return;
 		model = new GameModel();
+		leaderboard.setAllowedHighScore(true);
+		
 		if (view != null) {
 			view.model = model;
 			view.pausedMenu.setActiveItem(GameView.PAUSE_MENU_MODE_SINGLE);
