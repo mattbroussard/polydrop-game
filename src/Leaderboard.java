@@ -84,6 +84,12 @@ public class Leaderboard {
 
 	public void clearLeaderboard() {
 		
+		//FOR DRINKTANK DEMO ONLY
+		controller.setUsingUI(true);
+		JOptionPane.showMessageDialog(view, "Sorry, this feature is disabled for the demo. Play fairly!", "No Cheating", JOptionPane.ERROR_MESSAGE);
+		controller.setUsingUI(false);
+		if (true) return;
+
 		//prevent accidental clear
 		controller.setUsingUI(true);
 		int confirmation = JOptionPane.showConfirmDialog(view, "Are you sure you want to clear all high scores?", "Clear High Scores", JOptionPane.OK_CANCEL_OPTION);
