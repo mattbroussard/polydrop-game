@@ -15,7 +15,6 @@ public class GameView extends JComponent implements KeyListener{
 	Leaderboard leaderboard;
 	LinkedList<Notification> notifs;
 	
-	
 	boolean recentPointLoss = false;
 	int pointLossAlpha = 0;
 	
@@ -61,6 +60,7 @@ public class GameView extends JComponent implements KeyListener{
 		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_LEADERBOARD, "High Scores", "leaderboard", 260, 20));
 		muteMenuItem = new RadialMenuItem(PAUSE_MENU_MUTE, "Mute", "mute", 280, 20);
 		pausedMenu.addItem(muteMenuItem);
+		pausedMenu.setActiveItem(PAUSE_MENU_MODE_SINGLE);
 
 		//Constuct game over menu
 		gameOverMenu = new RadialMenu(8, 11.5f, this);
@@ -218,7 +218,7 @@ public class GameView extends JComponent implements KeyListener{
 
 		//Draw health bar
 		if( controller.getGameMode() != GameController.FREE_PLAY ) {
-			HealthRenderer.drawHealthBar(g2, model.getHealth());
+			HealthRenderer.drawHealthBar(g2, model.getHealth(), paused);
 		}
 
 		//Handle notifications -- unfortunately, one thing that gives the view a bit of statefulness...
