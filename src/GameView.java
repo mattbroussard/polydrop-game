@@ -224,15 +224,14 @@ public class GameView extends JComponent implements KeyListener{
 
 		}
 
+		//draw the leaderboard UI if we're using it
+		if (leaderboard != null && usingLeaderboard)
+			leaderboard.draw(g2);
 
 		//draw the active menu, if there is one
 		RadialMenu menu = getActiveMenu();
 		if (menu != null)
 			menu.draw(g2);
-
-		//draw the leaderboard UI if we're using it
-		if (leaderboard != null && usingLeaderboard)
-			leaderboard.draw(g2);
 		
 	}
 
