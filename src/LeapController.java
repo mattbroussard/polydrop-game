@@ -119,17 +119,20 @@ public class LeapController extends Listener implements Runnable {
 			return true;
 		}
 		
-		//reject hands with 2 or fewer fingers (fists)
-		if (h.fingers().count() <= 2) {
+		//reject hands with 2 or fewer fingers (fists)-- unless slanted enough that we think we're trying to do it
+		//had removed this, but was in end-hackathon good state so reviving
+		if (h.fingers().count() <= 2 && Math.abs(h.palmNormal().roll()) < FIST_ROLL_THRESHOLD) {
 			System.out.printf("Hand id=%d unusable! Failed nFingers test.\n", h.id());
 			return true;
 		}
 		
 		//reject hands that are too slanted (they're likely to be fists)
+		/*
 		if (Math.abs(h.palmNormal().roll()) > FIST_ROLL_THRESHOLD) {
 			System.out.printf("Hand id=%d unusable! Failed fist roll test.\n", h.id());
 			return true;
 		}
+		*/
 
 		return false;
 
@@ -160,7 +163,7 @@ public class LeapController extends Listener implements Runnable {
 
 			//don't allow right and left to be the same hand
 			if (h.id() == preferredHandIDs[1-which]) {
-				System.out.printf("Hand id=%d failed uniqueness test for hand %d.\n", h.id(), which);
+				System.out.printf("Hand id=%d failed uniqueness test for %s hand.\n", h.id(), which==0?"LEFT":"RIGHT");
 				continue;
 			}
 
