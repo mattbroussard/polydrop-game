@@ -34,6 +34,9 @@ public class GraphicsWrapper {
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+		g2.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
+		g2.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+		g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
 		//reset transformation
 		prepare(TRANSFORM_STANDARD);
@@ -113,11 +116,17 @@ public class GraphicsWrapper {
 
 		float scale = getCurrentScale();
 
+		Paint p = new TexturePaint(image, new Rectangle2D.Float(image.getWidth()/2f, image.getHeight()/2f, image.getWidth(), image.getHeight()));
+		g2.setPaint(p);
+		g2.fillRect((int)Math.round(x - image.getWidth()/2), (int)Math.round(y - image.getHeight()/2), image.getWidth(), image.getHeight());
+		
+		/*
 		AffineTransform at = new AffineTransform();
 		at.setToIdentity();
 		at.concatenate(AffineTransform.getTranslateInstance(-image.getWidth()/2f, -image.getHeight()/2f));
 
 		g2.drawImage(image, at, null);
+		*/
 
 	}
 

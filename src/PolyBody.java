@@ -25,7 +25,7 @@ public class PolyBody implements DrawableBody {
 		for (int i = 0; i < sides; i++) {
 			double theta = 2 * Math.PI / sides * i;
 			
-//			float r = 0.50f;
+			//float r = 0.50f;
 			verts[i] = new Vec2((float)Math.cos(theta) * r, (float)Math.sin(theta) * r);
 		}
 		shape.set(verts, sides);
@@ -47,12 +47,6 @@ public class PolyBody implements DrawableBody {
 	public Body getBody() {
 		return this.body;
 	}
-
-	/*
-	public void attach(PolyBody other) {
-		Fixture fix = other.getBody().getFixtureList();
-		body.createFixture(fix.getShape(), fix.getDensity());
-	} */
 
 	public Fixture getFixture() {
 		return this.fixture;
