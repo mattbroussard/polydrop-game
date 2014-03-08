@@ -184,7 +184,8 @@ public class GameView extends JComponent implements KeyListener{
 		if (!usingLeaderboard) {
 
 			//Draw platform(s)
-			if (model.getGameMode() == GameController.ONE_HAND) {
+			if (model.getGameMode() == GameController.ONE_HAND ||
+				model.getGameMode() == GameController.FREE_PLAY) {
 				BodyRenderer.drawBody(model.getPlatform(), g2, paused);
 			}
 			else if (model.getGameMode() == GameController.TWO_HANDS) {
@@ -216,7 +217,9 @@ public class GameView extends JComponent implements KeyListener{
 		LevelRenderer.drawLevelIndicator(g2, model.getLevel(), controller.calculateLevelProgress(), paused);
 
 		//Draw health bar
-		HealthRenderer.drawHealthBar(g2, model.getHealth());
+		if( controller.getGameMode() != GameController.FREE_PLAY ) {
+			HealthRenderer.drawHealthBar(g2, model.getHealth());
+		}
 
 		//Handle notifications -- unfortunately, one thing that gives the view a bit of statefulness...
 		synchronized (notifs) {
@@ -247,9 +250,11 @@ public class GameView extends JComponent implements KeyListener{
 		switch (id) {
 			case PAUSE_MENU_MODE_FREE:
 				pausedMenu.setActiveItem(PAUSE_MENU_MODE_FREE);
-
+				if( model.getGameMode() != GameController.FREE_PLAY ) {
+					model.setGameMode(GameController.FREE_PLAY);
+				}
 				//temp
-				SoundManager.play("pointGain");
+				//SoundManager.play("pointGain");
 				
 				break;
 
@@ -260,7 +265,7 @@ public class GameView extends JComponent implements KeyListener{
 				}
 
 				//temp
-				SoundManager.play("pointGain");
+				// SoundManager.play("pointGain");
 				
 				break;
 
@@ -271,7 +276,7 @@ public class GameView extends JComponent implements KeyListener{
 				}
 
 				//temp
-				SoundManager.play("pointGain");
+				//SoundManager.play("pointGain");
 				
 				break;
 			case PAUSE_MENU_MUTE:

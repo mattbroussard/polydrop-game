@@ -34,9 +34,35 @@ public class GameModel {
 	}
 
 	public void setGameMode(int newGameMode) {
+		if( gameMode == newGameMode ) {
+			return;
+		}
 		synchronized (world) {
+
+			// Just set gameMode variable. Done't mess with Platform objects.
+			if( gameMode    == GameController.ONE_HAND && 
+				newGameMode == GameController.FREE_PLAY ) {
+				gameMode = newGameMode;
+				return;
+			}
+
+			// Just set gameMode variable. Done't mess with Platform objects.
+			if( gameMode    == GameController.FREE_PLAY && 
+				newGameMode == GameController.ONE_HAND ) {
+				gameMode = newGameMode;
+				return;
+			}
+
 			gameMode = newGameMode;
-			if( gameMode == GameController.ONE_HAND ) {
+			if( gameMode == GameController.TWO_HANDS ) {
+				if( platform != null ) {
+					world.destroyBody(platform.getBody());
+				}
+				rp = new Platform(world, Platform.RIGHT);
+				lp = new Platform(world, Platform.LEFT);
+			}
+			else {
+				// ONE_HAND or FREE_PLAY
 				if( rp != null ) {
 					world.destroyBody(rp.getBody());
 				}
@@ -44,13 +70,6 @@ public class GameModel {
 					world.destroyBody(lp.getBody());
 				}
 				platform = new Platform(world, Platform.FULL);
-			}
-			else if( gameMode == GameController.TWO_HANDS ) {
-				if( platform != null ) {
-					world.destroyBody(platform.getBody());
-				}
-				rp = new Platform(world, Platform.RIGHT);
-				lp = new Platform(world, Platform.LEFT);
 			}
 		}
 	}
@@ -78,7 +97,8 @@ public class GameModel {
 
 	public void addPoints(int p) {
 		score += p;
-		if(score > maxScore) maxScore = score;
+		if(score > maxScore)
+			maxScore = score;
 	}
 
 	public Platform getPlatform() {

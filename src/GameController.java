@@ -18,9 +18,9 @@ public class GameController implements Runnable {
 	static final int PAUSE_DELAY = 100;
 	long pauseTimer = 0;
 
-	public static final int FREE_PLAY = 0;
 	public static final int ONE_HAND  = 1;
 	public static final int TWO_HANDS = 2;
+	public static final int FREE_PLAY = 3;
 
 	int gameMode;
 	GameModel model;
@@ -32,7 +32,7 @@ public class GameController implements Runnable {
 	int hands;
 	
     //final int timesToSpawn[] = {0,1000,600,400,300,250,200,150,150};
-	final float timesToGainHealth[] = {0,1.5f,1,.75f,.5f,.4f,.35f,.3f,.25f}; //in seconds
+	final float timesToGainHealth[] = {0,1.5f,1,.75f,.5f,.4f,.35f,.3f,.25f}; // in seconds
 	final int timesToSpawn[] = {0,1000,800,650,500,450,375,300,250};
 	final int scoreNeededToLevel[] = {0,80,200,500,1000,2000,3500,5500};
 	final int distributions[][] = {	{0}, //this will never run. Never on level '0'
@@ -184,7 +184,7 @@ public class GameController implements Runnable {
 					x = (float)(Math.random() * 14 - 7);
 				}
 			} else {
-				// ONE_HAND gameMode
+				// ONE_HAND or FREE_PLAY gameMode
 				float platformX = model.getPlatform().getBody().getPosition().x - 2;
 				x = (float)(Math.random() * 14 - 7);
 				while(Math.abs(platformX - x) < 4) {
@@ -227,9 +227,11 @@ public class GameController implements Runnable {
 			
 			// restore health
 			now = System.currentTimeMillis();
-			if(now - healthTime >= 1000 * timesToGainHealth[model.getLevel()]) {
-				model.increaseHealth();
-				healthTime = now;
+			if(getGameMode() != FREE_PLAY) {
+				if(now - healthTime >= 1000 * timesToGainHealth[model.getLevel()]) {
+					model.increaseHealth();
+					healthTime = now;
+				}
 			}
 
 			// physics update
@@ -275,7 +277,7 @@ public class GameController implements Runnable {
 					Vec2 pos = b.getBody().getPosition();
 					if(pos.y < -2) {
 						// Oh no! Lose points. :(
-						if(pos.x < -8){
+						if(pos.x < -8) {
 							view.setPointLossX(-8);
 						} else if(pos.x > 8) {
 							view.setPointLossX(8);
@@ -284,7 +286,9 @@ public class GameController implements Runnable {
 						}
 						System.out.println("pos: "+pos.x);
 						itr.remove();
-						model.reduceHealth();
+						if(getGameMode() != FREE_PLAY) {
+							model.reduceHealth();
+						}
 						if (view != null)
 							view.notifyScore(b, -20);
 						model.world.destroyBody(b.getBody());
@@ -306,21 +310,19 @@ public class GameController implements Runnable {
 	} 
 	
 	public synchronized void updatePlatformPosition(double rhandx, double rhandy, double rtheta, double lhandx, double lhandy, double ltheta, double dt) {
-		System.out.println("updatePlatformPosition for two hands entered");
 		if (isPaused() || model.isGameOver()) {
-			System.out.println("updatePlatformPosition for two hands returned immediately.");
 			return;
 		}
 
 		if (rhandx != -1) {
-			updatePlatformPosition(model.getRightPlatform(), rhandx, rhandy, rtheta, dt);
+			movePlatform(model.getRightPlatform(), rhandx, rhandy, rtheta, dt);
 		} else {
 			model.getRightPlatform().getBody().setLinearVelocity(new Vec2(0f, 0f));
 			model.getRightPlatform().getBody().setAngularVelocity(0f);
 		}
 		
 		if (lhandx != -1) {
-			updatePlatformPosition(model.getLeftPlatform(), lhandx, lhandy, ltheta, dt);
+			movePlatform(model.getLeftPlatform(), lhandx, lhandy, ltheta, dt);
 		} else {
 			model.getLeftPlatform().getBody().setLinearVelocity(new Vec2(0f, 0f));
 			model.getLeftPlatform().getBody().setAngularVelocity(0f);
@@ -332,10 +334,10 @@ public class GameController implements Runnable {
 			return;
 		}
 		
-		updatePlatformPosition(model.platform, handx, handy, theta, dt);
+		movePlatform(model.platform, handx, handy, theta, dt);
 	}
 
-	private synchronized void updatePlatformPosition(Platform p, double handx, double handy, double theta, double dt) {
+	private synchronized void movePlatform(Platform p, double handx, double handy, double theta, double dt) {
 		double dtheta = theta - p.getBody().getAngle();
 		double dx = (16*(float)handx - 8) - p.getBody().getPosition().x;
 		double dy = (10*(float)handy)     - p.getBody().getPosition().y;
