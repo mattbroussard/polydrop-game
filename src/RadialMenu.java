@@ -57,7 +57,7 @@ public class RadialMenu {
 		//System.out.printf("pointer has r=%.3f, theta=%.3f\n", r, theta);
 
 		//pointer isn't where there could be a selection
-		if (r < 2.8f || r > 4.5f) {
+		if (r < 2.5f || r > 4.5f) {
 
 			//System.out.println("-- not selection candidate");
 			selectExtent = 0;
@@ -98,7 +98,7 @@ public class RadialMenu {
 		}
 
 		//if we don't currently have a selection but are near the edge, check to see if we should start one
-		if (r > 2.8f && r < 3.2f) {
+		if (r > 2.5f && r < 3.2f) {
 
 			for (RadialMenuItem candidate : items) {
 
