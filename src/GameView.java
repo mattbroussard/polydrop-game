@@ -250,7 +250,6 @@ public class GameView extends JComponent implements KeyListener{
 
 				//temp
 				SoundManager.play("pointGain");
-				model.addPoints(10000);
 				
 				break;
 
@@ -262,7 +261,6 @@ public class GameView extends JComponent implements KeyListener{
 
 				//temp
 				SoundManager.play("pointGain");
-				model.addPoints(10000);
 				
 				break;
 
@@ -271,10 +269,9 @@ public class GameView extends JComponent implements KeyListener{
 				if( model.getGameMode() != GameController.ONE_HAND ) {
 					model.setGameMode(GameController.ONE_HAND);
 				}
-				
+
 				//temp
 				SoundManager.play("pointGain");
-				model.addPoints(10000);
 				
 				break;
 			case PAUSE_MENU_MUTE:
