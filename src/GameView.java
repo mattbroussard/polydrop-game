@@ -252,6 +252,7 @@ public class GameView extends JComponent implements KeyListener{
 				pausedMenu.setActiveItem(PAUSE_MENU_MODE_FREE);
 				if( model.getGameMode() != GameController.FREE_PLAY ) {
 					model.setGameMode(GameController.FREE_PLAY);
+					leaderboard.setAllowedHighScore(false);
 				}
 				//temp
 				//SoundManager.play("pointGain");
@@ -260,11 +261,6 @@ public class GameView extends JComponent implements KeyListener{
 
 			case PAUSE_MENU_MODE_DUAL:
 				pausedMenu.setActiveItem(PAUSE_MENU_MODE_DUAL);
-				if( model.getGameMode() == GameController.FREE_PLAY){
-					model.setScore(0);
-					model.setLevel(1);
-					model.restoreHealth();
-				}
 				if( model.getGameMode() != GameController.TWO_HANDS ) {
 					model.setGameMode(GameController.TWO_HANDS);
 				}
@@ -275,11 +271,6 @@ public class GameView extends JComponent implements KeyListener{
 
 			case PAUSE_MENU_MODE_SINGLE:
 				pausedMenu.setActiveItem(PAUSE_MENU_MODE_SINGLE);
-				if( model.getGameMode() == GameController.FREE_PLAY){
-					model.setScore(0);
-					model.setLevel(1);	
-					model.restoreHealth();
-				}
 				if( model.getGameMode() != GameController.ONE_HAND ) {
 					model.setGameMode(GameController.ONE_HAND);
 				}
