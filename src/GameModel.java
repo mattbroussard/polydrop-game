@@ -9,13 +9,14 @@ public class GameModel {
 	static final Vec2 GRAVITY = new Vec2(0.0f, -20f);
 
 	ArrayList<DrawableBody> blockList = new ArrayList<DrawableBody>();
-//	Platform platform;
+	Platform platform;
 	Platform rp;
 	Platform lp;
 
 	World world;
 	Body body;
 	
+	int gameMode;
 	int score = 0;
 	int maxScore = score;
 	int health = 100;
@@ -27,6 +28,15 @@ public class GameModel {
 		world = new World(GRAVITY);
 		rp = new Platform(world);
 		lp = new Platform(world);
+		platform = new Platform(world);
+	}
+
+	public int getGameMode() {
+		return gameMode;
+	}
+
+	public void setGameMode(int newGameMode) {
+		gameMode = newGameMode;
 	}
 	
 	public int getScore() {
@@ -73,6 +83,7 @@ public class GameModel {
 	public void levelUp() {
 		this.level++;
 	}
+
 	public int getLevel() {
 		return this.level;
 	}

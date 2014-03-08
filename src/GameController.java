@@ -22,6 +22,7 @@ public class GameController implements Runnable {
 	static final int ONE_HAND  = 1;
 	static final int TWO_HANDS = 2;
 
+	int gameMode;
 	GameModel model;
 	GameView view;
 	Leaderboard leaderboard;
@@ -43,25 +44,27 @@ public class GameController implements Runnable {
 							 		{3,4,5,6,7,8},
 							 		{3,4,5,6,7,8}};
 
-	Thread t;
 	
 	private ArrayList<Double> dxList = new ArrayList<Double>();
 
 	public GameController(GameModel m) {
 		model = m;
 		leaderboard = new Leaderboard(this);
-		t = new Thread(this);
+		Thread t = new Thread(this);
 		t.start();
+		gameMode = ONE_HAND;
+	}
+
+	public int getGameMode() {
+		return gameMode;
 	}
 	
 	public void exitGame() {
-
 		//For now, just exit. In the future, we may have cleanup things to do first.
 		System.exit(0);
-
 	}
 
-	public void setHands(int h){
+	public void setHands(int h) {
 		hands = h;
 	}
 	
@@ -166,23 +169,28 @@ public class GameController implements Runnable {
 		//return distributions[newPoly] == 4 ? new Square(model.world, x) : new PolyBody(model.world, x, distributions[newPoly], Colors.SHAPES[distributions[newPoly]-3]);
 		//long now = System.currentTimeMillis();
 		
-		if(getDx() <  .03 && Math.random() < .5 ) //Player is not moving that much
+		if(getDx() <  .03 && Math.random() < .5) //Player is not moving that much
 		{
 			//Find the locations of the platform(s)
 			//While loops are inefficient, but okay for now
-			if(hands > 1 ){
+			/// if(hands > 1) {
+			if(model.gameMode == TWO_HANDS) {
 				float rpx = model.getRightPlatform().getBody().getPosition().x;
 				float lpx = model.getLeftPlatform().getBody().getPosition().x;
 				//Dont pick any numbers within rpx +- 2 or lpx +- 2
 				x = (float)(Math.random() * 14 - 7);
-				while(Math.abs(x-rpx) < 2 || Math.abs(x-lpx) < 2) x = (float)(Math.random() * 14 - 7);
-			}else{
-				float rpx = model.getRightPlatform().getBody().getPosition().x - 2;
+				while(Math.abs(x-rpx) < 2 || Math.abs(x-lpx) < 2) {
+					x = (float)(Math.random() * 14 - 7);
+				}
+			} else {
+				// ONE_HAND gameMode
+				float platformX = model.getRightPlatform().getBody().getPosition().x - 2;
 				x = (float)(Math.random() * 14 - 7);
-				while(Math.abs(rpx - x) < 4) x = (float)(Math.random() * 14 - 7);
+				while(Math.abs(platformX - x) < 4) {
+					x = (float)(Math.random() * 14 - 7);
+				}
 			}
-		}else{
-			
+		} else {			
 			x = (float)(Math.random() * 12 - 6 );
 		}
 		System.out.println("spawing at "+x);
@@ -295,7 +303,7 @@ public class GameController implements Runnable {
 				view.repaint();
 			time = now;
 		}
-	}
+	} 
 	
 	public synchronized void updatePlatformPosition(double rhandx, double rhandy, double rtheta, double lhandx, double lhandy, double ltheta, double dt) {
 		if (isPaused() || model.isGameOver()) return;
@@ -325,6 +333,10 @@ public class GameController implements Runnable {
 			if(dxList.size() > 10)
 				dxList.remove(0);
 		}
+	}
+
+	public synchronized void updatePlatformPosition(double handx, double handy, double theta, double dt) {
+		
 	}
 	
 	public synchronized double getDx(){
