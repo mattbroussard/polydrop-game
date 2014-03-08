@@ -83,7 +83,14 @@ public class Leaderboard {
 	}
 
 	public void clearLeaderboard() {
-		//TODO Dallas: implement
+		
+		//prevent accidental clear
+		controller.setUsingUI(true);
+		int confirmation = JOptionPane.showConfirmDialog(view, "Are you sure you want to clear all high scores?", "Clear High Scores", JOptionPane.OK_CANCEL_OPTION);
+		controller.setUsingUI(false);
+		if (confirmation != JOptionPane.OK_OPTION)
+			return;
+
 		try {
 			prefs.clear();
 			topList = new ArrayList<Entry>();
