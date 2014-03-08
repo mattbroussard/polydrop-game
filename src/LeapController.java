@@ -15,7 +15,7 @@ public class LeapController extends Listener implements Runnable {
 
 	static final double SPACE_WIDTH = 500f;
 	static final double SPACE_HEIGHT = 500f;
-	static final double FIST_ROLL_THRESHOLD = Math.PI / 4f;
+	static final double FIST_ROLL_THRESHOLD = Math.PI / 6f;
 	static final double THUMB_YAW_THRESHOLD = 65f / 180f * Math.PI;
 	static final double THUMB_LENGTH_THRESHOLD = 30;
 	static final double Z_PAUSE_THRESHOLD = 175f;
@@ -138,6 +138,7 @@ public class LeapController extends Listener implements Runnable {
 		
 		//reject hands with 2 or fewer fingers (fists)-- unless slanted enough that we think we're trying to do it
 		//had removed this, but was in end-hackathon good state so reviving
+		System.out.println("h.palmNormal().rool() = "+ h.palmNormal().roll());
 		if (h.fingers().count() <= 2 && Math.abs(h.palmNormal().roll()) < FIST_ROLL_THRESHOLD) {
 			System.out.printf("Hand id=%d unusable! Failed nFingers test.\n", h.id());
 			return true;
