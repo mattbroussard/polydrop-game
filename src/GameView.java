@@ -81,6 +81,7 @@ public class GameView extends JComponent implements KeyListener{
 	
 	public void addLeaderboard(Leaderboard l) {
 		leaderboard = l;
+		leaderboard.view = this;
 	}
 
 	public void notifyScore(DrawableBody db, int scoreDelta) {
