@@ -42,10 +42,10 @@ public class SoundManager {
 		clip.start();
 	}
 	
-	public static void mute(){
+	public static void toggleMuted(){
 		muted = !muted;
 	}
-	public static boolean isMute(){
+	public static boolean isMuted(){
 		return muted;
 	}
 

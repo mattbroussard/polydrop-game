@@ -34,13 +34,6 @@ public class RadialMenu {
 		Collections.sort(items);
 
 	}
-	public RadialMenuItem getItem(int id){
-		return items.get(id);
-	}
-
-	public float distance(float x1, float y1, float x2, float y2) {
-		return (float)Math.sqrt(Math.pow(x1-x2, 2) + Math.pow(y1-y2, 2));
-	}
 
 	float cursorX = -1;
 	float cursorY = -1;
@@ -75,8 +68,10 @@ public class RadialMenu {
 
 		//we have a selection already. Is it valid? If so, are we done with it?
 		if (selected != null) {
+			
+			float leeway = (float) ((r - 2.8) * 5);
 		
-			if (r < x || theta < selected.startAngle || theta > selected.startAngle+selected.arcAngle) {
+			if (r < x || theta < selected.startAngle - leeway || theta > selected.startAngle+selected.arcAngle + leeway) {
 				
 				//System.out.println("-- selection cancelled");
 				selected = null;
@@ -103,7 +98,7 @@ public class RadialMenu {
 		}
 
 		//if we don't currently have a selection but are near the edge, check to see if we should start one
-		if (r > 2.8f && r < 3.0f) {
+		if (r > 2.8f && r < 3.5f) {
 
 			for (RadialMenuItem candidate : items) {
 

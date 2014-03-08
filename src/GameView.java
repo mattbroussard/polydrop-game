@@ -29,6 +29,7 @@ public class GameView extends JComponent implements KeyListener{
 	RadialMenu pausedMenu;
 	RadialMenu gameOverMenu;
 	RadialMenu leaderboardMenu;
+	RadialMenuItem muteMenuItem;
 
 	static final int PAUSE_MENU_MODE_FREE = 0;
 	static final int PAUSE_MENU_MODE_DUAL = 1;
@@ -58,7 +59,8 @@ public class GameView extends JComponent implements KeyListener{
 		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_MODE_SINGLE, "One Hand", "singleMode", 100, 20, Colors.MENU_MODE_SINGLE_SELECTED, Colors.MENU_MODE_SINGLE_ACTIVE));
 		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_EXIT_GAME, "Exit Game", "exit", 240, 20));
 		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_LEADERBOARD, "High Scores", "leaderboard", 260, 20));
-		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_MUTE, "Mute", "mute", 280, 20));
+		muteMenuItem = new RadialMenuItem(PAUSE_MENU_MUTE, "Mute", "mute", 280, 20);
+		pausedMenu.addItem(muteMenuItem);
 
 		//Constuct game over menu
 		gameOverMenu = new RadialMenu(8, 11.5f, this);
@@ -269,9 +271,9 @@ public class GameView extends JComponent implements KeyListener{
 				
 				break;
 			case PAUSE_MENU_MUTE:
-				SoundManager.mute();
-				String mute = SoundManager.isMute() ? "unmute" : "mute";
-				pausedMenu.getItem(id).changeIcon(mute);
+				SoundManager.toggleMuted();
+				muteMenuItem.setIcon(SoundManager.isMuted() ? "unmute" : "mute");
+				muteMenuItem.setTitle(SoundManager.isMuted() ? "Unmute" : "Mute");
 				
 				break;
 
