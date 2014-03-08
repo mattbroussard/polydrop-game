@@ -277,9 +277,9 @@ public class GameController implements Runnable {
 						// Oh no! Lose points. :(
 						if(pos.x < -8){
 							view.setPointLossX(-8);
-						}else if(pos.x > 8){
+						} else if(pos.x > 8) {
 							view.setPointLossX(8);
-						}else{
+						} else {
 							view.setPointLossX(pos.x);
 						}
 						System.out.println("pos: "+pos.x);
@@ -289,8 +289,7 @@ public class GameController implements Runnable {
 							view.notifyScore(b, -20);
 						model.world.destroyBody(b.getBody());
 						model.addPoints(-20);
-						SoundManager.play("pointLoss");
-						
+						SoundManager.play("pointLoss");						
 					}
 				}
 			}
@@ -360,7 +359,9 @@ public class GameController implements Runnable {
 		if (!model.isGameOver() || usingUI)
 			return;
 		model = new GameModel();
-		if (view != null)
+		if (view != null) {
 			view.model = model;
+			view.pausedMenu.setActiveItem(GameView.PAUSE_MENU_MODE_SINGLE);
+		}
 	}
 }
