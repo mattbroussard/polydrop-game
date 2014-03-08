@@ -15,7 +15,7 @@ public class LeapController extends Listener implements Runnable {
 
 	static final double SPACE_WIDTH = 500f;
 	static final double SPACE_HEIGHT = 500f;
-	static final double FIST_ROLL_THRESHOLD = Math.PI / 3f;
+	static final double FIST_ROLL_THRESHOLD = Math.PI / 4f;
 	static final double THUMB_YAW_THRESHOLD = 65f / 180f * Math.PI;
 	static final double THUMB_LENGTH_THRESHOLD = 30;
 	static final double Z_PAUSE_THRESHOLD = 175f;
