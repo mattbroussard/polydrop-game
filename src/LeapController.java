@@ -60,8 +60,8 @@ public class LeapController extends Listener implements Runnable {
 		Hand rightHand = handUnusable(hands.get(0)) ? null : hands.get(0);
 		Hand leftHand  = handUnusable(hands.get(1)) ? null : hands.get(1);
 		Hand primaryHand = getPrimaryHand(leftHand, rightHand);
-		System.out.println("Right hand: "+rightHand);
-		System.out.println("Left hand: "+leftHand);
+/*		System.out.println("Right hand: "+rightHand.toString());
+		System.out.println("Left hand: "+leftHand.toString());*/
 		//Hand primaryHand = getPrimaryHand(leftHand, rightHand);
 		
 		//System.out.printf("processFrameForPlatform: %d hands, left=%d, right=%d, primary=%d\n", nHands, leftHand!=null?leftHand.id():-1, rightHand!=null?rightHand.id():-1, primaryHand!=null?primaryHand.id():-1);
@@ -124,7 +124,12 @@ public class LeapController extends Listener implements Runnable {
 	}
 
 	public boolean handUnusable(Hand h) {
-
+		
+		//Check to see if hand is in frame
+		if(h.toString().equals("Invalid Hand")){
+			return true;
+		}
+		
 		//reject hands that are too far back
 		if (h.palmPosition().getZ() > Z_PAUSE_THRESHOLD) {
 			System.out.printf("Hand id=%d unusable! Failed Z threshold test.\n", h.id());
