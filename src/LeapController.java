@@ -58,118 +58,56 @@ public class LeapController extends Listener implements Runnable {
 		Hand rightHand = getPreferredHand(frame, HAND_RIGHT);
 		Hand leftHand = getPreferredHand(frame, HAND_LEFT);
 		Hand primaryHand = getPrimaryHand(leftHand, rightHand);
-		int nHands = leftHand != null ? (rightHand != null ? 2 : 1) : (rightHand != null ? 1 : 0);
 		
 		//System.out.printf("processFrameForPlatform: %d hands, left=%d, right=%d, primary=%d\n", nHands, leftHand!=null?leftHand.id():-1, rightHand!=null?rightHand.id():-1, primaryHand!=null?primaryHand.id():-1);
 
-		game.setHands(nHands);
-		
+		long now = System.currentTimeMillis();
+		long dt = (lastUpdate < 0) ? 0 : now-lastUpdate;
+
 		if (primaryHand == null) {
-			//rightHand = hands.frontmost();
-			//pauseLocation = rightHand.palmPosition();
 			game.pause(true);
 			return;
 		} else {
 			game.unpause(true);
 		}
+
+		int mode = game.getGameMode();
+		switch (mode) {
+
+			case GameController.FREE_PLAY:
+			case GameController.ONE_HAND:
+
+				Vector handPos = primaryHand.palmPosition();
+				double handX = normalize(handPos.getX(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f); 
+				double handY = normalize(handPos.getY(), 0f, SPACE_HEIGHT);
+				double handRoll = primaryHand.palmNormal().roll();
+
+				game.updatePlatformPosition(handX, handY, handRoll, dt);
+				
+				break;
+
+			case GameController.TWO_HANDS:
+				
+				Vector leftHandPos = leftHand == null ? null : leftHand.palmPosition();
+				double leftHandX = leftHand == null ? -1 : normalize(leftHandPos.getX(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f); 
+				double leftHandY = leftHand == null ? -1 : normalize(leftHandPos.getY(), 0f, SPACE_HEIGHT);
+				double leftHandRoll = leftHand == null ? -1 : leftHand.palmNormal().roll();
+
+				Vector rightHandPos = rightHand == null ? null : rightHand.palmPosition();
+				double rightHandX = rightHand == null ? -1 : normalize(rightHandPos.getX(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f); 
+				double rightHandY = rightHand == null ? -1 : normalize(rightHandPos.getY(), 0f, SPACE_HEIGHT);
+				double rightHandRoll = rightHand == null ? -1 : rightHand.palmNormal().roll();
+
+				game.updatePlatformPosition(rightHandX, rightHandY, rightHandRoll, leftHandX, leftHandY, leftHandRoll, dt);
+
+				break;
+			
+			default:
+				return; 
 		
-/*		if (rightHand.id() != lastHand) {
-			for (Hand h : hands) {
-				if (h.id() == lastHand) {
-					rightHand = h;
-					break;
-				}
-			}
-		}*/
-		long now = System.currentTimeMillis();
-		long dt = (lastUpdate < 0) ? 0 : now-lastUpdate;
-		
-		//why do we call this again? it's called above
-		//game.setHands(hands.count());
-
-		if(/*hands.count() > 1*/nHands > 1){
-			//lastHand = rightHand.id();
-
-			Vector rightHandPos = rightHand.palmPosition();
-			double rightHandX = normalize(rightHandPos.getX(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f); 
-			double rightHandY = normalize(rightHandPos.getY(), 0f, SPACE_HEIGHT);
-
-			
-			Vector rightHandNorm = rightHand.palmNormal();
-			double rightHandRoll = rightHandNorm.roll();
-			
-			Vector leftHandPos = leftHand.palmPosition();
-			double leftHandX = normalize(leftHandPos.getX(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f); 
-			double leftHandY = normalize(leftHandPos.getY(), 0f, SPACE_HEIGHT);
-
-			
-			Vector leftHandNorm = leftHand.palmNormal();
-			double leftHandRoll = leftHandNorm.roll();
-			
-			//game.updatePlatformPosition(handX, handY, handRoll, dt);
-			game.updatePlatformPosition(rightHandX, rightHandY, rightHandRoll, leftHandX, leftHandY, leftHandRoll, dt);
-			//game.model.platform.getBody().setLinearVelocity(new Vec2(0.0f, 0.0f));
-			lastUpdate = now;
-		} else if (nHands == 1) {
-			//lastHand = rightHand.id();
-
-			//hack: I'm too lazy to change references to rightHand below (TODO fix)
-			rightHand = primaryHand;
-
-			Vector handPos = rightHand.palmPosition();
-			double handX = normalize(handPos.getX(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f); 
-			double handY = normalize(handPos.getY(), 0f, SPACE_HEIGHT);
-
-			
-			Vector handNorm = rightHand.palmNormal();
-			double handRoll = handNorm.roll();
-			
-			game.updatePlatformPosition(handX, handY, handRoll, 0, 0, 0, dt);
-			//game.model.platform.getBody().setLinearVelocity(new Vec2(0.0f, 0.0f));
-			lastUpdate = now;
-		}
-		
-/*		if (hands.count()==0) {
-			pauseLocation = hand.palmPosition();
-			game.pause();
-			return;
 		}
 
-		
-		if (hand.id() != lastHand) {
-			for (Hand h : hands) {
-				if (h.id() == lastHand) {
-					hand = h;
-					break;
-				}
-			}
-		}
-		lastHand = hand.id();
-
-		Vector handPos = hand.palmPosition();
-		double handX = normalize(handPos.getX(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f); 
-		double handY = normalize(handPos.getY(), 0f, SPACE_HEIGHT);
-
-		
-		Vector handNorm = hand.palmNormal();
-		double handRoll = handNorm.roll();
-		
-		long now = System.currentTimeMillis();
-		long dt = (lastUpdate < 0) ? 0 : now-lastUpdate;
-		
-		if ((hand.fingers().count() <= 1 && Math.abs(handRoll) < FIST_THRESHOLD) || handPos.getZ() > Z_PAUSE_THRESHOLD) {
-			if(!game.paused){
-				game.pause();
-				return;
-			}
-		} else if (game.paused) {
-			game.unpause();
-			return;
-		}
-		
-		game.updatePlatformPosition(handX, handY, handRoll, dt);
-		//game.model.platform.getBody().setLinearVelocity(new Vec2(0.0f, 0.0f));
-		lastUpdate = now;*/
+		lastUpdate = now;
 
 	}
 

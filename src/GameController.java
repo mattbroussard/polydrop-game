@@ -18,9 +18,9 @@ public class GameController implements Runnable {
 	static final int PAUSE_DELAY = 100;
 	long pauseTimer = 0;
 
-	static final int FREE_PLAY = 0;
-	static final int ONE_HAND  = 1;
-	static final int TWO_HANDS = 2;
+	public static final int FREE_PLAY = 0;
+	public static final int ONE_HAND  = 1;
+	public static final int TWO_HANDS = 2;
 
 	int gameMode;
 	GameModel model;
