@@ -80,7 +80,7 @@ public class RadialMenu {
 
 			}
 
-			selectExtent = r - 2.8f;
+			selectExtent = Math.max(0f, r - 2.8f);
 
 			if (selectExtent > 1.2f) {
 
@@ -98,7 +98,7 @@ public class RadialMenu {
 		}
 
 		//if we don't currently have a selection but are near the edge, check to see if we should start one
-		if (r > 2.5f && r < 3.2f) {
+		if (r > 2.75f && r < 3.2f) {
 
 			for (RadialMenuItem candidate : items) {
 
@@ -106,7 +106,7 @@ public class RadialMenu {
 
 					//System.out.println("-- found a selection");
 					selected = candidate;
-					selectExtent = r - 2.8f;
+					selectExtent = Math.max(0f, r - 2.8f);
 					return;
 
 				}
