@@ -91,10 +91,6 @@ public class Leaderboard {
 			e.printStackTrace();
 		}
 
-		//debug
-		for (int i = N_ENTRIES; i > 0; i--)
-			topList.add(new Entry("dummy "+i, i*1000));
-
 	}
 
 	public void draw(GraphicsWrapper g2) {
