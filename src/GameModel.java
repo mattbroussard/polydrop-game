@@ -32,6 +32,13 @@ public class GameModel {
 	public int getGameMode() {
 		return gameMode;
 	}
+	
+	public void setScore(int score){
+		this.score = score;
+	}
+	public void setLevel(int level){
+		this.level = level;
+	}
 
 	public void setGameMode(int newGameMode) {
 		if( gameMode == newGameMode ) {
@@ -93,6 +100,9 @@ public class GameModel {
 
 	public void increaseHealth() {
 		this.health = Math.min(health + 1, 100);
+	}
+	public void restoreHealth(){
+		this.health = 100;
 	}
 
 	public void addPoints(int p) {
