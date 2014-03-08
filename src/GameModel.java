@@ -26,9 +26,6 @@ public class GameModel {
 
 	public GameModel() {
 		world = new World(GRAVITY);
-		rp = new Platform(world);
-		lp = new Platform(world);
-		platform = new Platform(world);
 		setGameMode(GameController.ONE_HAND);
 	}
 
@@ -37,16 +34,24 @@ public class GameModel {
 	}
 
 	public void setGameMode(int newGameMode) {
-		gameMode = newGameMode;
-		if( gameMode == GameController.ONE_HAND ) {
-			world.destroyBody(rp.getBody());
-			world.destroyBody(lp.getBody());
-			world.createBody(platform.getBodyDef());
-		}
-		else if( gameMode == GameController.TWO_HANDS ) {
-			world.destroyBody(platform.getBody());
-			world.createBody(rp.getBodyDef());
-			world.createBody(lp.getBodyDef());
+		synchronized (world) {
+			gameMode = newGameMode;
+			if( gameMode == GameController.ONE_HAND ) {
+				if( rp != null ) {
+					world.destroyBody(rp.getBody());
+				}
+				if( lp != null ) {
+					world.destroyBody(lp.getBody());
+				}
+				platform = new Platform(world, Platform.FULL);
+			}
+			else if( gameMode == GameController.TWO_HANDS ) {
+				if( platform != null ) {
+					world.destroyBody(platform.getBody());
+				}
+				rp = new Platform(world, Platform.RIGHT);
+				lp = new Platform(world, Platform.LEFT);
+			}
 		}
 	}
 	

@@ -6,19 +6,34 @@ import java.awt.Color;
 
 public class Platform implements DrawableBody {
 
+	public static final int FULL  = 0;
+	public static final int LEFT  = 1;
+	public static final int RIGHT = 2;
+	
 	private Body body;
 	private Fixture fixture;
 	private Color color;
 	private BodyDef bdef;
 	
-	public Platform(World world, Color debugColor) {
+	public Platform(World world, int type, Color debugColor) {
 		bdef = new BodyDef();
 		bdef.type = BodyType.KINEMATIC;
-		bdef.position.set(0,2);
+		if( type == FULL ) {
+			// center
+			bdef.position.set(0,2);
+		} else if( type == LEFT ){
+			bdef.position.set(-3,2);
+		} else if( type == RIGHT ) {
+			bdef.position.set(3, 2);
+		}
 		body = world.createBody(bdef);
 		
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(2, 0.25f);
+		if( type == FULL ) {
+			shape.setAsBox(4, 0.25f);
+		} else {
+			shape.setAsBox(2, 0.25f);
+		}
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.shape = shape;
 		fixtureDef.density = 1;
@@ -28,8 +43,8 @@ public class Platform implements DrawableBody {
 		this.color = debugColor;
 	}
 
-	public Platform(World w) {
-		this(w, Colors.PLATFORM);
+	public Platform(World w, int type) {
+		this(w, type, Colors.PLATFORM);
 	}
 
 	public Color getColor() {

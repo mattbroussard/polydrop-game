@@ -57,7 +57,7 @@ public class GameController implements Runnable {
 	}
 
 	public int getGameMode() {
-		return gameMode;
+		return model.getGameMode();
 	}
 	
 	public void exitGame() {
@@ -185,7 +185,7 @@ public class GameController implements Runnable {
 				}
 			} else {
 				// ONE_HAND gameMode
-				float platformX = model.getRightPlatform().getBody().getPosition().x - 2;
+				float platformX = model.getPlatform().getBody().getPosition().x - 2;
 				x = (float)(Math.random() * 14 - 7);
 				while(Math.abs(platformX - x) < 4) {
 					x = (float)(Math.random() * 14 - 7);
@@ -307,16 +307,24 @@ public class GameController implements Runnable {
 	} 
 	
 	public synchronized void updatePlatformPosition(double rhandx, double rhandy, double rtheta, double lhandx, double lhandy, double ltheta, double dt) {
+		System.out.println("updatePlatformPosition for two hands entered");
 		if (isPaused() || model.isGameOver()) {
+			System.out.println("updatePlatformPosition for two hands returned immediately.");
 			return;
 		}
 
 		if (rhandx != -1) {
-			updatePlatformPosition(model.rp, rhandx, rhandy, rtheta, dt);
+			updatePlatformPosition(model.getRightPlatform(), rhandx, rhandy, rtheta, dt);
+		} else {
+			model.getRightPlatform().getBody().setLinearVelocity(new Vec2(0f, 0f));
+			model.getRightPlatform().getBody().setAngularVelocity(0f);
 		}
 		
 		if (lhandx != -1) {
-			updatePlatformPosition(model.lp, lhandx, lhandy, ltheta, dt);
+			updatePlatformPosition(model.getLeftPlatform(), lhandx, lhandy, ltheta, dt);
+		} else {
+			model.getLeftPlatform().getBody().setLinearVelocity(new Vec2(0f, 0f));
+			model.getLeftPlatform().getBody().setAngularVelocity(0f);
 		}
 	}
 
@@ -345,7 +353,6 @@ public class GameController implements Runnable {
 		for(Double d : dxList){
 			dx += d;
 		}
-		//System.out.println("DX: "+dx/dxList.size());
 		return dx/dxList.size();
 	}
 

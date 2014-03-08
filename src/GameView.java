@@ -183,7 +183,7 @@ public class GameView extends JComponent implements KeyListener{
 
 		if (!usingLeaderboard) {
 
-			//Draw platform
+			//Draw platform(s)
 			if (model.getGameMode() == GameController.ONE_HAND) {
 				BodyRenderer.drawBody(model.getPlatform(), g2, paused);
 			}
@@ -244,8 +244,6 @@ public class GameView extends JComponent implements KeyListener{
 
 	public void menuItemSelected(int id) {
 
-		
-
 		switch (id) {
 			case PAUSE_MENU_MODE_FREE:
 				pausedMenu.setActiveItem(PAUSE_MENU_MODE_FREE);
@@ -258,6 +256,9 @@ public class GameView extends JComponent implements KeyListener{
 
 			case PAUSE_MENU_MODE_DUAL:
 				pausedMenu.setActiveItem(PAUSE_MENU_MODE_DUAL);
+				if( model.getGameMode() != GameController.TWO_HANDS ) {
+					model.setGameMode(GameController.TWO_HANDS);
+				}
 
 				//temp
 				SoundManager.play("pointGain");
@@ -267,7 +268,10 @@ public class GameView extends JComponent implements KeyListener{
 
 			case PAUSE_MENU_MODE_SINGLE:
 				pausedMenu.setActiveItem(PAUSE_MENU_MODE_SINGLE);
-
+				if( model.getGameMode() != GameController.ONE_HAND ) {
+					model.setGameMode(GameController.ONE_HAND);
+				}
+				
 				//temp
 				SoundManager.play("pointGain");
 				model.addPoints(10000);
