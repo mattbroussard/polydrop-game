@@ -78,7 +78,7 @@ public class Leaderboard {
 		//TODO Dallas: implement
 		for(int i = 0; i < topFive.length; i ++){
 			//g2.drawStringCentered("Placeholder!", 1, Color.white, 8, 5);
-			g2.drawStringCentered(topFive+"", 1, Color.white, 8, 5+50*i);
+			g2.drawStringCentered(topFive[i]+"", 1, Color.white, 8, (float) (3+.85*i));
 
 		}
 
