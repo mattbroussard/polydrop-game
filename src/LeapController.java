@@ -54,28 +54,33 @@ public class LeapController extends Listener implements Runnable {
 	int lastHand = -1;
 	public void processFrameForPlatform(Frame frame) {
 
-		//HandList hands = frame.hands();
-		Hand rightHand = getPreferredHand(frame, HAND_RIGHT);
-		Hand leftHand = getPreferredHand(frame, HAND_LEFT);
+		HandList hands = frame.hands();
+/*		Hand rightHand = getPreferredHand(frame, HAND_RIGHT);
+		Hand leftHand = getPreferredHand(frame, HAND_LEFT);*/
+		Hand rightHand = handUnusable(hands.get(0)) ? null : hands.get(0);
+		Hand leftHand  = handUnusable(hands.get(1)) ? null : hands.get(1);
 		Hand primaryHand = getPrimaryHand(leftHand, rightHand);
+		System.out.println("Right hand: "+rightHand);
+		System.out.println("Left hand: "+leftHand);
+		//Hand primaryHand = getPrimaryHand(leftHand, rightHand);
 		
 		//System.out.printf("processFrameForPlatform: %d hands, left=%d, right=%d, primary=%d\n", nHands, leftHand!=null?leftHand.id():-1, rightHand!=null?rightHand.id():-1, primaryHand!=null?primaryHand.id():-1);
 
 		long now = System.currentTimeMillis();
 		long dt = (lastUpdate < 0) ? 0 : now-lastUpdate;
 
-		if (primaryHand == null) {
-			game.pause(true);
-			return;
-		} else {
-			game.unpause(true);
-		}
-
 		int mode = game.getGameMode();
 		switch (mode) {
 
 			case GameController.FREE_PLAY:
 			case GameController.ONE_HAND:
+				
+				if (rightHand == null) {
+					game.pause(true);
+					return;
+				} else {
+					game.unpause(true);
+				}
 
 				Vector handPos = primaryHand.palmPosition();
 				double handX = normalize(handPos.getX(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f); 
@@ -87,6 +92,13 @@ public class LeapController extends Listener implements Runnable {
 				break;
 
 			case GameController.TWO_HANDS:
+				
+				if (rightHand == null && leftHand == null) {
+					game.pause(true);
+					return;
+				} else {
+					game.unpause(true);
+				}
 				
 				Vector leftHandPos = leftHand == null ? null : leftHand.palmPosition();
 				double leftHandX = leftHand == null ? -1 : normalize(leftHandPos.getX(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f); 
