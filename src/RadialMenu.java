@@ -75,8 +75,10 @@ public class RadialMenu {
 
 		//we have a selection already. Is it valid? If so, are we done with it?
 		if (selected != null) {
+			
+			float leeway = (float) ((r - 2.8) * 5);
 		
-			if (r < x || theta < selected.startAngle || theta > selected.startAngle+selected.arcAngle) {
+			if (r < x || theta < selected.startAngle - leeway || theta > selected.startAngle+selected.arcAngle + leeway) {
 				
 				//System.out.println("-- selection cancelled");
 				selected = null;
@@ -103,7 +105,7 @@ public class RadialMenu {
 		}
 
 		//if we don't currently have a selection but are near the edge, check to see if we should start one
-		if (r > 2.8f && r < 3.0f) {
+		if (r > 2.8f && r < 3.5f) {
 
 			for (RadialMenuItem candidate : items) {
 
