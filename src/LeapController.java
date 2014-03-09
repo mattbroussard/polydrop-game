@@ -156,12 +156,14 @@ public class LeapController extends Listener implements Runnable {
 		
 		//reject hands with 2 or fewer fingers (fists)-- unless slanted enough that we think we're trying to do it
 		//had removed this, but was in end-hackathon good state so reviving
-		if (h.fingers().count() <= 2) {
-			if (game.isPaused()) {
+		if (game.isPaused()) {
+			if (h.fingers().count() <= 2) {
 				System.out.printf("\tHand id=%d unusable! Failed nFingers test.\n", h.id());
 				return true;
 			}
-			else if (withinPauseBounds(h)) {
+		}
+		else {
+			if( h.fingers().count() <= 1 && withinPauseBounds(h) ) {
 				System.out.printf("\tHand id=%d unusable! Failed nFingers test.\n", h.id());
 				return true;
 			}
