@@ -3,10 +3,16 @@
 
 	<!-- properties -->
 	<loadfile property="version" srcFile="VERSION" />
-	<available file="/usr/libexec/java_home" property="java_home_available"/>
-	<property environment="env"/>
-	<exec if:set="java_home_available" executable="/usr/libexec/java_home" outputproperty="javahome" />
-	<property unless:set="java_home_available" name="javahome" value="${env.JAVA_HOME}" />
+	
+	<!-- the location of a JRE for bundling can be specified with `ant -Djavahome=[jre location] [target]`. -->
+	<!-- if one isn't specified, try getting it from $JAVA_HOME or /usr/libexec/java_home (on Mac) -->
+	<sequential unless:set="javahome">
+		<available file="/usr/libexec/java_home" property="java_home_available"/>
+		<property environment="env"/>
+		<exec if:set="java_home_available" executable="/usr/libexec/java_home" outputproperty="javahome" />
+		<property unless:set="java_home_available" name="javahome" value="${env.JAVA_HOME}" />
+	</sequential>
+	<!-- note: using sequential here is a bit of a hack to avoid having to use ant-contrib's if/then/else -->
 
 	<!-- default target, just compiles everything -->
 	<target name="default">
