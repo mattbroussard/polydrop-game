@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="PolyDrop" default="default" basedir="." xmlns:if="ant:if" xmlns:unless="ant:unless">
+
+	<!-- properties -->
+	<loadfile property="version" srcFile="VERSION" />
+	<available file="/usr/libexec/java_home" property="java_home_available"/>
+	<property environment="env"/>
+	<exec if:set="java_home_available" executable="/usr/libexec/java_home" outputproperty="javahome" />
+	<property unless:set="java_home_available" name="javahome" value="${env.JAVA_HOME}" />
+
+	<!-- default target, just compiles everything -->
+	<target name="default">
+		<javac
+			srcdir="src/"
+			destdir="classes/"
+			classpath="lib/leapJava.jar:lib/jbox2d-library-2.2.1.1.jar"
+			includeantruntime="no" />
+	</target>
+
+	<!-- removes previously created build artifacts -->
+	<target name="clean">
+		<delete includeEmptyDirs="true">
+			<fileset dir="classes/" includes="**/*" excludes=".empty" defaultexcludes="no"/>
+		</delete>
+		<delete includeEmptyDirs="true" dir="distrib/Mac" />
+		<delete file="distrib/PolyDrop.jar" />
+	</target>
+
+	<!-- runs already-compiled classfiles with specified command-line arguments -->
+	<target name="execute">
+		<java
+			classpath="res:classes:lib/leapJava.jar:lib/jbox2d-library-2.2.1.1.jar"
+			classname="Main"
+			fork="yes"
+				>
+			<sysproperty key="java.library.path" path="lib/"/>
+			<arg line="${args}" />
+		</java>
+	</target>
+
+	<!-- runs already-compiled classfiles with FPS counter visible for debugging -->
+	<target name="run">
+		<property name="args" value="--fps" />
+		<antcall target="execute" />
+	</target>
+
+	<!-- cleans, builds, and runs compiled classfiles -->
+	<target name="go">
+		<antcall target="default" />
+		<antcall target="run" />
+	</target>
+
+	<!-- runs the already-compiled classfiles with windowed option -->
+	<target name="windowed">
+		<property name="args" value="--fps --windowed" />
+		<antcall target="execute" />
+	</target>
+
+	<!-- creates a jar with
+	      - the contents of LeapJava.jar
+	      - the contents of jbox2d-library-2.2.1.1.jar
+	      - all PolyDrop class files
+	      - all PolyDrop resources (images and sounds)
+	      - META-INF folder containing jar manifest
+	-->
+	<target name="jar">
+		<jar
+			destfile="distrib/PolyDrop.jar"
+			manifest="META-INF/MANIFEST.MF"
+			>
+			<fileset dir="classes" includes="*.class" />
+			<fileset dir="res" includes="**/*" />
+			<zipfileset src="lib/LeapJava.jar">
+				<exclude name="META-INF/*" />
+			</zipfileset>
+			<zipfileset src="lib/jbox2d-library-2.2.1.1.jar">
+				<exclude name="META-INF/*" />
+				<exclude name="META-INF/maven" />
+			</zipfileset>
+		</jar>
+	</target>
+
+	<!-- runs the already-compiled classfiles with no options -->
+	<target name="demo">
+		<antcall target="execute" />
+	</target>
+
+	<!-- generates a mac bundle -->
+	<target name="mac">
+		
+		<!-- taskdef for AppBundler -->
+		<taskdef name="bundleapp"
+			 classname="com.oracle.appbundler.AppBundlerTask"
+			 classpath="buildtools/appbundler-1.0.jar" />
+
+		<antcall target="clean" />
+		<antcall target="default" />
+		<antcall target="jar" />
+
+		<!-- make distrib/Mac folder if it doesn't exist -->
+		<mkdir dir="distrib/Mac" />
+
+		<bundleapp
+			outputdirectory="distrib/Mac/"
+			name="PolyDrop"
+			displayname="PolyDrop"
+			identifier="name.mattb.polydrop"
+			icon="icons/icon.icns"
+			shortversion="${version}"
+			applicationCategory="public.app-category.games"
+			mainclassname="Main">
+			<classpath file="distrib/PolyDrop.jar" />
+			<librarypath dir="lib/" includes="libLeap.dylib, libLeapJava.dylib" />
+			<runtime dir="${javahome}" if:set="includeJRE" />
+		</bundleapp>
+
+	</target>
+
+	<!-- generates a mac bundle with embedded JRE -->
+	<target name="mac-jre">
+		<property name="includeJRE" value="true" />
+		<antcall target="mac" />
+	</target>
+
+</project>
