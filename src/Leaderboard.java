@@ -104,12 +104,6 @@ public class Leaderboard {
 	}
 
 	public void clearLeaderboard() {
-		
-		//FOR DRINKTANK DEMO ONLY
-		controller.setUsingUI(true);
-		JOptionPane.showMessageDialog(view, "Sorry, this feature is disabled for the demo. Play fairly!", "No Cheating", JOptionPane.ERROR_MESSAGE);
-		controller.setUsingUI(false);
-		if (true) return;
 
 		//prevent accidental clear
 		controller.setUsingUI(true);
