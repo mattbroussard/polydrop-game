@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="PolyDrop" default="default" basedir="." xmlns:if="ant:if" xmlns:unless="ant:unless">
 
-	<!-- properties -->
+	<!-- load version from VERSION file. Used for Mac/Windows build artifacts. -->
 	<loadfile property="version" srcFile="VERSION" />
 	
 	<!-- the location of a JRE for bundling can be specified with `ant -Djavahome=[jre location] [target]`. -->
@@ -28,8 +28,22 @@
 		<delete includeEmptyDirs="true">
 			<fileset dir="classes/" includes="**/*" excludes=".empty" defaultexcludes="no"/>
 		</delete>
-		<delete includeEmptyDirs="true" dir="distrib/Mac" />
-		<delete file="distrib/PolyDrop.jar" />
+		<delete file="distrib/${version}/PolyDrop.jar" />
+	</target>
+
+	<!-- removes previously created Mac artifacts -->
+	<target name="clean-mac">
+		<delete includeEmptyDirs="true" dir="distrib/${version}/Mac" />
+	</target>
+
+	<!-- removes previously created Windows artifacts -->
+	<target name="clean-win">
+		<delete includeEmptyDirs="true" dir="distrib/${version}/Windows" />
+	</target>
+
+	<!-- removes previously created Airspace artifacts -->
+	<target name="clean-airspace">
+		<delete includeEmptyDirs="true" dir="distrib/${version}/Airspace" />
 	</target>
 
 	<!-- runs already-compiled classfiles with specified command-line arguments -->
@@ -37,8 +51,7 @@
 		<java
 			classpath="res:classes:lib/leapJava.jar:lib/jbox2d-library-2.2.1.1.jar"
 			classname="Main"
-			fork="yes"
-				>
+			fork="yes" >
 			<sysproperty key="java.library.path" path="lib/"/>
 			<arg line="${args}" />
 		</java>
@@ -71,7 +84,7 @@
 	-->
 	<target name="jar">
 		<jar
-			destfile="distrib/PolyDrop.jar"
+			destfile="distrib/${version}/PolyDrop.jar"
 			manifest="META-INF/MANIFEST.MF"
 			>
 			<fileset dir="classes" includes="*.class" />
@@ -100,14 +113,15 @@
 			 classpath="buildtools/appbundler-1.0.jar" />
 
 		<antcall target="clean" />
+		<antcall target="clean-mac" />
 		<antcall target="default" />
 		<antcall target="jar" />
 
 		<!-- make distrib/Mac folder if it doesn't exist -->
-		<mkdir dir="distrib/Mac" />
+		<mkdir dir="distrib/${version}/Mac" />
 
 		<bundleapp
-			outputdirectory="distrib/Mac/"
+			outputdirectory="distrib/${version}/Mac/"
 			name="PolyDrop"
 			displayname="PolyDrop"
 			identifier="name.mattb.polydrop"
@@ -115,10 +129,23 @@
 			shortversion="${version}"
 			applicationCategory="public.app-category.games"
 			mainclassname="Main">
-			<classpath file="distrib/PolyDrop.jar" />
+			<classpath file="distrib/${version}/PolyDrop.jar" />
 			<librarypath dir="lib/" includes="libLeap.dylib, libLeapJava.dylib" />
 			<runtime dir="${javahome}" if:set="includeJRE" />
 		</bundleapp>
+
+		<!-- this is a little ugly, but adds to Info.plist the necessary keys to support Retina and fullscreen mode on Mac -->
+		<!-- do not change the indentation, you will break it -->
+		<replace file="distrib/${version}/Mac/PolyDrop.app/Contents/Info.plist">
+		  <replacetoken><![CDATA[</dict>
+</plist>]]></replacetoken>
+		  <replacevalue><![CDATA[<key>NSHighResolutionCapable</key>
+<true/>
+<key>LSUIPresentationMode</key>
+<integer>3</integer>
+</dict>
+</plist>]]></replacevalue>
+		</replace>
 
 	</target>
 
@@ -126,6 +153,70 @@
 	<target name="mac-jre">
 		<property name="includeJRE" value="true" />
 		<antcall target="mac" />
+	</target>
+
+	<!-- generates a windows bundle -->
+	<target name="win">
+
+		<!-- taskdef for launch4j -->
+		<taskdef name="launch4j"
+			classname="net.sf.launch4j.ant.Launch4jTask"
+			classpath="buildtools/launch4j/launch4j.jar:buildtools/launch4j/lib/xstream.jar" />
+
+		<antcall target="clean" />
+		<antcall target="clean-win" />
+		<antcall target="default" />
+		<antcall target="jar" />
+
+		<!-- make distrib/Windows folder if it doesn't exist -->
+		<mkdir dir="distrib/${version}/Windows" />
+		
+		<copy file="distrib/${version}/PolyDrop.jar" todir="distrib/" />
+		<launch4j configFile="launch4j.xml" />
+		<move file="distrib/PolyDrop.exe" todir="distrib/${version}/Windows/" />
+		<delete file="distrib/PolyDrop.jar" />
+
+		<mkdir if:set="includeJRE" dir="distrib/${version}/Windows/jre" />
+		<copy if:set="includeJRE" todir="distrib/${version}/Windows/jre">
+			<fileset dir="${javahome}" includes="**/*" />
+		</copy>
+
+		<copy todir="distrib/${version}/Windows">
+			<fileset dir="lib/" includes="Leap.dll, LeapJava.dll" />
+		</copy>
+
+	</target>
+
+	<!-- generates a windows bundle with embedded JRE -->
+	<target name="win-jre">
+		<property name="includeJRE" value="true" />
+		<antcall target="win" />
+	</target>
+
+	<!-- generates files necessary for submission to Leap Motion Airspace store -->
+	<!-- unfortunately this only works on Mac since it needs hdiutil to create a DMG -->
+	<!-- targets mac-jre and win-jre must have already been built; one of them will need a custom JRE path for the foreign platform -->
+	<target name="airspace">
+
+		<antcall target="clean-airspace" />
+		<mkdir dir="distrib/${version}/Airspace" />
+
+		<mkdir dir="distrib/${version}/Airspace/PolyDrop" />
+		<copy todir="distrib/${version}/Airspace/PolyDrop">
+			<fileset dir="distrib/${version}/Windows" includes="**/*" />
+		</copy>
+		<move file="distrib/${version}/Airspace/PolyDrop/PolyDrop.exe" tofile="distrib/${version}/Airspace/PolyDrop/PolyDrop_LM.exe" />
+		<zip destfile="distrib/${version}/Airspace/PolyDrop_${version}_Airspace_Windows.zip">
+			<fileset dir="distrib/${version}/Airspace/PolyDrop" includes="**/*" />
+		</zip>
+		<delete dir="distrib/${version}/Airspace/PolyDrop" />
+
+		<move file="distrib/${version}/Mac/PolyDrop.app" tofile="distrib/${version}/Mac/PolyDrop_LM.app" />
+		<exec executable="hdiutil" failonerror="true">
+			<arg line="create -srcfolder 'distrib/${version}/Mac' -volname 'PolyDrop_${version}' -fs HFS+ -fsargs '-c c=64,a=16,e=16' -format UDRW 'distrib/${version}/Airspace/PolyDrop_${version}_Airspace_Mac.dmg'"/>
+		</exec>
+		<move file="distrib/${version}/Mac/PolyDrop_LM.app" tofile="distrib/${version}/Mac/PolyDrop.app" />
+
 	</target>
 
 </project>

@@ -21,14 +21,15 @@ The following files are missing for licensing reasons:
 * jBox2D Library (available [here](http://www.jbox2d.org/))
   * lib/jbox2d-library-2.2.1.1.jar
 
-The following must be present to generate the Mac bundles:
+The following must be present to generate the Mac bundle:
 
 * AppBundler (available [here](https://java.net/projects/appbundler))
   * buildtools/appbundler-1.0.jar
 
-The following must be present to generate the Windows bundles:
+The following must be present to generate the Windows bundle:
 
-* To be determined.
+* Launch4j (available [here](http://launch4j.sourceforge.net/))
+  * buildtools/launch4j/*
 
 # Building
 
@@ -39,4 +40,6 @@ This project uses [Apache Ant](http://ant.apache.org/) 1.9.1 or later for builds
 * To run test build: `ant run`
 * To run test build in windowed mode: `ant windowed`
 * To generate distrib/PolyDrop.jar: `ant jar`
-* To generate Mac bundle: `ant mac` or `ant mac-jre` to include JRE
+* To generate Mac bundle: `ant mac` or `ant mac-jre` to include JRE (specify JRE location with -Djavahome=[location] if foreign platform)
+* To generate Windows bundle: `ant win` or `ant win-jre` to include JRE (specify JRE location with -Djavahome=[location] if foreign platform)
+* To generate Airspace files, `ant airspace` (Mac-only since requires `hdiutil`)
