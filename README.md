@@ -39,7 +39,7 @@ This project uses [Apache Ant](http://ant.apache.org/) 1.9.1 or later for builds
 * To build: `ant`
 * To run test build: `ant run`
 * To run test build in windowed mode: `ant windowed`
-* To generate distrib/PolyDrop.jar: `ant jar`
+* To generate JAR: `ant jar`
 * To generate Mac bundle: `ant mac` or `ant mac-jre` to include JRE (specify JRE location with `-Djavahome=[location]` if foreign platform)
 * To generate Windows bundle: `ant win` or `ant win-jre` to include JRE (specify JRE location with `-Djavahome=[location]` if foreign platform)
 * To generate Airspace files, `ant airspace` (Mac-only since requires `hdiutil`)
