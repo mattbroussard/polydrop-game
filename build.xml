@@ -206,14 +206,14 @@
 			<fileset dir="distrib/${version}/Windows" includes="**/*" />
 		</copy>
 		<move file="distrib/${version}/Airspace/PolyDrop/PolyDrop.exe" tofile="distrib/${version}/Airspace/PolyDrop/PolyDrop_LM.exe" />
-		<zip destfile="distrib/${version}/Airspace/PolyDrop_${version}_Airspace_Windows.zip">
+		<zip destfile="distrib/${version}/Airspace/PolyDrop_LM_${version}_Windows.zip">
 			<fileset dir="distrib/${version}/Airspace/PolyDrop" includes="**/*" />
 		</zip>
 		<delete dir="distrib/${version}/Airspace/PolyDrop" />
 
 		<move file="distrib/${version}/Mac/PolyDrop.app" tofile="distrib/${version}/Mac/PolyDrop_LM.app" />
 		<exec executable="hdiutil" failonerror="true">
-			<arg line="create -srcfolder 'distrib/${version}/Mac' -volname 'PolyDrop_${version}' -fs HFS+ -fsargs '-c c=64,a=16,e=16' -format UDRW 'distrib/${version}/Airspace/PolyDrop_${version}_Airspace_Mac.dmg'"/>
+			<arg line="create -srcfolder 'distrib/${version}/Mac' -volname 'PolyDrop_${version}' -fs HFS+ -fsargs '-c c=64,a=16,e=16' -format UDRW 'distrib/${version}/Airspace/PolyDrop_LM_${version}_OSX.dmg'"/>
 		</exec>
 		<move file="distrib/${version}/Mac/PolyDrop_LM.app" tofile="distrib/${version}/Mac/PolyDrop.app" />
 
