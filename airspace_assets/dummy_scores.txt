@@ -1,22 +1,22 @@
 #PolyDrop settings file... do not tamper with this!
 #Mon Mar 17 20:20:50 CDT 2014
 name_1=Melody
-score_1=9039
+score_1=9040
 name_2=Dustin
-score_2=7111
+score_2=7110
 name_3=Elizabeth
-score_3=6381
+score_3=6380
 name_4=Donald
-score_4=5202
+score_4=5200
 name_5=Samantha
-score_5=5087
+score_5=5080
 name_6=Michael
-score_6=5008
+score_6=5000
 name_7=Alice
-score_7=4854
+score_7=4850
 name_8=Chris
-score_8=3306
+score_8=3300
 name_9=Mary
-score_9=1848
+score_9=1840
 name_10=John
-score_10=1787
+score_10=1780
