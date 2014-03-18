@@ -48,7 +48,7 @@ public class Main {
 
 		} else {
 			
-			frame.setSize(1280,800);
+			frame.setSize(1280,824);
 			frame.setLocation(100,100);
 
 		}
