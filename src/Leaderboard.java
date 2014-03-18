@@ -1,15 +1,12 @@
 
 import javax.swing.JOptionPane;
 import java.awt.Color;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
 import java.util.*;
 
 public class Leaderboard {
 	
 	static final int N_ENTRIES = 10;
 
-	Preferences prefs = Preferences.userRoot();
 	ArrayList<Entry> topList = new ArrayList<Entry>();
 	
 	GameController controller;
@@ -34,7 +31,7 @@ public class Leaderboard {
 	public String promptForName(int score, int place) {
 		controller.setUsingUI(true);
 		String msg = String.format("New high score of %d (placed #%d)!\nWhat is your name?", score, place);
-		String s = JOptionPane.showInputDialog(view, msg, "");
+		String s = (String)JOptionPane.showInputDialog(view, msg, "New High Score", JOptionPane.QUESTION_MESSAGE, ImageManager.getIcon("leaderboard"), null, "");
 		controller.setUsingUI(false);
 		return s;
 	}
@@ -43,9 +40,11 @@ public class Leaderboard {
 
 		for (int i = 0; i < topList.size(); i++) {
 			Entry e = topList.get(i);
-			prefs.put("name_"+(i+1), e.name);
-			prefs.putInt("score_"+(i+1), e.score);
+			Prefs.putString("name_"+(i+1), e.name);
+			Prefs.putInt("score_"+(i+1), e.score);
 		}
+
+		Prefs.writeOut();
 
 	}
 
@@ -53,8 +52,8 @@ public class Leaderboard {
 
 		for (int i = 1; i <= N_ENTRIES; i++) {
 
-			String name = prefs.get("name_"+i, null);
-			int score = prefs.getInt("score_"+i, Integer.MIN_VALUE);
+			String name = Prefs.getString("name_"+i, null);
+			int score = Prefs.getInt("score_"+i, Integer.MIN_VALUE);
 			
 			if (name == null || score == Integer.MIN_VALUE)
 				break;
@@ -107,17 +106,14 @@ public class Leaderboard {
 
 		//prevent accidental clear
 		controller.setUsingUI(true);
-		int confirmation = JOptionPane.showConfirmDialog(view, "Are you sure you want to clear all high scores?", "Clear High Scores", JOptionPane.OK_CANCEL_OPTION);
+		int confirmation = JOptionPane.showConfirmDialog(view, "Are you sure you want to clear all high scores?", "Clear High Scores", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, ImageManager.getIcon("clearLeaderboard"));
 		controller.setUsingUI(false);
 		if (confirmation != JOptionPane.OK_OPTION)
 			return;
 
-		try {
-			prefs.clear();
-			topList = new ArrayList<Entry>();
-		} catch (BackingStoreException e) {
-			e.printStackTrace();
-		}
+		Prefs.reset();
+		Prefs.writeOut();
+		topList = new ArrayList<Entry>();
 
 	}
 

@@ -1,7 +1,9 @@
 
+import java.awt.Image;
 import java.awt.image.*;
 import javax.imageio.*;
 import java.util.*;
+import javax.swing.ImageIcon;
 
 public class ImageManager {
 	
@@ -27,6 +29,12 @@ public class ImageManager {
 		}
 
 		return cache.get(name);
+
+	}
+
+	public static ImageIcon getIcon(String name) {
+
+		return new ImageIcon(ImageManager.getImage(name).getScaledInstance(64, 64, Image.SCALE_SMOOTH));
 
 	}
 
