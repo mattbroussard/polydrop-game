@@ -1,7 +1,7 @@
 <launch4jConfig>
-  <dontWrapJar>false</dontWrapJar>
+  <dontWrapJar>true</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>distrib/PolyDrop.jar</jar>
+  <jar>PolyDrop.jar</jar>
   <outfile>distrib/PolyDrop.exe</outfile>
   <errTitle>PolyDrop</errTitle>
   <cmdLine></cmdLine>

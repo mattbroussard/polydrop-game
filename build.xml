@@ -171,10 +171,9 @@
 		<!-- make distrib/Windows folder if it doesn't exist -->
 		<mkdir dir="distrib/${version}/Windows" />
 		
-		<copy file="distrib/${version}/PolyDrop.jar" todir="distrib/" />
+		<copy file="distrib/${version}/PolyDrop.jar" todir="distrib/${version}/Windows/" />
 		<launch4j configFile="launch4j.xml" />
 		<move file="distrib/PolyDrop.exe" todir="distrib/${version}/Windows/" />
-		<delete file="distrib/PolyDrop.jar" />
 
 		<mkdir if:set="includeJRE" dir="distrib/${version}/Windows/jre" />
 		<copy if:set="includeJRE" todir="distrib/${version}/Windows/jre">
