@@ -2,10 +2,15 @@
 import java.awt.*;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
+import java.io.InputStream;
+import java.util.Scanner;
 
 public class Main {
 
 	public static void main(String[] args) {
+
+		//Print current build version
+		System.out.printf("PolyDrop version %s starting up...\n", getVersion());
 
 		//Parse any command-line arguments
 		boolean fullScreen = true;
@@ -58,6 +63,28 @@ public class Main {
 
 		//Make window visible
 		frame.setVisible(true);
+
+	}
+
+	private static String version = null;
+	public static String getVersion() {
+
+		if (version == null) {
+
+			try {
+				InputStream is = Main.class.getResource("BUILD_VERSION").openStream();
+				Scanner scan = new Scanner(is);
+				version = scan.useDelimiter("\\A").next().trim();
+				scan.close();
+				is.close();
+			} catch (Exception e) {
+				if (version == null)
+					version = "Unknown";
+			}
+
+		}
+
+		return version;
 
 	}
 

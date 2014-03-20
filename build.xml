@@ -3,6 +3,9 @@
 
 	<!-- load version from VERSION file. Used for Mac/Windows build artifacts. -->
 	<loadfile property="version" srcFile="VERSION" />
+	<tstamp>
+		<format property="version_timestamp" pattern="yyyyMMddHHmm" />
+	</tstamp>
 	
 	<!-- the location of a JRE for bundling can be specified with `ant -Djavahome=[jre location] [target]`. -->
 	<!-- if one isn't specified, try getting it from $JAVA_HOME or /usr/libexec/java_home (on Mac) -->
@@ -16,6 +19,8 @@
 
 	<!-- default target, just compiles everything -->
 	<target name="default">
+		<delete file="res/BUILD_VERSION" />
+		<echo file="res/BUILD_VERSION" message="${version}.${version_timestamp}" />
 		<javac
 			srcdir="src/"
 			destdir="classes/"
@@ -29,6 +34,7 @@
 			<fileset dir="classes/" includes="**/*" excludes=".empty" defaultexcludes="no"/>
 		</delete>
 		<delete file="distrib/${version}/PolyDrop.jar" />
+		<delete file="res/BUILD_VERSION" />
 	</target>
 
 	<!-- removes previously created Mac artifacts -->
@@ -171,15 +177,20 @@
 		<!-- make distrib/Windows folder if it doesn't exist -->
 		<mkdir dir="distrib/${version}/Windows" />
 		
-		<copy file="distrib/${version}/PolyDrop.jar" todir="distrib/${version}/Windows/" />
-		<launch4j configFile="launch4j.xml" />
-		<move file="distrib/PolyDrop.exe" todir="distrib/${version}/Windows/" />
+		<launch4j
+			configFile="launch4j.xml"
+			outfile="distrib/${version}/Windows/PolyDrop.exe"
+			fileVersion="${version}.${version_timestamp}"
+			txtFileVersion="${version}.${version_timestamp}"
+			productVersion="${version}.${version_timestamp}"
+			txtProductVersion="${version}.${version_timestamp}" />
 
 		<mkdir if:set="includeJRE" dir="distrib/${version}/Windows/jre" />
 		<copy if:set="includeJRE" todir="distrib/${version}/Windows/jre">
 			<fileset dir="${javahome}" includes="**/*" />
 		</copy>
 
+		<copy file="distrib/${version}/PolyDrop.jar" todir="distrib/${version}/Windows/" />
 		<copy todir="distrib/${version}/Windows">
 			<fileset dir="lib/" includes="Leap.dll, LeapJava.dll" />
 		</copy>
