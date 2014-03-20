@@ -122,7 +122,7 @@ public class Leaderboard {
 		if (topList.size()>0) {
 			for (int i = 0; i < topList.size(); i++) {
 				Entry e = topList.get(i);
-				String msg = String.format("#%d: %s - %d points", i+1, e.name, e.score);
+				String msg = String.format("#%d: %s:  %d points", i+1, e.name, e.score);
 				g2.drawStringCentered(msg, 0.5f, Colors.LEADERBOARD, 8, 1.8f + 0.6f*i);
 			}
 		} else {
