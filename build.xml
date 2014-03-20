@@ -180,9 +180,9 @@
 		<launch4j
 			configFile="launch4j.xml"
 			outfile="distrib/${version}/Windows/PolyDrop.exe"
-			fileVersion="${version}.${version_timestamp}"
+			fileVersion="${version}.0"
 			txtFileVersion="${version}.${version_timestamp}"
-			productVersion="${version}.${version_timestamp}"
+			productVersion="${version}.0"
 			txtProductVersion="${version}.${version_timestamp}" />
 
 		<mkdir if:set="includeJRE" dir="distrib/${version}/Windows/jre" />
