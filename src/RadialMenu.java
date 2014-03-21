@@ -38,14 +38,11 @@ public class RadialMenu {
 	float cursorX = -1;
 	float cursorY = -1;
 	long lastPointerUpdate = -1;
-	public void pointerUpdate(float x, float y) {
+	public void pointerUpdate(float cursorX, float cursorY) {
 
 		//System.out.printf("menu.pointerUpdate called with x=%.3f, y=%.3f\n", x, y);
 
 		lastPointerUpdate = System.currentTimeMillis();
-
-		cursorX = x * 16.0f;
-		cursorY = 10.0f - (y * 10.0f);
 
 		float dx = cursorX - centerX;
 		float dy = cursorY - centerY;
@@ -71,7 +68,8 @@ public class RadialMenu {
 			
 			float leeway = (float) ((r - 2.8) * 7.5);
 		
-			if (r < x || theta < selected.startAngle - leeway || theta > selected.startAngle+selected.arcAngle + leeway) {
+			//TODO: what was this r < x business for? -Matt
+			if (/*r < x ||*/ theta < selected.startAngle - leeway || theta > selected.startAngle+selected.arcAngle + leeway) {
 				
 				//System.out.println("-- selection cancelled");
 				selected = null;

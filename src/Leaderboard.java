@@ -10,6 +10,8 @@ public class Leaderboard {
 	ArrayList<Entry> topList = new ArrayList<Entry>();
 	
 	GameController controller;
+	
+	//TODO: after this extends View, it won't need access to the GameView anymore and can call its own getViewManager() to use JOptionPane
 	GameView view;
 	
 	private boolean allowedHighScore = true;
@@ -31,7 +33,7 @@ public class Leaderboard {
 	public String promptForName(int score, int place) {
 		controller.setUsingUI(true);
 		String msg = String.format("New high score of %d (placed #%d)!\nWhat is your name?", score, place);
-		String s = (String)JOptionPane.showInputDialog(view, msg, "New High Score", JOptionPane.QUESTION_MESSAGE, ImageManager.getIcon("leaderboard"), null, "");
+		String s = (String)JOptionPane.showInputDialog(view.getViewManager(), msg, "New High Score", JOptionPane.QUESTION_MESSAGE, ImageManager.getIcon("leaderboard"), null, "");
 		controller.setUsingUI(false);
 		return s;
 	}
@@ -106,7 +108,7 @@ public class Leaderboard {
 
 		//prevent accidental clear
 		controller.setUsingUI(true);
-		int confirmation = JOptionPane.showConfirmDialog(view, "Are you sure you want to clear all high scores?", "Clear High Scores", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, ImageManager.getIcon("clearLeaderboard"));
+		int confirmation = JOptionPane.showConfirmDialog(view.getViewManager(), "Are you sure you want to clear all high scores?", "Clear High Scores", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, ImageManager.getIcon("clearLeaderboard"));
 		controller.setUsingUI(false);
 		if (confirmation != JOptionPane.OK_OPTION)
 			return;

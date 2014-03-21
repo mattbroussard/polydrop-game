@@ -8,7 +8,7 @@ import com.leapmotion.leap.*;
 public class LeapController extends Listener implements Runnable {
 	
 	GameController game;
-	GameView view;
+	ViewManager viewManager;
 	Controller leap;
 
 	Thread t;
@@ -332,7 +332,7 @@ public class LeapController extends Listener implements Runnable {
 			return;
 		}
 
-		view.pointerUpdate(x, y);
+		viewManager.pointerUpdate(x, y);
 
 	}
 
@@ -357,11 +357,11 @@ public class LeapController extends Listener implements Runnable {
 	//The LeapController is used to:
 	// - actuate change in the position of the platform(s) on the model (via the GameController)
 	// - pause and unpause the game (via the GameController)
-	// - drive UI interactions to change game modes (via the GameView directly)
-	public LeapController(GameController game, GameView view) {
+	// - drive UI interactions to change game modes (via the ViewController)
+	public LeapController(GameController game, ViewManager viewManager) {
 
 		this.game = game;
-		this.view = view;
+		this.viewManager = viewManager;
 
 		//setup Leap listener/controller
 		leap = new Controller();

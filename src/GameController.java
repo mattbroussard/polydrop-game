@@ -69,7 +69,7 @@ public class GameController implements Runnable {
 		hands = h;
 	}
 	
-	public void addView(GameView v) {
+	public void addGameView(GameView v) {
 		view = v;
 		v.addLeaderboard(leaderboard);
 	}

@@ -1,14 +1,13 @@
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import javax.swing.*;
 import java.awt.geom.*;
 import java.util.*;
 
 import org.jbox2d.common.*;
 
-public class GameView extends JComponent implements KeyListener{
+public class GameView extends View {
 	
 	GameModel model;
 	GameController controller;
@@ -74,14 +73,6 @@ public class GameView extends JComponent implements KeyListener{
 		leaderboardMenu.addItem(new RadialMenuItem(LEADERBOARD_MENU_CLEAR, "Reset Scores", "clearLeaderboard", 70, 20));
 
 	}
-
-	public void keyReleased(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) controller.exitGame();
-		if(e.getKeyCode() == KeyEvent.VK_SPACE) controller.newGame();
-	}
-
-	public void keyPressed(KeyEvent e) {}
-	public void keyTyped(KeyEvent e) {}
 	
 	public void addLeaderboard(Leaderboard l) {
 		leaderboard = l;
@@ -122,10 +113,7 @@ public class GameView extends JComponent implements KeyListener{
 		this.pointLossX = pointLossX;
 	}
 	
-	public void paintComponent(Graphics graphics) {
-
-		super.paintComponent(graphics);
-		GraphicsWrapper g2 = new GraphicsWrapper(graphics, this);
+	public void draw(GraphicsWrapper g2, boolean active) {
 
 		boolean gameOver = model.isGameOver();
 		boolean paused = controller.isPaused() || gameOver;
@@ -134,9 +122,6 @@ public class GameView extends JComponent implements KeyListener{
 		Color bg = paused ? Colors.PAUSED : Colors.BACKGROUND;
 		g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
 		g2.fillRect(0, 0, 16, 10, bg);
-
-		//Draw FPS, if requested with --fps command line option
-		paintFPS(g2);
 
 		/*
 		//some code dallas added but commented? not ported to new graphics scheme.
@@ -333,60 +318,13 @@ public class GameView extends JComponent implements KeyListener{
 	}
 
 	//called by LeapController to indicate position of pointer.
-	public void pointerUpdate(double x, double y) {
+	public void pointerUpdate(float x, float y) {
 
 		RadialMenu m = getActiveMenu();
 		if (m == null)
 			return;
 
-		m.pointerUpdate((float)x, (float)y);
-
-	}
-
-	//To implement letterboxing and avoid unpleasant stretching, we tell the parent container what size we'd like to be
-	public Dimension getPreferredSize() {
-
-		Container parent = this.getParent();
-		if (parent == null) return null;
-
-		float parentRatio = (float)parent.getWidth() / (float)parent.getHeight();
-
-		if (parentRatio > 1.6f) {
-
-			//container is too wide, take its height
-			float ourWidth = 1.6f * parent.getHeight();
-			return new Dimension((int)Math.round(ourWidth), parent.getHeight());
-
-		} else {
-
-			//container is too tall, take its width
-			float ourHeight = (float)parent.getWidth() / 1.6f;
-			return new Dimension(parent.getWidth(), (int)Math.round(ourHeight));
-
-		}
-
-	}
-
-	//we always get what we want
-	public Dimension getMaximumSize() { return getPreferredSize(); }
-	public Dimension getMinimumSize() { return getPreferredSize(); }
-
-	long lastPaint = 0;
-	int paintId = 0;
-	float fps = 0;
-	boolean showFPS = false; /* set from Main */
-	static final int FPS_SAMPLE = 10;
-	public void paintFPS(GraphicsWrapper g2) {
-
-		if (!showFPS) return;
-
-		paintId = (paintId + 1) % FPS_SAMPLE;
-		if (paintId == 0) {
-			long now = System.currentTimeMillis();
-			fps = FPS_SAMPLE * 1000f / (now - lastPaint);
-			lastPaint = now;
-		}
-		g2.drawString(String.format("%.1f fps", fps), 0.2f, Color.white, 15f, 9.6f);
+		m.pointerUpdate(x, y);
 
 	}
 

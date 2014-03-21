@@ -26,24 +26,27 @@ public class Main {
 		GameModel model = new GameModel();
 
 		//Setup game controller
-		GameController game = new GameController(model);
+		GameController gameController = new GameController(model);
+
+		//Setup ViewManager
+		ViewManager vm = new ViewManager(showFPS);
+
+		//Setup initially present views
+		GameView gameView = new GameView(model, gameController);
+		vm.pushView(gameView);
+		gameController.addGameView(gameView);
 
 		//Setup frame
 		JFrame frame = new JFrame("PolyDrop");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-		//Setup view and frame's layout
-		GameView view = new GameView(model, game);
-		view.showFPS = showFPS;
 		Container lay = frame.getContentPane();
 		lay.setLayout(new BoxLayout(lay, BoxLayout.Y_AXIS));
 		lay.setBackground(Colors.LETTERBOX);
 		lay.add(Box.createVerticalGlue());
-		lay.add(view);
+		lay.add(vm);
 		lay.add(Box.createVerticalGlue());
 		lay.setCursor(Toolkit.getDefaultToolkit().createCustomCursor(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), new Point(), "null"));
-		frame.addKeyListener(view);
-		game.addView(view);
+		frame.addKeyListener(vm);
 
 		//Setup full screen window
 		if (fullScreen) {
@@ -59,7 +62,7 @@ public class Main {
 		}
 
 		//Setup Leap controller
-		LeapController leap = new LeapController(game, view);
+		LeapController leap = new LeapController(gameController, vm);
 
 		//Make window visible
 		frame.setVisible(true);
