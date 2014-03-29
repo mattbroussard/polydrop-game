@@ -195,7 +195,7 @@ public class GameController implements Runnable {
 			x = (float)(Math.random() * 12 - 6 );
 		}
 		System.out.println("spawing at "+x);
-		return new PolyBody(model.world, x, distributions[level][newPoly]);
+		return new PolyBody(model.world, x, distributions[level][newPoly], model.gameMode);
 	}
 
 	public void run() {
@@ -250,10 +250,10 @@ public class GameController implements Runnable {
 					b.reduceLifetime(dt);
 					if( b.getExpiration() <= 0 ) {
 						// yay, points!
-						model.addPoints(b.getValue());
+						model.addPoints(b.getReward());
 						SoundManager.play("pointGain");
 						if (view != null)
-							view.notifyScore(b, b.getValue());
+							view.notifyScore(b, b.getReward());
 						
 						// level up
 						if(model.getLevel() < scoreNeededToLevel.length && model.getScore() >= scoreNeededToLevel[model.getLevel()]) {
@@ -291,9 +291,9 @@ public class GameController implements Runnable {
 							model.reduceHealth();
 						}
 						if (view != null)
-							view.notifyScore(b, -20);
+							view.notifyScore(b, b.getPenalty());
+						model.addPoints(b.getPenalty());
 						model.world.destroyBody(b.getBody());
-						model.addPoints(-20);
 						SoundManager.play("pointLoss");						
 					}
 				}

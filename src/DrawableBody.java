@@ -10,5 +10,7 @@ public interface DrawableBody {
 	public int getValue();
 	public long getExpiration();
 	public void reduceLifetime(long dt);
+	public int getPenalty();
+	public int getReward();
 
 }

@@ -70,4 +70,12 @@ public class Platform implements DrawableBody {
 	public BodyDef getBodyDef() {
 		return this.bdef;
 	}
+
+	public int getPenalty() {
+		return 0;
+	}
+
+	public int getReward() {
+		return 0;
+	}
 }

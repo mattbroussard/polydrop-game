@@ -11,8 +11,10 @@ public class PolyBody implements DrawableBody {
 	private int sides;
 	private long lifetime = 10*1000; // milliseconds
 	private float size;
+	private int reward;
+	private int penalty;
 
-	public PolyBody(World world, float x, int sides) {		
+	public PolyBody(World world, float x, int sides, int gameMode) {		
 		BodyDef bdef = new BodyDef();
 		bdef.type = BodyType.DYNAMIC;
 		bdef.position.set(x,10);
@@ -38,6 +40,9 @@ public class PolyBody implements DrawableBody {
 
 		this.color = Colors.SHAPES[sides-3];
 		this.sides = sides;
+		
+		this.reward = (gameMode == GameModel.FREE_PLAY) ? 0 : 10 * sides;
+		this.penalty = (gameMode == GameModel.FREE_PLAY) ? 0 : -20;
 	}
 
 	public Color getColor() {
@@ -70,6 +75,12 @@ public class PolyBody implements DrawableBody {
 
 	public int getNumSides() {
 		return this.sides;
+	}
+	public int getReward(){
+		return reward;
+	}
+	public int getPenalty(){
+		return penalty;
 	}
 
 }
