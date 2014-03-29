@@ -149,10 +149,6 @@ public class GameView extends View {
 		}
 		
 	}
-	
-	public void clearBlockList(){
-		model.blockList.clear();
-	}
 
 	//this is a little annoying, but the controller doesn't know about the ViewManager
 	public void switchToPaused() { getViewManager().swapView("paused"); }

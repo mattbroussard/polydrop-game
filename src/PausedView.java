@@ -71,7 +71,6 @@ public class PausedView extends View implements RadialMenuListener {
 				menu.setActiveItem(PAUSE_MENU_MODE_FREE);
 				if( model.getGameMode() != GameModel.FREE_PLAY ) {
 					model.setGameMode(GameModel.FREE_PLAY);
-					gameView.clearBlockList();
 				}
 				
 				break;
