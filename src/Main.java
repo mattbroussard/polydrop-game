@@ -31,10 +31,24 @@ public class Main {
 		//Setup ViewManager
 		ViewManager vm = new ViewManager(showFPS);
 
-		//Setup initially present views
+		//Setup views
 		GameView gameView = new GameView(model, gameController);
-		vm.pushView(gameView);
 		gameController.addGameView(gameView);
+		vm.registerView(gameView, "game");
+		PausedView pausedView = new PausedView(gameController, gameView);
+		vm.registerView(pausedView, "paused");
+		GameOverView gameOverView = new GameOverView(gameController, gameView);
+		vm.registerView(gameOverView, "gameover");
+		TutorialView tutorial = new TutorialView();
+		vm.registerView(tutorial, "tutorial");
+		AboutView about = new AboutView();
+		vm.registerView(about, "about");
+		Leaderboard leaderboard = new Leaderboard(gameController);
+		vm.registerView(leaderboard, "leaderboard");
+		gameController.addLeaderboard(leaderboard);
+		SplashView splash = new SplashView();
+		vm.registerView(splash, "splash");
+		vm.pushView(splash);
 
 		//Setup frame
 		JFrame frame = new JFrame("PolyDrop");

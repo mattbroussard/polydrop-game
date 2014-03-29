@@ -224,14 +224,14 @@ public class GraphicsWrapper {
 	}
 
 	//angles in degrees
-	public void fillArc(float x, float y, float radius, float startAngle, float arcAngle, Color c) {
+	public void fillArc(float x, float y, float radius, float startAngle, float arcAngle, Paint c) {
 		
 		float scale = getCurrentScale();
 
 		x -= radius;
 		y -= radius;
 
-		g2.setColor(c);
+		g2.setPaint(c);
 		g2.fillArc(
 			(int)Math.round(x*scale),
 			(int)Math.round(y*scale),

@@ -1,12 +1,12 @@
 
-import java.awt.Color;
+import java.awt.Paint;
 import java.util.*;
 
 public class RadialMenu {
 	
 	float centerX;
 	float centerY;
-	GameView parent;
+	RadialMenuListener listener;
 	ArrayList<RadialMenuItem> items;
 
 	RadialMenuItem selected = null;
@@ -15,11 +15,11 @@ public class RadialMenu {
 
 	static final float ITEM_GAP = 0.5f;
 
-	public RadialMenu(float centerX, float centerY, GameView parent) {
+	public RadialMenu(float centerX, float centerY, RadialMenuListener listener) {
 
 		this.centerX = centerX;
 		this.centerY = centerY;
-		this.parent = parent;
+		this.listener = listener;
 		items = new ArrayList<RadialMenuItem>();
 
 	}
@@ -38,11 +38,13 @@ public class RadialMenu {
 	float cursorX = -1;
 	float cursorY = -1;
 	long lastPointerUpdate = -1;
-	public void pointerUpdate(float cursorX, float cursorY) {
+	public void pointerUpdate(float cx, float cy) {
 
 		//System.out.printf("menu.pointerUpdate called with x=%.3f, y=%.3f\n", x, y);
 
 		lastPointerUpdate = System.currentTimeMillis();
+		this.cursorX = cx;
+		this.cursorY = cy;
 
 		float dx = cursorX - centerX;
 		float dy = cursorY - centerY;
@@ -68,7 +70,7 @@ public class RadialMenu {
 			
 			float leeway = (float) ((r - 2.8) * 7.5);
 		
-			//TODO: what was this r < x business for? -Matt
+			//TODO: what was this r < x business for? Remove? -Matt
 			if (/*r < x ||*/ theta < selected.startAngle - leeway || theta > selected.startAngle+selected.arcAngle + leeway) {
 				
 				//System.out.println("-- selection cancelled");
@@ -82,7 +84,7 @@ public class RadialMenu {
 
 			if (selectExtent > 1.2f) {
 
-				parent.menuItemSelected(selected.id);
+				listener.onMenuSelection(selected.id);
 				//System.out.println("-- selection successful, callback would be called.");
 				selected = null;
 				selectExtent = 0;
@@ -136,7 +138,7 @@ public class RadialMenu {
 				g2.fillArc(centerX, centerY, 3.8f, gapStart + ITEM_GAP, gapLength - 2*ITEM_GAP, Colors.MENU_GAP);
 				
 			float extent = item == selected ? selectExtent : 0;
-			Color color = item == selected ? item.selectedColor : (active == item.id ? item.activeColor : Colors.MENU_ITEM);
+			Paint color = item == selected ? item.selectedColor : (active == item.id ? item.activeColor : Colors.MENU_ITEM);
 
 			//draw item slice
 			g2.maskCircle(centerX, centerY, 2.8f + extent);
@@ -147,9 +149,8 @@ public class RadialMenu {
 			float labelAngleDeg = item.startAngle + item.arcAngle/2.0f;
 			float labelAngleRad = labelAngleDeg / 180.f * (float)Math.PI;
 			g2.setOrigin(centerX + (3.3f+extent)*(float)Math.cos(labelAngleRad), centerY - (3.3f+extent)*(float)Math.sin(labelAngleRad));
-			g2.rotate(90 - labelAngleDeg);
 			item.drawLabel(g2, item == selected);
-			g2.restore(2);
+			g2.restore();
 
 		}
 		g2.restore();

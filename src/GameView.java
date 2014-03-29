@@ -11,37 +11,11 @@ public class GameView extends View {
 	
 	GameModel model;
 	GameController controller;
-	Leaderboard leaderboard;
 	LinkedList<Notification> notifs;
 	
 	boolean recentPointLoss = false;
 	int pointLossAlpha = 0;
-	
-	//I don't think these are used anymore except code commented by dallas in paintComponent?
-	boolean startUnpause = false;
-	int countdown = 3;
 	float pointLossX = 0;
-
-	boolean usingLeaderboard = false;
-
-	RadialMenu pausedMenu;
-	RadialMenu gameOverMenu;
-	RadialMenu leaderboardMenu;
-	RadialMenuItem muteMenuItem;
-
-	static final int PAUSE_MENU_MODE_FREE = 0;
-	static final int PAUSE_MENU_MODE_DUAL = 1;
-	static final int PAUSE_MENU_MODE_SINGLE = 2;
-	static final int PAUSE_MENU_EXIT_GAME = 3;
-	static final int PAUSE_MENU_LEADERBOARD = 4;
-	static final int PAUSE_MENU_MUTE = 5;
-
-	static final int LEADERBOARD_MENU_CLEAR = 6;
-	static final int LEADERBOARD_MENU_EXIT = 7;
-
-	static final int GAMEOVER_MENU_NEWGAME = 8;
-	static final int GAMEOVER_MENU_EXIT_GAME = 9;
-	static final int GAMEOVER_MENU_LEADERBOARD = 10;
 
 	public GameView(GameModel m, GameController c) {
 
@@ -50,33 +24,6 @@ public class GameView extends View {
 		controller = c;
 		notifs = new LinkedList<Notification>();
 
-		//Construct paused menu
-		pausedMenu = new RadialMenu(8, 5.5f, this);
-		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_MODE_FREE, "Free Play", "freeMode", 60, 20, Colors.MENU_MODE_FREE_SELECTED, Colors.MENU_MODE_FREE_ACTIVE));
-		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_MODE_DUAL, "Two Hands", "dualMode", 80, 20, Colors.MENU_MODE_DUAL_SELECTED, Colors.MENU_MODE_DUAL_ACTIVE));
-		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_MODE_SINGLE, "One Hand", "singleMode", 100, 20, Colors.MENU_MODE_SINGLE_SELECTED, Colors.MENU_MODE_SINGLE_ACTIVE));
-		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_EXIT_GAME, "Exit Game", "exit", 240, 20));
-		pausedMenu.addItem(new RadialMenuItem(PAUSE_MENU_LEADERBOARD, "High Scores", "leaderboard", 260, 20));
-		muteMenuItem = new RadialMenuItem(PAUSE_MENU_MUTE, "Mute", "mute", 280, 20);
-		pausedMenu.addItem(muteMenuItem);
-		pausedMenu.setActiveItem(PAUSE_MENU_MODE_SINGLE);
-
-		//Constuct game over menu
-		gameOverMenu = new RadialMenu(8, 11.5f, this);
-		gameOverMenu.addItem(new RadialMenuItem(GAMEOVER_MENU_NEWGAME, "New Game", "newGame", 100, 20));
-		gameOverMenu.addItem(new RadialMenuItem(GAMEOVER_MENU_EXIT_GAME, "Exit Game", "exit", 80, 20));
-		gameOverMenu.addItem(new RadialMenuItem(GAMEOVER_MENU_LEADERBOARD, "High Scores", "leaderboard", 60, 20));
-
-		//Construct leaderboard menu
-		leaderboardMenu = new RadialMenu(8, 11.5f, this);
-		leaderboardMenu.addItem(new RadialMenuItem(LEADERBOARD_MENU_EXIT, "Back", "menuReturn", 90, 20));
-		leaderboardMenu.addItem(new RadialMenuItem(LEADERBOARD_MENU_CLEAR, "Reset Scores", "clearLeaderboard", 70, 20));
-
-	}
-	
-	public void addLeaderboard(Leaderboard l) {
-		leaderboard = l;
-		leaderboard.view = this;
 	}
 
 	public void notifyScore(DrawableBody db, int scoreDelta) {
@@ -96,11 +43,6 @@ public class GameView extends View {
 		synchronized (notifs) { notifs.addFirst(n); }
 
 	}
-	
-	public void unPaused(){
-		startUnpause = true;
-		countdown = 3;
-	}
 
 	public void notifyLevel() {
 
@@ -109,42 +51,26 @@ public class GameView extends View {
 
 	}
 
+	public void onActive() {
+
+		controller.setUsingUI(false);
+
+	}
+
 	public void setPointLossX(float pointLossX){
 		this.pointLossX = pointLossX;
 	}
 	
 	public void draw(GraphicsWrapper g2, boolean active) {
+		draw(g2, active, true);
+	}
 
-		boolean gameOver = model.isGameOver();
-		boolean paused = controller.isPaused() || gameOver;
+	public void draw(GraphicsWrapper g2, boolean active, boolean showBodies) {
 
 		//Draw background
-		Color bg = paused ? Colors.PAUSED : Colors.BACKGROUND;
+		Color bg = !active ? Colors.PAUSED : Colors.BACKGROUND;
 		g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
 		g2.fillRect(0, 0, 16, 10, bg);
-
-		/*
-		//some code dallas added but commented? not ported to new graphics scheme.
-		if(startUnpause){
-
-			System.out.println("Starting unpause");
-			g.setFont(new Font("Monospace", 0, (int) fontSize));
-			System.out.println("Color: " +(int)(255 - (fontSize-200)*10));
-			g.setColor(new Color(255, 0,0,(int)(255 - (fontSize-200)*10)));
-			g.drawString(countdown+"", this.getWidth()/2, this.getHeight()/2);
-			//drawStringCentered(countdown+"",new Font("Monospace", 0, fontSize),new Color(256,0,0,(100+fontSize)), g2, (int)(this.getWidth()/2), (int)(this.getHeight()/2) );
-			fontSize += 1.3;
-			if(255 - (fontSize-200)*10 <= 1){
-				countdown--;
-				fontSize = 200;
-				if(countdown <= 0){
-					countdown = 3;
-					startUnpause = false;
-					paused = false;
-				}
-			}
-		}
-		*/
 
 		//TODO: in the future, it might be nice if this were in its own Renderer class like the other components.
 		//red flash/gradient on bottom
@@ -166,32 +92,24 @@ public class GameView extends View {
 			g2.fillCircle((float)(pointLossX+8), 11.3f, 1+i, new Color(1,0,0,alpha));
 		}
 
-		if (!usingLeaderboard) {
+		if (showBodies) {
 
 			//Draw platform(s)
-			if (model.getGameMode() == GameController.ONE_HAND ||
-				model.getGameMode() == GameController.FREE_PLAY) {
-				BodyRenderer.drawBody(model.getPlatform(), g2, paused);
+			if (model.getGameMode() == GameModel.ONE_HAND ||
+				model.getGameMode() == GameModel.FREE_PLAY) {
+				BodyRenderer.drawBody(model.getPlatform(), g2, !active);
 			}
-			else if (model.getGameMode() == GameController.TWO_HANDS) {
-				BodyRenderer.drawBody(model.getRightPlatform(), g2, paused);
-				BodyRenderer.drawBody(model.getLeftPlatform(),  g2, paused);
+			else if (model.getGameMode() == GameModel.TWO_HANDS) {
+				BodyRenderer.drawBody(model.getRightPlatform(), g2, !active);
+				BodyRenderer.drawBody(model.getLeftPlatform(),  g2, !active);
 			}
 			
 			//Draw blocks
 			ArrayList<DrawableBody> blocks = model.getBlocks();
 			synchronized (blocks) {
 				for (DrawableBody b : blocks)
-					BodyRenderer.drawBody(b, g2, paused);
+					BodyRenderer.drawBody(b, g2, !active);
 			}
-			
-			//draw paused message if paused
-			if (paused && !gameOver)
-				TextRenderer.drawPaused(g2);
-			
-			//draw game over message if game over
-			if (gameOver)
-				TextRenderer.drawGameOver(g2);
 
 		}
 
@@ -199,14 +117,14 @@ public class GameView extends View {
 		TextRenderer.drawScore(g2, model.getScore());
 
 		//Draw radial level indicator
-		LevelRenderer.drawLevelIndicator(g2, model.getLevel(), controller.calculateLevelProgress(), paused);
+		LevelRenderer.drawLevelIndicator(g2, model.getLevel(), controller.calculateLevelProgress(), !active);
 
 		//Draw health bar
-		if( controller.getGameMode() != GameController.FREE_PLAY ) {
-			HealthRenderer.drawHealthBar(g2, model.getHealth(), paused);
+		if( model.getGameMode() != GameModel.FREE_PLAY ) {
+			HealthRenderer.drawHealthBar(g2, model.getHealth(), !active);
 		}
 
-		//Handle notifications -- unfortunately, one thing that gives the view a bit of statefulness...
+		//Handle notifications
 		synchronized (notifs) {
 
 			//Prune old score notifications
@@ -218,114 +136,12 @@ public class GameView extends View {
 				TextRenderer.drawNotification(g2, n);
 
 		}
-
-		//draw the leaderboard UI if we're using it
-		if (leaderboard != null && usingLeaderboard)
-			leaderboard.draw(g2);
-
-		//draw the active menu, if there is one
-		RadialMenu menu = getActiveMenu();
-		if (menu != null)
-			menu.draw(g2);
 		
 	}
 
-	public void menuItemSelected(int id) {
-
-		switch (id) {
-			case PAUSE_MENU_MODE_FREE:
-				pausedMenu.setActiveItem(PAUSE_MENU_MODE_FREE);
-				if( model.getGameMode() != GameController.FREE_PLAY ) {
-					model.setGameMode(GameController.FREE_PLAY);
-					leaderboard.setAllowedHighScore(false);
-				}
-				//temp
-				//SoundManager.play("pointGain");
-				
-				break;
-
-			case PAUSE_MENU_MODE_DUAL:
-				pausedMenu.setActiveItem(PAUSE_MENU_MODE_DUAL);
-				if( model.getGameMode() != GameController.TWO_HANDS ) {
-					model.setGameMode(GameController.TWO_HANDS);
-				}
-				//temp
-				// SoundManager.play("pointGain");
-				
-				break;
-
-			case PAUSE_MENU_MODE_SINGLE:
-				pausedMenu.setActiveItem(PAUSE_MENU_MODE_SINGLE);
-				if( model.getGameMode() != GameController.ONE_HAND ) {
-					model.setGameMode(GameController.ONE_HAND);
-				}
-
-				//temp
-				//SoundManager.play("pointGain");
-				
-				break;
-			case PAUSE_MENU_MUTE:
-				SoundManager.toggleMuted();
-				muteMenuItem.setIcon(SoundManager.isMuted() ? "unmute" : "mute");
-				muteMenuItem.setTitle(SoundManager.isMuted() ? "Unmute" : "Mute");
-				
-				break;
-
-			case PAUSE_MENU_EXIT_GAME:
-			case GAMEOVER_MENU_EXIT_GAME:
-				controller.exitGame();
-				break;
-
-			case PAUSE_MENU_LEADERBOARD:
-			case GAMEOVER_MENU_LEADERBOARD:
-				controller.setUsingUI(true);
-				usingLeaderboard = true;
-				break;
-
-			case LEADERBOARD_MENU_CLEAR:
-				if (leaderboard != null)
-					leaderboard.clearLeaderboard();
-				break;
-
-			case LEADERBOARD_MENU_EXIT:
-				usingLeaderboard = false;
-				controller.setUsingUI(false);
-				break;
-
-			case GAMEOVER_MENU_NEWGAME:
-				controller.newGame();
-				break;
-
-			default:
-				return;
-		}
-		
-		SoundManager.play("menuChoice");
-
-	}
-
-	public RadialMenu getActiveMenu() {
-
-		if (usingLeaderboard)
-			return leaderboardMenu;
-		if (model.isGameOver())
-			return gameOverMenu;
-		if (controller.isPaused())
-			return pausedMenu;
-
-		return null;
-
-	}
-
-	//called by LeapController to indicate position of pointer.
-	public void pointerUpdate(float x, float y) {
-
-		RadialMenu m = getActiveMenu();
-		if (m == null)
-			return;
-
-		m.pointerUpdate(x, y);
-
-	}
-
+	//this is a little annoying, but the controller doesn't know about the ViewManager
+	public void switchToPaused() { getViewManager().swapView("paused"); }
+	public void switchToUnpaused() { getViewManager().swapView("game"); }
+	public void switchToGameOver() { getViewManager().swapView("gameover"); }
+	
 }

@@ -78,11 +78,11 @@ public class LeapController extends Listener implements Runnable {
 		long now = System.currentTimeMillis();
 		long dt = (lastUpdate < 0) ? 0 : now-lastUpdate;
 
-		int mode = game.getGameMode();
+		int mode = game.getModel().getGameMode();
 		switch (mode) {
 
-			case GameController.FREE_PLAY:
-			case GameController.ONE_HAND:
+			case GameModel.FREE_PLAY:
+			case GameModel.ONE_HAND:
 				
 				if (rightHand == null) {
 					game.pause(true);
@@ -100,7 +100,7 @@ public class LeapController extends Listener implements Runnable {
 				
 				break;
 
-			case GameController.TWO_HANDS:
+			case GameModel.TWO_HANDS:
 				
 				if (rightHand == null && leftHand == null) {
 					game.pause(true);

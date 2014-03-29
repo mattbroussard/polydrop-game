@@ -8,13 +8,13 @@ public abstract class View {
 
 	//called by the ViewManager if the view is on the view stack.
 	//If the view is the topmost one that the user intends to interact with, it is considered active.
-	//There is a special exception for the GameView and PausedView: the PausedView calls the GameView's draw directly when the GameView is not on the stack at all.
+	//There is a special exception to this relationship for for GameView, PausedView, and GameOverView: PausedView/GameOverView call the GameView's draw directly when the GameView is not on the stack at all so that the presence of blocks, etc. can be controlled more finely.
 	public void draw(GraphicsWrapper g2, boolean active) {}
 	
 	//called when the view becomes active, either:
 	// - by being added to the view stack for the first time, or
 	// - by another view being removed from the view stack
-	public void onActive(View source) {}
+	public void onActive() {}
 
 	//called to update the position of the pointer, if this view uses one, when the view is active.
 	//coordinates are in the 16x10 standard coordinate space

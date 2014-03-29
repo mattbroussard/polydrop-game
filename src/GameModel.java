@@ -8,6 +8,10 @@ public class GameModel {
 	
 	static final Vec2 GRAVITY = new Vec2(0.0f, -20f);
 
+	public static final int ONE_HAND  = 1;
+	public static final int TWO_HANDS = 2;
+	public static final int FREE_PLAY = 3;
+
 	ArrayList<DrawableBody> blockList = new ArrayList<DrawableBody>();
 	Platform platform;
 	Platform rp;
@@ -26,7 +30,7 @@ public class GameModel {
 
 	public GameModel() {
 		world = new World(GRAVITY);
-		setGameMode(GameController.ONE_HAND);
+		setGameMode(ONE_HAND);
 	}
 
 	public int getGameMode() {
@@ -47,21 +51,21 @@ public class GameModel {
 		synchronized (world) {
 
 			// Just set gameMode variable. Done't mess with Platform objects.
-			if( gameMode    == GameController.ONE_HAND && 
-				newGameMode == GameController.FREE_PLAY ) {
+			if( gameMode    == ONE_HAND && 
+				newGameMode == FREE_PLAY ) {
 				gameMode = newGameMode;
 				return;
 			}
 
 			// Just set gameMode variable. Done't mess with Platform objects.
-			if( gameMode    == GameController.FREE_PLAY && 
-				newGameMode == GameController.ONE_HAND ) {
+			if( gameMode    == FREE_PLAY && 
+				newGameMode == ONE_HAND ) {
 				gameMode = newGameMode;
 				return;
 			}
 
 			gameMode = newGameMode;
-			if( gameMode == GameController.TWO_HANDS ) {
+			if( gameMode == TWO_HANDS ) {
 				if( platform != null ) {
 					world.destroyBody(platform.getBody());
 				}

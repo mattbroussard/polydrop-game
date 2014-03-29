@@ -3,38 +3,34 @@ import javax.swing.JOptionPane;
 import java.awt.Color;
 import java.util.*;
 
-public class Leaderboard {
+public class Leaderboard extends View implements RadialMenuListener {
 	
 	static final int N_ENTRIES = 10;
+
 
 	ArrayList<Entry> topList = new ArrayList<Entry>();
 	
 	GameController controller;
 	
-	//TODO: after this extends View, it won't need access to the GameView anymore and can call its own getViewManager() to use JOptionPane
-	GameView view;
-	
-	private boolean allowedHighScore = true;
+	RadialMenu menu;
+	static final int LEADERBOARD_MENU_CLEAR = 1;
+	static final int LEADERBOARD_MENU_EXIT = 2;
 
 	public Leaderboard(GameController c) {
+
 		this.controller = c;
 		topList = new ArrayList<Entry>();
 		readPrefs();
-	}
-	
-	public void setAllowedHighScore(boolean b){
-		allowedHighScore = b;
-	}
-	
-	public boolean isAllowedHighScore(){
-		return allowedHighScore;
+
+		menu = new RadialMenu(8, 11.5f, this);
+		menu.addItem(new RadialMenuItem(LEADERBOARD_MENU_EXIT, "Back", "menuReturn", 90, 20, RadialMenuItem.ORIENT_TOP));
+		menu.addItem(new RadialMenuItem(LEADERBOARD_MENU_CLEAR, "Reset Scores", "clearLeaderboard", 70, 20, RadialMenuItem.ORIENT_TOP));
+
 	}
 
 	public String promptForName(int score, int place) {
-		controller.setUsingUI(true);
 		String msg = String.format("New high score of %d (placed #%d)!\nWhat is your name?", score, place);
-		String s = (String)JOptionPane.showInputDialog(view.getViewManager(), msg, "New High Score", JOptionPane.QUESTION_MESSAGE, ImageManager.getIcon("leaderboard"), null, "");
-		controller.setUsingUI(false);
+		String s = (String)JOptionPane.showInputDialog(getViewManager(), msg, "New High Score", JOptionPane.QUESTION_MESSAGE, ImageManager.getIcon("leaderboard"), null, "");
 		return s;
 	}
 
@@ -74,15 +70,10 @@ public class Leaderboard {
 		
 		System.out.printf("reportScore(%d) called.\n", score);
 
-		if (!isAllowedHighScore()) {
-			System.out.println("...but not allowed to be on leaderboard!");
-			SoundManager.play("gameOver");
-			return;
-		}
-
 		Entry entry = new Entry(null, score);
 
-		int insertIndex = -Collections.binarySearch(topList, entry)-1;
+		int binSearch = Collections.binarySearch(topList, entry);
+		int insertIndex = binSearch < 0 ? -binSearch-1 : binSearch+1; //binarySearch can say it found the entry if score comparator returns 0
 		if (insertIndex < N_ENTRIES) {
 			
 			SoundManager.play("highScore");
@@ -107,9 +98,7 @@ public class Leaderboard {
 	public void clearLeaderboard() {
 
 		//prevent accidental clear
-		controller.setUsingUI(true);
-		int confirmation = JOptionPane.showConfirmDialog(view.getViewManager(), "Are you sure you want to clear all high scores?", "Clear High Scores", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, ImageManager.getIcon("clearLeaderboard"));
-		controller.setUsingUI(false);
+		int confirmation = JOptionPane.showConfirmDialog(getViewManager(), "Are you sure you want to clear all high scores?", "Clear High Scores", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, ImageManager.getIcon("clearLeaderboard"));
 		if (confirmation != JOptionPane.OK_OPTION)
 			return;
 
@@ -119,8 +108,10 @@ public class Leaderboard {
 
 	}
 
-	public void draw(GraphicsWrapper g2) {
+	public void draw(GraphicsWrapper g2, boolean active) {
 		
+		if (!active) return;
+
 		if (topList.size()>0) {
 			for (int i = 0; i < topList.size(); i++) {
 				Entry e = topList.get(i);
@@ -131,7 +122,33 @@ public class Leaderboard {
 			g2.drawStringCentered("No High Scores", 1, Colors.LEADERBOARD, 8, 5);
 		}
 
+		menu.draw(g2);
+
 	}
+
+	public void pointerUpdate(float cursorX, float cursorY) {
+		menu.pointerUpdate(cursorX, cursorY);
+	}
+
+	public void onMenuSelection(int id) {
+
+		switch (id) {
+			case LEADERBOARD_MENU_CLEAR:
+				clearLeaderboard();
+				break;
+
+			case LEADERBOARD_MENU_EXIT:
+				getViewManager().popView();
+				break;
+
+			default:
+				return;
+		}
+
+		SoundManager.play("menuChoice");
+
+	}
+
 	private class Entry implements Comparable<Entry> {
 		String name;
 		int score;

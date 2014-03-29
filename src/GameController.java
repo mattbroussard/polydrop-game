@@ -18,18 +18,14 @@ public class GameController implements Runnable {
 	static final int PAUSE_DELAY = 100;
 	long pauseTimer = 0;
 
-	public static final int ONE_HAND  = 1;
-	public static final int TWO_HANDS = 2;
-	public static final int FREE_PLAY = 3;
-
-	int gameMode;
 	GameModel model;
 	GameView view;
 	Leaderboard leaderboard;
 	boolean paused = false;
-	boolean usingUI = false;
 	
-	int hands;
+	//The existence of this flag is a bit annoying, but we need it to ensure the game won't unpause while a different view is active
+	//So, it starts true and is set to false when the GameView/PausedView is entered via the SplashView, then true again if any other view is entered via those views.
+	boolean usingUI = true;
 	
     //final int timesToSpawn[] = {0,1000,600,400,300,250,200,150,150};
 	final float timesToGainHealth[] = {0,1.5f,1,.75f,.5f,.4f,.35f,.3f,.25f}; // in seconds
@@ -50,28 +46,25 @@ public class GameController implements Runnable {
 
 	public GameController(GameModel m) {
 		model = m;
-		leaderboard = new Leaderboard(this);
 		Thread t = new Thread(this);
 		t.start();
-		gameMode = ONE_HAND;
-	}
-
-	public int getGameMode() {
-		return model.getGameMode();
 	}
 	
 	public void exitGame() {
 		//For now, just exit. In the future, we may have cleanup things to do first.
 		System.exit(0);
 	}
-
-	public void setHands(int h) {
-		hands = h;
-	}
 	
+	public GameModel getModel() {
+		return model;
+	}
+
 	public void addGameView(GameView v) {
 		view = v;
-		v.addLeaderboard(leaderboard);
+	}
+
+	public void addLeaderboard(Leaderboard l) {
+		leaderboard = l;
 	}
 	
 	public void setUsingUI(boolean using) {
@@ -81,6 +74,13 @@ public class GameController implements Runnable {
 	}
 
 	public synchronized void pause(boolean delay) {
+
+		//don't allow accidentally falling into the paused view if the user is using UI things (such as leaderboard)
+		if (usingUI) {
+			paused = true;
+			pauseTimer = 0;
+			return;
+		}
 
 		//don't pause until a short delay without unpause
 		if (!delay) {
@@ -103,6 +103,7 @@ public class GameController implements Runnable {
 
 		System.out.println("Actually pausing.");
 		paused = true;
+		view.switchToPaused();
 		if (view != null)
 			view.repaint();
 
@@ -112,8 +113,8 @@ public class GameController implements Runnable {
 		
 		//don't allow accidental unpauses if the user is using UI things (such as leaderboard)
 		if (usingUI) {
-			if (!isPaused())
-				pause(false);
+			paused = true;
+			pauseTimer = 0;
 			return;
 		}
 
@@ -137,9 +138,8 @@ public class GameController implements Runnable {
 		pauseTimer = 0;
 
 		System.out.println("Actually unpausing.");
-		if (view != null)
-			view.unPaused();
 		paused = false;
+		view.switchToUnpaused();
 
 	}
 
@@ -175,7 +175,7 @@ public class GameController implements Runnable {
 			//Find the locations of the platform(s)
 			//While loops are inefficient, but okay for now
 			/// if(hands > 1) {
-			if(model.gameMode == TWO_HANDS) {
+			if(model.getGameMode() == GameModel.TWO_HANDS) {
 				float rpx = model.getRightPlatform().getBody().getPosition().x;
 				float lpx = model.getLeftPlatform().getBody().getPosition().x;
 				//Dont pick any numbers within rpx +- 2 or lpx +- 2
@@ -209,6 +209,7 @@ public class GameController implements Runnable {
 
 			// Just spin if we're paused
 			if (isPaused() || model.isGameOver()) {
+				//System.out.printf("*/*/*/*/*/ controller thread spinning. isPaused()=%s, model.isGameOver()=%s\n", isPaused(), model.isGameOver());
 				time = System.currentTimeMillis();
 				if (view!=null)
 					view.repaint();
@@ -227,7 +228,7 @@ public class GameController implements Runnable {
 			
 			// restore health
 			now = System.currentTimeMillis();
-			if(getGameMode() != FREE_PLAY) {
+			if(model.getGameMode() != GameModel.FREE_PLAY) {
 				if(now - healthTime >= 1000 * timesToGainHealth[model.getLevel()]) {
 					model.increaseHealth();
 					healthTime = now;
@@ -286,7 +287,7 @@ public class GameController implements Runnable {
 						}
 						System.out.println("pos: "+pos.x);
 						itr.remove();
-						if(getGameMode() != FREE_PLAY) {
+						if(model.getGameMode() != GameModel.FREE_PLAY) {
 							model.reduceHealth();
 						}
 						if (view != null)
@@ -300,7 +301,10 @@ public class GameController implements Runnable {
 
 			if(model.isGameOver()){
 				//reentrancy prevented by isGameOver spin check at top of loop
-				leaderboard.reportScore(model.getScore());
+				setUsingUI(true);
+				view.switchToGameOver();
+				if (leaderboard != null)
+					leaderboard.reportScore(model.getScore());
 			}
 
 			if (view!=null)
@@ -358,14 +362,20 @@ public class GameController implements Runnable {
 	}
 
 	public void newGame() {
-		if (!model.isGameOver() || usingUI)
+		if (!model.isGameOver())
 			return;
+		
+		int oldMode = model.getGameMode();
 		model = new GameModel();
-		leaderboard.setAllowedHighScore(true);
+		model.setGameMode(oldMode);
 		
 		if (view != null) {
 			view.model = model;
-			view.pausedMenu.setActiveItem(GameView.PAUSE_MENU_MODE_SINGLE);
 		}
+
+		paused = false;
+		pauseTimer = 0;
+		view.switchToUnpaused();
+
 	}
 }

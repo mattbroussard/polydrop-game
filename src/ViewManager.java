@@ -8,10 +8,12 @@ import java.awt.event.KeyEvent;
 import java.awt.Dimension;
 import java.awt.Color;
 import java.awt.Container;
+import java.util.HashMap;
 
 public class ViewManager extends JComponent implements KeyListener {
 	
 	private ConcurrentLinkedDeque<View> views = new ConcurrentLinkedDeque<View>();
+	private HashMap<String, View> registry = new HashMap<String, View>();
 
 	//stuff used to draw FPS counter if --fps command-line argument was given
 	private static final int FPS_SAMPLE = 10;
@@ -27,10 +29,33 @@ public class ViewManager extends JComponent implements KeyListener {
 
 	}
 
+	public void registerView(View view, String viewName) {
+
+		registry.put(viewName, view);
+		view.setViewManager(this);
+
+	}
+
+	public View getView(String viewName) {
+
+		return registry.get(viewName);
+
+	}
+
 	public void pushView(View view) {
 
-		view.onActive(views.peek());
+		view.setViewManager(this);
+		view.onActive();
 		views.push(view);
+
+	}
+
+	public void pushView(String viewName) {
+
+		View view = getView(viewName);
+		if (view==null) return;
+
+		pushView(view);
 
 	}
 
@@ -40,7 +65,7 @@ public class ViewManager extends JComponent implements KeyListener {
 		
 		View activeView = views.peek();
 		if (activeView != null)
-			activeView.onActive(popped);
+			activeView.onActive();
 
 		return popped;
 
@@ -51,6 +76,15 @@ public class ViewManager extends JComponent implements KeyListener {
 		View temp = popView();
 		pushView(view);
 		return temp;
+
+	}
+
+	public View swapView(String viewName) {
+
+		View view = getView(viewName);
+		if (view == null) return null;
+
+		return swapView(view);
 
 	}
 
@@ -69,7 +103,7 @@ public class ViewManager extends JComponent implements KeyListener {
 
 		GraphicsWrapper g2 = new GraphicsWrapper(g, this);
 
-		Iterator<View> it = views.iterator();
+		Iterator<View> it = views.descendingIterator();
 		while (it.hasNext()) {
 
 			View v = it.next();

@@ -1,5 +1,9 @@
 
-import java.awt.Color;
+//import java.awt.Color;
+
+import java.awt.*;
+import java.awt.geom.*;
+import java.awt.image.*;
 
 public class Colors {
 	
@@ -47,6 +51,9 @@ public class Colors {
 	public static final Color MENU_MODE_DUAL_ACTIVE = new Color(0x00C3FF);
 	public static final Color MENU_MODE_FREE_ACTIVE = new Color(0xF6E614);
 
+	public static final Paint SPLASH_MENU_PLAY_ACTIVE = new ThrobbingColor(0x20D972/*0x00C3FF*/);
+	public static final Color SPLASH_MENU_PLAY_SELECTED = new Color(0x20D972/*0x00C3FF*/);
+
 	public static Color interpolateColor(Color a, Color c, double progress) {
 
 		double r = (c.getRed() - a.getRed()) * progress + a.getRed();
@@ -55,6 +62,58 @@ public class Colors {
 
 		return new Color((int)r, (int)g, (int)b);
 
+	}
+
+}
+
+class ThrobbingColor implements Paint, PaintContext {
+
+	private float[] hsb = new float[3];
+	
+	final static int THROB_PERIOD = 1500;
+	final static float BRIGHTNESS_MODULATION = 0.1f;
+
+	public ThrobbingColor(int c) {
+		this(new Color(c));
+	}
+
+	public ThrobbingColor(Color c) {
+		Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), hsb);
+	}
+
+	public PaintContext createContext(ColorModel cm, Rectangle deviceBounds, Rectangle2D userBounds, AffineTransform xform, RenderingHints hints) {
+		return this;
+	}
+
+	public void dispose() {}
+
+	public ColorModel getColorModel() {
+		return ColorModel.getRGBdefault();
+	}
+
+	public Raster getRaster(int x, int y, int w, int h) {
+
+		WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
+
+		float mod = (float)Math.sin((System.currentTimeMillis() % THROB_PERIOD) / (float)THROB_PERIOD * 2f * (float)Math.PI);
+		mod = (mod + 1f) / 2f;
+		mod = (mod * BRIGHTNESS_MODULATION) + (1f - BRIGHTNESS_MODULATION);
+
+		Color c = Color.getHSBColor(hsb[0], hsb[1], hsb[2]*mod);
+		float[] arr = { c.getRed(), c.getGreen(), c.getBlue(), 255 };
+
+		for (int i = 0; i < w; i++) {
+			for (int j = 0; j < h; j++) {
+				raster.setPixel(i, j, arr);
+			}
+		}
+
+		return raster;
+
+	}
+
+	public int getTransparency() {
+		return Transparency.OPAQUE;
 	}
 
 }
