@@ -115,11 +115,9 @@ public class GameModel {
 	}
 
 	public void addPoints(int p) {
-		if(getGameMode() != GameModel.FREE_PLAY){
-			score += p;
-			if(score > maxScore)
-				maxScore = score;			
-		}
+		score += p;
+		if(score > maxScore)
+			maxScore = score;
 	}
 
 	public Platform getPlatform() {
