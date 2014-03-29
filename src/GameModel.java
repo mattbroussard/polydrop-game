@@ -98,21 +98,28 @@ public class GameModel {
 	}
 
 	public void reduceHealth() {
-		this.health -= 5;
-		this.gameOver = (this.health <= 0);
+		if(getGameMode() != GameModel.FREE_PLAY){
+			this.health -= 5;
+			this.gameOver = (this.health <= 0);
+		}
 	}
 
 	public void increaseHealth() {
-		this.health = Math.min(health + 1, 100);
+		if(getGameMode() != GameModel.FREE_PLAY){
+			this.health = Math.min(health + 1, 100);
+
+		}
 	}
 	public void restoreHealth(){
 		this.health = 100;
 	}
 
 	public void addPoints(int p) {
-		score += p;
-		if(score > maxScore)
-			maxScore = score;
+		if(getGameMode() != GameModel.FREE_PLAY){
+			score += p;
+			if(score > maxScore)
+				maxScore = score;			
+		}
 	}
 
 	public Platform getPlatform() {

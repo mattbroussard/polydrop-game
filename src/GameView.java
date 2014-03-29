@@ -28,19 +28,24 @@ public class GameView extends View {
 
 	public void notifyScore(DrawableBody db, int scoreDelta) {
 		
-		if (scoreDelta<0)
-			recentPointLoss = true;
+		if(model.getGameMode() != GameModel.FREE_PLAY){
+			if (scoreDelta<0){
+				recentPointLoss = true;				
+			}
 
-		Vec2 pos = db.getBody().getPosition();
-		if (pos.y < 0) pos.set(pos.x, 0);
-		if (pos.x < -7.0f) pos.set(-7.0f, pos.y);
-		if (pos.x > 7.0f) pos.set(7.0f, pos.y);
+			Vec2 pos = db.getBody().getPosition();
+			if (pos.y < 0) pos.set(pos.x, 0);
+			if (pos.x < -7.0f) pos.set(-7.0f, pos.y);
+			if (pos.x > 7.0f) pos.set(7.0f, pos.y);
+	
+			Color c = scoreDelta >= 0 ? Colors.REWARD : Colors.PENALTY;
+			String msg = String.format("%s%d", (scoreDelta>=0?"+":""), scoreDelta);
+	
+			Notification n = new Notification((float)pos.x, (float)pos.y, System.currentTimeMillis(), msg, 0.35f, c);
+			synchronized (notifs) { notifs.addFirst(n); }
+		}
+		
 
-		Color c = scoreDelta >= 0 ? Colors.REWARD : Colors.PENALTY;
-		String msg = String.format("%s%d", (scoreDelta>=0?"+":""), scoreDelta);
-
-		Notification n = new Notification((float)pos.x, (float)pos.y, System.currentTimeMillis(), msg, 0.35f, c);
-		synchronized (notifs) { notifs.addFirst(n); }
 
 	}
 
@@ -114,10 +119,14 @@ public class GameView extends View {
 		}
 
 		//Draw score
-		TextRenderer.drawScore(g2, model.getScore());
+		if(model.getGameMode() != GameModel.FREE_PLAY){
+			TextRenderer.drawScore(g2, model.getScore());			
+		}
 
 		//Draw radial level indicator
-		LevelRenderer.drawLevelIndicator(g2, model.getLevel(), controller.calculateLevelProgress(), !active);
+		if(model.getGameMode() != GameModel.FREE_PLAY){
+			LevelRenderer.drawLevelIndicator(g2, model.getLevel(), controller.calculateLevelProgress(), !active);		
+		}
 
 		//Draw health bar
 		if( model.getGameMode() != GameModel.FREE_PLAY ) {
