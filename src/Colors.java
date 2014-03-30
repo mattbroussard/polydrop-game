@@ -54,6 +54,9 @@ public class Colors {
 	public static final Paint SPLASH_MENU_PLAY_ACTIVE = new ThrobbingColor(0x20D972/*0x00C3FF*/);
 	public static final Color SPLASH_MENU_PLAY_SELECTED = new Color(0x20D972/*0x00C3FF*/);
 
+	public static final Color LEAP_WARNING_OVERLAY = new Color(150, 0, 0, 150);
+	public static final Color LEAP_WARNING_TEXT = Color.white;
+
 	public static Color interpolateColor(Color a, Color c, double progress) {
 
 		double r = (c.getRed() - a.getRed()) * progress + a.getRed();

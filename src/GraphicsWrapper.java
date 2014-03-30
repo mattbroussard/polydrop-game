@@ -113,13 +113,17 @@ public class GraphicsWrapper {
 		//TODO Matt: try a smooth image render hack like https://weblogs.java.net/blog/campbell/archive/2007/03/java_2d_tricker.html
 		// - update: it didn't work.
 
+		//TODO Matt: optimize the performance of this method, either here, or in the image loading... using large images like the 4096x4096 leap warning causes very bad framerates
+
 		float scale = getCurrentScale();
 		
 		AffineTransform at = new AffineTransform();
 		at.setToIdentity();
 		at.concatenate(AffineTransform.getTranslateInstance(-image.getWidth()/2f, -image.getHeight()/2f));
 
+		setOrigin(x, y);
 		g2.drawImage(image, at, null);
+		restore();
 
 	}
 

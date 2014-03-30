@@ -338,6 +338,8 @@ public class LeapController extends Listener implements Runnable {
 
 	public void processFrame(Frame frame) {
 
+		viewManager.setLeapWarningVisible(!leap.isConnected());
+
 		processFrameForPlatform(frame);
 		processFrameForMenu(frame);
 

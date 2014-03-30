@@ -15,6 +15,9 @@ public class ViewManager extends JComponent implements KeyListener {
 	private ConcurrentLinkedDeque<View> views = new ConcurrentLinkedDeque<View>();
 	private HashMap<String, View> registry = new HashMap<String, View>();
 
+	private LeapWarningView leapWarning = new LeapWarningView();
+	private boolean leapWarningVisible = false;
+
 	//stuff used to draw FPS counter if --fps command-line argument was given
 	private static final int FPS_SAMPLE = 10;
 	private boolean showFPS = false;
@@ -88,6 +91,10 @@ public class ViewManager extends JComponent implements KeyListener {
 
 	}
 
+	public void setLeapWarningVisible(boolean vis) {
+		leapWarningVisible = vis;
+	}
+
 	public void pointerUpdate(double x, double y) {
 
 		float cursorX = (float)(x * 16.0f);
@@ -111,6 +118,10 @@ public class ViewManager extends JComponent implements KeyListener {
 			v.draw(g2, active);
 
 		}
+
+		//This View gets drawn outside of the normal view stack on top of everything if the LeapController says it should be visible
+		if (leapWarningVisible)
+			leapWarning.draw(g2, true);
 
 		paintFPS(g2);
 
