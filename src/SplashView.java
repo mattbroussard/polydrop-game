@@ -20,7 +20,8 @@ public class SplashView extends View implements RadialMenuListener {
 	Platform rp, lp;
 	float a;
 	float v;
-	
+	float terminalv = 3;
+	long time;
 	World world;
 	
 	ArrayList<DrawableBody> blockList = new ArrayList<DrawableBody>();
@@ -38,11 +39,12 @@ public class SplashView extends View implements RadialMenuListener {
 		menu.setActiveItem(SPLASH_MENU_PLAY);
 		world = new World(new Vec2(0.0f, -20f));
 		
-		rp = new Platform(world, Platform.RIGHT, -5, 7 );
-		lp = new Platform(world, Platform.LEFT , 0, 3);
-		v = 1f;
+		rp = new Platform(world, Platform.RIGHT);
+		lp = new Platform(world, Platform.LEFT);
 		
-		System.currentTimeMillis();
+		rp.getBody().setTransform(new Vec2(-2,6), 0);
+		lp.getBody().setTransform(new Vec2(-2,3), 0);
+		v = terminalv;
 
 	}
 
@@ -61,7 +63,7 @@ public class SplashView extends View implements RadialMenuListener {
 			BodyRenderer.drawBody(db, g2, false);
 		}
 		
-		g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
+		 g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
 		 	
 		//TODO: clearly, this is temporary
 		g2.drawStringCentered("le splash~", 1.5f, Colors.SCORE, 8.0f, 5.0f);
@@ -73,7 +75,7 @@ public class SplashView extends View implements RadialMenuListener {
 	
 	public void update(){ 
 		long now = System.currentTimeMillis();
-		long time = System.currentTimeMillis();
+//		long time = System.currentTimeMillis();
 		if(now - squareSpawnTime >= 2.5*1000) {
 			DrawableBody db = spawn();
 			synchronized (blockList) {
@@ -81,7 +83,7 @@ public class SplashView extends View implements RadialMenuListener {
 			}
 			squareSpawnTime = now;
 		}		
-		
+
 		world.step((now-time)/1000f, 6, 2);
 		
 		//Reduce lifetimes
@@ -104,15 +106,21 @@ public class SplashView extends View implements RadialMenuListener {
 				world.destroyBody(b.getBody());				
 			}
 		}
-		a = lp.getBody().getPosition().x * -.01f;
+		a = (lp.getBody().getPosition().x + 2) * -.1f;
 		updatePlatforms();
+		time = System.currentTimeMillis();
 	}
 	
 	public void updatePlatforms(){
 		rp.getBody().setLinearVelocity(new Vec2(-1*v,0));
 		lp.getBody().setLinearVelocity(new Vec2(v,0));
 		
+	//	rp.getBody().setLinearVelocity(new Vec2(0,0));
+	//	lp.getBody().setLinearVelocity(new Vec2(0,0));
+			
 		v += a;
+		if(v > terminalv ) v = terminalv;
+		if( v < -1 * terminalv) v = -1 * terminalv;
 	}
 	
 	public DrawableBody spawn() {
