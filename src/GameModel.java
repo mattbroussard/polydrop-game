@@ -11,6 +11,7 @@ public class GameModel {
 	public static final int ONE_HAND  = 1;
 	public static final int TWO_HANDS = 2;
 	public static final int FREE_PLAY = 3;
+	public static final int SPLASH_SCREEN = 4;
 
 	ArrayList<DrawableBody> blockList = new ArrayList<DrawableBody>();
 	Platform platform;

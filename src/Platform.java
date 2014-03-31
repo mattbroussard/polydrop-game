@@ -42,6 +42,27 @@ public class Platform implements DrawableBody {
 
 		this.color = debugColor;
 	}
+	
+	public Platform(World world, int type, int x, int y){
+		bdef = new BodyDef();
+		bdef.type = BodyType.KINEMATIC;
+		bdef.position.set(x,y);
+		body = world.createBody(bdef);
+		
+		PolygonShape shape = new PolygonShape();
+		if( type == FULL ) {
+			shape.setAsBox(4, 0.25f);
+		} else {
+			shape.setAsBox(2, 0.25f);
+		}
+		FixtureDef fixtureDef = new FixtureDef();
+		fixtureDef.shape = shape;
+		fixtureDef.density = 1;
+		fixtureDef.friction = 2.0f;
+		this.fixture = body.createFixture(fixtureDef);
+
+		this.color = Colors.PLATFORM;
+	}
 
 	public Platform(World w, int type) {
 		this(w, type, Colors.PLATFORM);

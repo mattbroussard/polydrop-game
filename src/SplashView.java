@@ -1,3 +1,9 @@
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.World;
+
 
 public class SplashView extends View implements RadialMenuListener {
 	
@@ -8,6 +14,16 @@ public class SplashView extends View implements RadialMenuListener {
 	static final int SPLASH_MENU_LEADERBOARD = 2;
 	static final int SPLASH_MENU_ABOUT = 3;
 	static final int SPLASH_MENU_EXIT_GAME = 4;
+	
+	long squareSpawnTime; 
+	
+	Platform rp, lp;
+	float a;
+	float v;
+	
+	World world;
+	
+	ArrayList<DrawableBody> blockList = new ArrayList<DrawableBody>();
 
 	public SplashView() {
 
@@ -20,21 +36,98 @@ public class SplashView extends View implements RadialMenuListener {
 		menu.addItem(new RadialMenuItem(SPLASH_MENU_EXIT_GAME, "Exit Game", "exit", 217, 20, RadialMenuItem.ORIENT_LEFT));
 
 		menu.setActiveItem(SPLASH_MENU_PLAY);
+		world = new World(new Vec2(0.0f, -20f));
+		
+		rp = new Platform(world, Platform.RIGHT, -5, 7 );
+		lp = new Platform(world, Platform.LEFT , 0, 3);
+		v = 1f;
+		
+		System.currentTimeMillis();
 
 	}
 
 	public void draw(GraphicsWrapper g2, boolean active) {
+		update(); 
 		g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
 
 		g2.fillRect(0f, 0f, 16f, 10f, Colors.PAUSED);
 		if (!active) return;
 
+		
+		BodyRenderer.drawBody(rp, g2, false);
+		BodyRenderer.drawBody(lp, g2, false);
+		
+		for(DrawableBody db : blockList){
+			BodyRenderer.drawBody(db, g2, false);
+		}
+		
+		g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
+		 	
 		//TODO: clearly, this is temporary
 		g2.drawStringCentered("le splash~", 1.5f, Colors.SCORE, 8.0f, 5.0f);
 		g2.drawStringCentered("build " + Main.getVersion(), 0.2f, Colors.SCORE, 8.0f, 6.5f);
 
 		menu.draw(g2);
 
+	}
+	
+	public void update(){ 
+		long now = System.currentTimeMillis();
+		long time = System.currentTimeMillis();
+		if(now - squareSpawnTime >= 2.5*1000) {
+			DrawableBody db = spawn();
+			synchronized (blockList) {
+				blockList.add(db);
+			}
+			squareSpawnTime = now;
+		}		
+		
+		world.step((now-time)/1000f, 6, 2);
+		
+		//Reduce lifetimes
+		Iterator<DrawableBody> itr = blockList.iterator();
+		while( itr.hasNext() ) {
+			DrawableBody b = itr.next();
+			long dt = now - time;
+			b.reduceLifetime(dt);
+			if( b.getExpiration() <= 0 ) {
+				// remove block
+				itr.remove();
+				world.destroyBody(b.getBody());
+			}
+			
+
+			Vec2 pos = b.getBody().getPosition();
+			if(pos.y < -2) {
+				// Oh no! Lose points. :(
+				itr.remove();
+				world.destroyBody(b.getBody());				
+			}
+		}
+		a = lp.getBody().getPosition().x * -.01f;
+		updatePlatforms();
+	}
+	
+	public void updatePlatforms(){
+		rp.getBody().setLinearVelocity(new Vec2(-1*v,0));
+		lp.getBody().setLinearVelocity(new Vec2(v,0));
+		
+		v += a;
+	}
+	
+	public DrawableBody spawn() {
+		int sides = (int)Math.round(Math.random()*5) + 3;
+		float x;
+
+        // int level = Arrays.binarySearch(scoreNeededToLevel, model.getMaxScore());
+		int newPoly = (int)(Math.random()*5)+3;
+		//return distributions[newPoly] == 4 ? new Square(model.world, x) : new PolyBody(model.world, x, distributions[newPoly], Colors.SHAPES[distributions[newPoly]-3]);
+		//long now = System.currentTimeMillis();
+		
+		x = (float)(Math.random() * 10 - 8 );
+		
+		System.out.println("spawing at "+x);
+		return new PolyBody(world, x, newPoly, GameModel.FREE_PLAY);
 	}
 
 	public void onMenuSelection(int id) {
@@ -70,6 +163,7 @@ public class SplashView extends View implements RadialMenuListener {
 
 	public void pointerUpdate(float cursorX, float cursorY) {
 		menu.pointerUpdate(cursorX, cursorY);
+
 	}
 
 }
