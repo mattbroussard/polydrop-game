@@ -2,15 +2,25 @@
 
 PolyDrop is a game created by Matt Broussard, Josh Kelle, and Dallas Kelle for use with the [Leap Motion Controller](https://www.leapmotion.com/). It was conceived at the first annual Leap Motion + Compare Metrics hackathon (February 21-23, 2014) at Capital Factory in Austin, TX. After being selected as a finalist, work continued culminating in its selection as the grand prize winner at Compare Metrics' "Think Tank | Drink Tank" SXSW happy hour event two weeks later. Work continues on the game to ready it for submission to the Leap Motion Airspace store.
 
-# Authors
+## Authors
 
 * [Matt Broussard](http://mattb.name/) ([email](http://scr.im/mbroussard))
 * Josh Kelle ([email](http://scr.im/jkelle))
 * Dallas Kelle ([email](http://scr.im/dkelle))
 
-# Missing files
+## Disclaimer
 
-The following files are missing for licensing reasons:
+This code is unfinished and still being actively modified. We make no guarantees as to the quality or stability of it at this time. There is an effort ongoing to clean things up in preparation to submit to Airspace.
+
+## License
+
+This code is covered by [GPL v3](https://github.com/mattbroussard/polydrop-game/blob/master/LICENSE.txt).
+
+# Developer Information
+
+## Missing files
+
+The following files (required to build/run successfully) are missing for licensing reasons:
 
 * Leap Motion SDK (available [here](https://developer.leapmotion.com/downloads))
   * lib/Leap.dll
@@ -31,7 +41,7 @@ The following must be present to generate the Windows bundle:
 * Launch4j (available [here](http://launch4j.sourceforge.net/))
   * buildtools/launch4j/*
 
-# Building
+## Building
 
 This project uses [Apache Ant](http://ant.apache.org/) 1.9.1 or later for builds.
 
