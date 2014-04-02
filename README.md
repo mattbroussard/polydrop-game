@@ -12,6 +12,8 @@ PolyDrop is a game created by Matt Broussard, Josh Kelle, and Dallas Kelle for u
 
 This code is unfinished and still being actively modified. We make no guarantees as to the quality or stability of it at this time. There is an effort ongoing to clean things up in preparation to submit to Airspace.
 
+We are open to feedback via the [Issues](https://github.com/mattbroussard/polydrop-game/issues) page. In the future, we will also accept pull requests but for now are keeping the project under our own control.
+
 ## License
 
 This code is covered by [GPL v3](https://github.com/mattbroussard/polydrop-game/blob/master/LICENSE.txt).
