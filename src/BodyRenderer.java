@@ -16,7 +16,7 @@ public class BodyRenderer {
 		if (expiry == 0) return null;
 
 		double progress = (double)(EXPIRATION_PERIOD-expiry) / (double)EXPIRATION_PERIOD;
-		Color interp = Colors.interpolateColor(c, Colors.BACKGROUND, progress);
+		Color interp = new Color(c.getRed(), c.getGreen(), c.getBlue(), (int)Math.round((1-progress)*255)); //previously: Colors.interpolateColor(c, Colors.BACKGROUND, progress);
 
 		double blink = Math.sin(50.0f * progress);
 		return blink >= 0 ? interp : null;
