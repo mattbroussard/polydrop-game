@@ -19,16 +19,18 @@ public class GraphicsWrapper {
 	static final String FONT_NAME = "Arial";
 
 	private Graphics2D g2;
-	private LinkedList<Graphics2D> transformStack;
+	private Graphics2D originalGraphics;
+	private LinkedList<Transform> transformStack;
 	private JComponent canvas;
 	private int lastPrepare = -1;
 
 	public GraphicsWrapper(Graphics g, JComponent canvas) {
 	
-		this.g2 = (Graphics2D)g;
-		this.transformStack = new LinkedList<Graphics2D>();
-		this.transformStack.push(g2);
+		this.originalGraphics = (Graphics2D)g;
 		this.canvas = canvas;
+		this.g2 = this.originalGraphics;
+		this.transformStack = new LinkedList<Transform>();
+		addTransform();
 
 		//enable antialiasing
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -108,27 +110,33 @@ public class GraphicsWrapper {
 
 	}
 
-	public void drawImage(BufferedImage image, float x, float y) {
-
-		//TODO Matt: try a smooth image render hack like https://weblogs.java.net/blog/campbell/archive/2007/03/java_2d_tricker.html
-		// - update: it didn't work.
-
-		//TODO Matt: optimize the performance of this method, either here, or in the image loading... using large images like the 4096x4096 leap warning causes very bad framerates
-
-		float scale = getCurrentScale();
-		
-		AffineTransform at = new AffineTransform();
-		at.setToIdentity();
-		at.concatenate(AffineTransform.getTranslateInstance(-image.getWidth()/2f, -image.getHeight()/2f));
-
-		setOrigin(x, y);
-		g2.drawImage(image, at, null);
-		restore();
-
-	}
-
 	public void drawImage(String imgName, float x, float y) {
-		drawImage(ImageManager.getImage(imgName), x, y);
+
+		//TODO Matt: in the future, cache these transformed images, and do smoother scaling/rotating w/ antialiasing
+
+		float scaleX = (float)g2.getTransform().getScaleX();
+		float scaleY = (float)g2.getTransform().getScaleY();
+		
+		float cumTransX = (float)(g2.getTransform().getTranslateX() - originalGraphics.getTransform().getTranslateX());
+		float cumTransY = (float)(g2.getTransform().getTranslateY() - originalGraphics.getTransform().getTranslateY());
+		float realX = (x / 16f) * canvas.getWidth() + cumTransX;
+		float realY = (y / 10f) * canvas.getHeight() + cumTransY;
+
+		BufferedImage image = ImageManager.getImage(imgName);
+
+		AffineTransform tform = new AffineTransform();
+
+		tform.concatenate(AffineTransform.getTranslateInstance(realX, realY));
+		tform.concatenate(AffineTransform.getTranslateInstance(-image.getWidth()*scaleX*0.5f, -image.getHeight()*scaleY*0.5f));
+		
+		float rotation = transformStack.peek().cumRotation;
+		if (rotation != 0)
+			tform.concatenate(AffineTransform.getRotateInstance(rotation / 180f * Math.PI, image.getWidth()*scaleX*0.5f, image.getHeight()*scaleY*0.5f));
+
+		tform.concatenate(AffineTransform.getScaleInstance(scaleX, scaleY));
+		
+		originalGraphics.drawImage(image, tform, null);
+
 	}
 
 	//Note: this mutates the polygon
@@ -178,8 +186,7 @@ public class GraphicsWrapper {
 
 		//Matt TODO: try the soft clipping hack described at https://weblogs.java.net/blog/2006/07/19/java-2d-trickery-soft-clipping
 
-		g2 = (Graphics2D)g2.create();
-		transformStack.push(g2);
+		addTransform();
 
 		float scale = getCurrentScale();
 
@@ -202,7 +209,7 @@ public class GraphicsWrapper {
 
 			g2.dispose();
 			transformStack.pop();
-			g2 = transformStack.peek();
+			g2 = transformStack.peek().graphics;
 
 		}
 
@@ -212,8 +219,7 @@ public class GraphicsWrapper {
 
 		float scale = getCurrentScale();
 
-		g2 = (Graphics2D)g2.create();
-		transformStack.push(g2);
+		addTransform();
 		g2.translate(scale*x, scale*y);
 
 	}
@@ -221,9 +227,9 @@ public class GraphicsWrapper {
 	//angles in degrees
 	public void rotate(float angle) {
 
-		g2 = (Graphics2D)g2.create();
-		transformStack.push(g2);
+		Transform t = addTransform();
 		g2.rotate(angle / 180f * (float)Math.PI);
+		t.cumRotation += angle;
 
 	}
 
@@ -245,6 +251,27 @@ public class GraphicsWrapper {
 			(int)Math.round(arcAngle)
 		);
 
+	}
+
+	private Transform addTransform() {
+
+		Transform t = new Transform();
+		g2 = (Graphics2D)g2.create();
+		t.graphics = g2;
+
+		Transform old = transformStack.peek();
+		if (old != null)
+			t.cumRotation = old.cumRotation;
+
+		transformStack.push(t);	
+		return t;
+
+	}
+
+	private class Transform {
+		Graphics2D graphics = null;
+		float cumRotation = 0;
+		public Transform() {}
 	}
 
 }
