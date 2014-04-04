@@ -110,32 +110,25 @@ public class GraphicsWrapper {
 
 	}
 
+	//only guaranteed to work in TRANSFORM_STANDARD mode
+	//TODO Matt: support in TRANSFORM_BODIES mode, or get rid of TRANSFORM_BODIES entirely?
 	public void drawImage(String imgName, float x, float y) {
-
-		//TODO Matt: in the future, cache these transformed images, and do smoother scaling/rotating w/ antialiasing
 
 		float scaleX = (float)g2.getTransform().getScaleX();
 		float scaleY = (float)g2.getTransform().getScaleY();
+		float rotation = transformStack.peek().cumRotation;
 		
 		float cumTransX = (float)(g2.getTransform().getTranslateX() - originalGraphics.getTransform().getTranslateX());
 		float cumTransY = (float)(g2.getTransform().getTranslateY() - originalGraphics.getTransform().getTranslateY());
 		float realX = (x / 16f) * canvas.getWidth() + cumTransX;
 		float realY = (y / 10f) * canvas.getHeight() + cumTransY;
 
-		BufferedImage image = ImageManager.getImage(imgName);
-
-		AffineTransform tform = new AffineTransform();
-
-		tform.concatenate(AffineTransform.getTranslateInstance(realX, realY));
-		tform.concatenate(AffineTransform.getTranslateInstance(-image.getWidth()*scaleX*0.5f, -image.getHeight()*scaleY*0.5f));
-		
-		float rotation = transformStack.peek().cumRotation;
-		if (rotation != 0)
-			tform.concatenate(AffineTransform.getRotateInstance(rotation / 180f * Math.PI, image.getWidth()*scaleX*0.5f, image.getHeight()*scaleY*0.5f));
-
-		tform.concatenate(AffineTransform.getScaleInstance(scaleX, scaleY));
-		
-		originalGraphics.drawImage(image, tform, null);
+		Image inst = ImageManager.getImageInstance(imgName, scaleX, scaleY, rotation);
+		AffineTransform tf = new AffineTransform();
+		tf.concatenate(AffineTransform.getTranslateInstance(realX - inst.getWidth(null)/2f/ImageManager.REAL_DENSITY, realY - inst.getHeight(null)/2f/ImageManager.REAL_DENSITY));
+		if (ImageManager.REAL_DENSITY != 1.0f)
+			tf.concatenate(AffineTransform.getScaleInstance(1/ImageManager.REAL_DENSITY, 1/ImageManager.REAL_DENSITY));
+		originalGraphics.drawImage(inst, tf, null);
 
 	}
 
