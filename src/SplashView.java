@@ -50,7 +50,7 @@ public class SplashView extends View implements RadialMenuListener {
 
 	public void draw(GraphicsWrapper g2, boolean active) {
 		update(); 
-		g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
+		g2.prepare();
 
 		g2.fillRect(0f, 0f, 16f, 10f, Colors.PAUSED);
 		if (!active) return;
@@ -63,16 +63,16 @@ public class SplashView extends View implements RadialMenuListener {
 			BodyRenderer.drawBody(db, g2, false);
 		}
 		
-		 g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
+		g2.prepare();
 		 	
 		//TODO: clearly, this is temporary
 		//g2.drawStringCentered("le splash~", 1.5f, Colors.SCORE, 8.0f, 5.0f);
 		//g2.drawStringCentered("build " + Main.getVersion(), 0.2f, Colors.SCORE, 8.0f, 6.5f);
 
-		 String[] poly = {"P", "o", "l", "y", "D", "r", "o", "p"};
-		 for(int i = 0; i < poly.length; i++){
+		String[] poly = {"P", "o", "l", "y", "D", "r", "o", "p"};
+		for(int i = 0; i < poly.length; i++){
 			g2.drawStringCentered(poly[i], 0.75f, Colors.SHAPES[i%Colors.SHAPES.length], 3.25f+.75f*i, 5.75f); 
-		 }
+		}
 
 		menu.draw(g2);
 
@@ -80,7 +80,6 @@ public class SplashView extends View implements RadialMenuListener {
 	
 	public void update(){ 
 		long now = System.currentTimeMillis();
-//		long time = System.currentTimeMillis();
 		if(now - squareSpawnTime >= 2.5*1000) {
 			DrawableBody db = spawn();
 			synchronized (blockList) {
@@ -176,7 +175,6 @@ public class SplashView extends View implements RadialMenuListener {
 
 	public void pointerUpdate(float cursorX, float cursorY) {
 		menu.pointerUpdate(cursorX, cursorY);
-
 	}
 
 }

@@ -25,7 +25,7 @@ public class BodyRenderer {
 
 	public static void drawBody(DrawableBody db, GraphicsWrapper g2, boolean paused) {
 
-		g2.prepare(GraphicsWrapper.TRANSFORM_BODIES);
+		g2.prepare();
 
 		Fixture fix = db.getFixture();
 		Body body = db.getBody();
@@ -35,8 +35,8 @@ public class BodyRenderer {
 		for (int i = 0; i < shape.getVertexCount(); i++) {
 			Vec2 vertex = shape.getVertex(i);
 			Vec2 wv = body.getWorldPoint(vertex);
-			if (i==0) poly.moveTo(wv.x, wv.y);
-			else poly.lineTo(wv.x, wv.y);
+			if (i==0) poly.moveTo(wv.x + 8.0f, 10.0f - wv.y);
+			else poly.lineTo(wv.x + 8.0f, 10.0f - wv.y);
 		}
 
 		Color c = paused ? Colors.BACKGROUND : expireColor(db.getColor(), db.getExpiration());

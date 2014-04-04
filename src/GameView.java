@@ -33,7 +33,7 @@ public class GameView extends View {
 		}
 		
 		if (scoreDelta<0){
-			recentPointLoss = true;				
+			recentPointLoss = true;
 		}
 
 		Vec2 pos = db.getBody().getPosition();
@@ -74,14 +74,14 @@ public class GameView extends View {
 
 	public void draw(GraphicsWrapper g2, boolean active, boolean showBodies) {
 
+		g2.prepare();
+		
 		//Draw background
 		Color bg = !active ? Colors.PAUSED : Colors.BACKGROUND;
-		g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
 		g2.fillRect(0, 0, 16, 10, bg);
 
 		//TODO: in the future, it might be nice if this were in its own Renderer class like the other components.
 		//red flash/gradient on bottom
-		g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
 		float maxPointLossAlpha = 80;
 		if(recentPointLoss) {
 			pointLossAlpha = (int)maxPointLossAlpha;

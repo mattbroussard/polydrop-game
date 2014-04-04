@@ -121,7 +121,7 @@ public class RadialMenu {
 
 	public void draw(GraphicsWrapper g2) {
 
-		g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
+		g2.prepare();
 
 		//draw menu items + gaps
 		g2.maskCircle(centerX, centerY, 2.8f);

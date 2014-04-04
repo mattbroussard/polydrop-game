@@ -5,7 +5,7 @@ public class LeapWarningView extends View {
 	
 	public void draw(GraphicsWrapper g2, boolean active) {
 		if (!active) return;
-		g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
+		g2.prepare();
 
 		g2.fillRect(0, 0, 16, 10, Colors.LEAP_WARNING_OVERLAY);
 

@@ -5,7 +5,7 @@ public class LevelRenderer {
 
 	public static void drawLevelIndicator(GraphicsWrapper g2, int level, float progress, boolean paused) {
 
-		g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
+		g2.prepare();
 
 		Color levelFGColor = paused ? Colors.PAUSED : Colors.SHAPES[(level+1)%(Colors.SHAPES.length)];
 		Color levelBGColor = paused ? Colors.BACKGROUND : Colors.PAUSED;

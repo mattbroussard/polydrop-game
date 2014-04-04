@@ -5,15 +5,7 @@ import javax.swing.*;
 import java.util.*;
 import java.awt.image.*;
 
-//This class was made to avoid lots of places where we had:
-// - awkward int/float casting
-// - PRECISION_FACTOR multiply/divides
-// - graphics transformations for drawing different things
 public class GraphicsWrapper {
-
-	static final int TRANSFORM_RAW = 0;
-	static final int TRANSFORM_STANDARD = 1;
-	static final int TRANSFORM_BODIES = 2;
 
 	static final int PRECISION_FACTOR = 1000;
 	static final String FONT_NAME = "Arial";
@@ -22,7 +14,6 @@ public class GraphicsWrapper {
 	private Graphics2D originalGraphics;
 	private LinkedList<Transform> transformStack;
 	private JComponent canvas;
-	private int lastPrepare = -1;
 
 	public GraphicsWrapper(Graphics g, JComponent canvas) {
 	
@@ -38,42 +29,18 @@ public class GraphicsWrapper {
 		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 		g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-		//reset transformation
-		prepare(TRANSFORM_STANDARD);
+		//configure transforms for 16x10 coordinate space
+		float scale = getCurrentScale();
+		float xScale = ((float)canvas.getWidth()) / (16.0f * scale);
+		float yScale = ((float)canvas.getHeight()) / (10.0f * scale);
+		g2.setTransform(AffineTransform.getScaleInstance(xScale, yScale));
 	
 	}
 
-	public void prepare(int transformType) {
+	public void prepare() {
 
 		//get back to the original state on the transform stack
 		restore(Integer.MAX_VALUE);
-
-		//don't waste time resetting the transform if we don't have to
-		if (transformType == lastPrepare)
-			return;
-		else
-			lastPrepare = transformType;
-
-		AffineTransform id = new AffineTransform();
-		id.setToIdentity();
-		g2.setTransform(id);
-
-		float scale = getCurrentScale();
-
-		if (transformType == TRANSFORM_STANDARD || transformType == TRANSFORM_BODIES) {
-
-			float xScale = ((float)canvas.getWidth()) / (16.0f * scale);
-			float yScale = ((float)canvas.getHeight()) / (10.0f * scale);
-			g2.transform(AffineTransform.getScaleInstance(xScale, yScale));
-
-		}
-
-		if (transformType == TRANSFORM_BODIES) {
-
-			g2.transform(AffineTransform.getScaleInstance(1.0, -1.0));
-			g2.translate(8.0f * scale, -10.0f * scale);
-
-		}
 
 	}
 
@@ -81,8 +48,10 @@ public class GraphicsWrapper {
 		return g2;
 	}
 
+	//This is sort of a vestige, since previously there were different modes with different scales.
+	//In the future, maybe this will be the case again? So keeping it here.
 	public float getCurrentScale() {
-		return lastPrepare == TRANSFORM_RAW ? 1.0f : PRECISION_FACTOR;
+		return PRECISION_FACTOR;
 	}
 
 	public void drawString(String s, float fontSize, Color c, float x, float y) {
@@ -110,8 +79,6 @@ public class GraphicsWrapper {
 
 	}
 
-	//only guaranteed to work in TRANSFORM_STANDARD mode
-	//TODO Matt: support in TRANSFORM_BODIES mode, or get rid of TRANSFORM_BODIES entirely?
 	public void drawImage(String imgName, float x, float y) {
 
 		float scaleX = (float)g2.getTransform().getScaleX();

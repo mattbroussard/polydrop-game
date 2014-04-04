@@ -7,7 +7,7 @@ public class TextRenderer {
 
 	public static void drawScore(GraphicsWrapper g2, int score) {
 
-		g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
+		g2.prepare();
 
 		g2.drawString(
 			"Score: "+score,
@@ -21,7 +21,7 @@ public class TextRenderer {
 
 	public static void drawNotification(GraphicsWrapper g2, Notification n) {
 
-		g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
+		g2.prepare();
 
 		float progress = n.expirationProgress();
 		float dy = progress * NOTIFICATION_DISTANCE;
@@ -33,7 +33,7 @@ public class TextRenderer {
 
 	public static void drawGameOver(GraphicsWrapper g2) {
 
-		g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
+		g2.prepare();
 
 		g2.drawStringCentered(
 			"GAME OVER",
@@ -55,7 +55,7 @@ public class TextRenderer {
 
 	public static void drawPaused(GraphicsWrapper g2) {
 
-		g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
+		g2.prepare();
 
 		g2.drawStringCentered(
 			"PAUSED",

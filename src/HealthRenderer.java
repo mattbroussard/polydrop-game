@@ -5,7 +5,7 @@ public class HealthRenderer {
 	
 	public static void drawHealthBar(GraphicsWrapper g2, int health, boolean paused) {
 
-		g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
+		g2.prepare();
 
 		Color healthColor = Colors.HEALTH_GOOD;
 		if (health < 60) healthColor = Colors.HEALTH_MID;

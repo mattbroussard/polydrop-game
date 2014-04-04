@@ -30,7 +30,7 @@ public abstract class PaginatedView extends View implements RadialMenuListener {
 
 	public void draw(GraphicsWrapper g2, boolean active) {
 		if (!active) return;
-		g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
+		g2.prepare();
 
 		draw(g2, getCurrentPage());
 

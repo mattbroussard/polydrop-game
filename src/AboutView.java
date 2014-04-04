@@ -14,7 +14,7 @@ public class AboutView extends View implements RadialMenuListener {
 
 	public void draw(GraphicsWrapper g2, boolean active) {
 		if (!active) return;
-		g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
+		g2.prepare();
 
 		g2.fillRect(0f, 0f, 16f, 10f, Colors.PAUSED);
 

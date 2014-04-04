@@ -130,7 +130,7 @@ public class ViewManager extends JComponent implements KeyListener {
 	private void paintFPS(GraphicsWrapper g2) {
 
 		if (!showFPS) return;
-		g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
+		g2.prepare();
 
 		paintId = (paintId + 1) % FPS_SAMPLE;
 		if (paintId == 0) {
