@@ -80,9 +80,16 @@ public class GraphicsWrapper {
 	}
 
 	public void drawImage(String imgName, float x, float y) {
+		drawImage(imgName, x, y, true);
+	}
 
-		float scaleX = (float)g2.getTransform().getScaleX();
-		float scaleY = (float)g2.getTransform().getScaleY();
+	//if useInstanceCache is false, do the rotate transform here, not at the instance cache level
+	//this is desirable if the image will be rotated often (i.e. on a body) to avoid running out of memory by filling up the instance cache
+	public void drawImage(String imgName, float x, float y, boolean useInstanceCache) {
+
+		float scale = getCurrentScale();
+		float scaleX = ((float)canvas.getWidth()) / (16.0f * scale);
+		float scaleY = ((float)canvas.getHeight()) / (10.0f * scale);
 		float rotation = transformStack.peek().cumRotation;
 		
 		float cumTransX = (float)(g2.getTransform().getTranslateX() - originalGraphics.getTransform().getTranslateX());
@@ -90,12 +97,29 @@ public class GraphicsWrapper {
 		float realX = (x / 16f) * canvas.getWidth() + cumTransX;
 		float realY = (y / 10f) * canvas.getHeight() + cumTransY;
 
-		Image inst = ImageManager.getImageInstance(imgName, scaleX, scaleY, rotation);
-		AffineTransform tf = new AffineTransform();
-		tf.concatenate(AffineTransform.getTranslateInstance(realX - inst.getWidth(null)/2f/ImageManager.REAL_DENSITY, realY - inst.getHeight(null)/2f/ImageManager.REAL_DENSITY));
-		if (ImageManager.REAL_DENSITY != 1.0f)
-			tf.concatenate(AffineTransform.getScaleInstance(1/ImageManager.REAL_DENSITY, 1/ImageManager.REAL_DENSITY));
-		originalGraphics.drawImage(inst, tf, null);
+		if (!useInstanceCache) {
+
+			BufferedImage image = ImageManager.getImage(imgName);
+
+			AffineTransform tform = new AffineTransform();
+			tform.concatenate(AffineTransform.getTranslateInstance(realX, realY));
+			tform.concatenate(AffineTransform.getTranslateInstance(-image.getWidth()*scaleX*0.5f, -image.getHeight()*scaleY*0.5f));
+			tform.concatenate(AffineTransform.getScaleInstance(scaleX, scaleY));
+			if (rotation != 0)
+				tform.concatenate(AffineTransform.getRotateInstance(rotation / 180f * Math.PI, image.getWidth()*0.5f, image.getHeight()*0.5f));
+
+			originalGraphics.drawImage(image, tform, null);
+
+		} else {
+
+			Image inst = ImageManager.getImageInstance(imgName, scaleX, scaleY, rotation);
+			AffineTransform tf = new AffineTransform();
+			tf.concatenate(AffineTransform.getTranslateInstance(realX - inst.getWidth(null)/2f/ImageManager.REAL_DENSITY, realY - inst.getHeight(null)/2f/ImageManager.REAL_DENSITY));
+			if (ImageManager.REAL_DENSITY != 1.0f)
+				tf.concatenate(AffineTransform.getScaleInstance(1/ImageManager.REAL_DENSITY, 1/ImageManager.REAL_DENSITY));
+			originalGraphics.drawImage(inst, tf, null);
+
+		}
 
 	}
 
@@ -186,6 +210,8 @@ public class GraphicsWrapper {
 
 	//angles in degrees
 	public void rotate(float angle) {
+
+		//TODO Matt: in the future, maybe get rid of this and rotate individual draw calls (we already do it for images)
 
 		Transform t = addTransform();
 		g2.rotate(angle / 180f * (float)Math.PI);
