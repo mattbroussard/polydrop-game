@@ -25,23 +25,32 @@ public class SoundManager {
 		System.out.println("Loaded audio resource "+ clipName);
 	}
 
-	public static void play(String clipName) {
-		if(muted){
-			return;
-		}
+	public static boolean ensureLoaded(String clipName) {
+
 		if(!clips.containsKey(clipName)) {
 			try {
 				load(clipName);
 			} catch (Exception e) {
 				System.out.println("Couldn't load audio resource "+ clipName);
-				return;
+				return false;
 			}
 		}
-		Clip clip = clips.get(clipName);
-		clip.setFramePosition(0);
-		clip.start();
+
+		return true;
+
+	}
+
+	public static void play(String clipName) {
+		if(!muted && ensureLoaded(clipName)){
+			Clip clip = clips.get(clipName);
+			clip.setFramePosition(0);
+			clip.start();
+		}
 	}
 	
+	public static void setMuted(boolean m) {
+		muted = m;
+	}
 	public static void toggleMuted(){
 		muted = !muted;
 	}

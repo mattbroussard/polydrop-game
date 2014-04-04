@@ -52,6 +52,28 @@ public class ImageManager {
 			return instanceCache.get(key);
 
 		BufferedImage raw = getImage(name);
+		Image tbr = null;
+
+		//if the image is too small, don't try to do transforms on it
+		if (raw.getWidth() <= 10 || raw.getHeight() <= 10 || xScale*raw.getWidth() < 5 || yScale*raw.getHeight() < 5)
+			return raw;
+
+		try {
+			tbr = getImageInstance(raw, xScale, yScale, rotation);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return raw;
+		}
+
+		if (tbr == null)
+			return raw;
+
+		instanceCache.put(key, tbr);
+		return tbr;
+
+	}
+
+	private static Image getImageInstance(BufferedImage raw, float xScale, float yScale, float rotation) {
 
 		//draw the rotated image at full (raw file pixels) size
 		BufferedImage step1 = new BufferedImage(raw.getWidth()*2, raw.getHeight()*2, BufferedImage.TYPE_INT_ARGB);
@@ -63,7 +85,8 @@ public class ImageManager {
 		s1g.dispose();
 
 		//scale the rotated image to the correct resolution for the screen
-		Image step2 = step1.getScaledInstance((int)Math.round(step1.getWidth()*xScale*REAL_DENSITY), (int)Math.round(step1.getHeight()*yScale*REAL_DENSITY), Image.SCALE_SMOOTH);
+		Image step2 = null;
+		step2 = step1.getScaledInstance((int)Math.round(step1.getWidth()*xScale*REAL_DENSITY), (int)Math.round(step1.getHeight()*yScale*REAL_DENSITY), Image.SCALE_SMOOTH);
 
 		//copy the image onto a "compatible image"
 		//commented because it didn't seem to have any noticeable performance improvement
@@ -74,7 +97,6 @@ public class ImageManager {
 		s3g.dispose();
 		*/
 
-		instanceCache.put(key, step2);
 		return step2;
 
 	}
