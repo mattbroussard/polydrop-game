@@ -20,7 +20,7 @@ public class SplashView extends View implements RadialMenuListener {
 	Platform rp, lp;
 	float a;
 	float v;
-	float terminalv = 3;
+	float terminalv = 3.5f;
 	long time;
 	World world;
 	
@@ -66,8 +66,13 @@ public class SplashView extends View implements RadialMenuListener {
 		 g2.prepare(GraphicsWrapper.TRANSFORM_STANDARD);
 		 	
 		//TODO: clearly, this is temporary
-		g2.drawStringCentered("le splash~", 1.5f, Colors.SCORE, 8.0f, 5.0f);
-		g2.drawStringCentered("build " + Main.getVersion(), 0.2f, Colors.SCORE, 8.0f, 6.5f);
+		//g2.drawStringCentered("le splash~", 1.5f, Colors.SCORE, 8.0f, 5.0f);
+		//g2.drawStringCentered("build " + Main.getVersion(), 0.2f, Colors.SCORE, 8.0f, 6.5f);
+
+		 String[] poly = {"P", "o", "l", "y", "D", "r", "o", "p"};
+		 for(int i = 0; i < poly.length; i++){
+			g2.drawStringCentered(poly[i], 0.75f, Colors.SHAPES[i%Colors.SHAPES.length], 3.25f+.75f*i, 5.75f); 
+		 }
 
 		menu.draw(g2);
 
