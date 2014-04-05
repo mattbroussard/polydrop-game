@@ -24,7 +24,7 @@
 		<javac
 			srcdir="src/"
 			destdir="classes/"
-			classpath="lib/leapJava.jar:lib/jbox2d-library-2.2.1.1.jar"
+			classpath="lib/LeapJava.jar:lib/leapJava.jar:lib/jbox2d-library-2.2.1.1.jar"
 			includeantruntime="no" />
 	</target>
 
