@@ -8,6 +8,7 @@ import com.leapmotion.leap.*;
 public class LeapController extends Listener implements Runnable {
 	
 	GameController game;
+	TutorialView tutorialView;
 	ViewManager viewManager;
 	Controller leap;
 
@@ -86,9 +87,11 @@ public class LeapController extends Listener implements Runnable {
 				
 				if (rightHand == null) {
 					game.pause(true);
+					tutorialView.pause(true);
 					return;
 				} else {
 					game.unpause(true);
+					tutorialView.pause(false);
 				}
 
 				Vector handPos = primaryHand.palmPosition();
@@ -97,6 +100,7 @@ public class LeapController extends Listener implements Runnable {
 				double handRoll = primaryHand.palmNormal().roll();
 
 				game.updatePlatformPosition(handX, handY, handRoll, dt);
+				tutorialView.updatePlatform(handX, handY, handRoll, dt);
 				
 				break;
 
@@ -118,9 +122,9 @@ public class LeapController extends Listener implements Runnable {
 				double rightHandX = rightHand == null ? -1 : normalize(rightHandPos.getX(), -SPACE_WIDTH/2.0f, SPACE_WIDTH/2.0f); 
 				double rightHandY = rightHand == null ? -1 : normalize(rightHandPos.getY(), 0f, SPACE_HEIGHT);
 				double rightHandRoll = rightHand == null ? -1 : rightHand.palmNormal().roll();
-
+				
 				game.updatePlatformPosition(rightHandX, rightHandY, rightHandRoll, leftHandX, leftHandY, leftHandRoll, dt);
-
+				
 				break;
 			
 			default:
@@ -360,9 +364,10 @@ public class LeapController extends Listener implements Runnable {
 	// - actuate change in the position of the platform(s) on the model (via the GameController)
 	// - pause and unpause the game (via the GameController)
 	// - drive UI interactions to change game modes (via the ViewController)
-	public LeapController(GameController game, ViewManager viewManager) {
+	public LeapController(GameController game, TutorialView tutorialView, ViewManager viewManager) {
 
 		this.game = game;
+		this.tutorialView = tutorialView;
 		this.viewManager = viewManager;
 
 		//setup Leap listener/controller

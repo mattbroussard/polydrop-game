@@ -76,7 +76,7 @@ public class Main {
 		}
 
 		//Setup Leap controller
-		LeapController leap = new LeapController(gameController, vm);
+		LeapController leap = new LeapController(gameController, tutorial, vm);
 
 		//Make window visible
 		frame.setVisible(true);
