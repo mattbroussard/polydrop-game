@@ -55,7 +55,7 @@
 	<!-- runs already-compiled classfiles with specified command-line arguments -->
 	<target name="execute">
 		<java
-			classpath="res:classes:lib/leapJava.jar:lib/jbox2d-library-2.2.1.1.jar"
+			classpath="res:classes:lib/LeapJava.jar:lib/leapJava.jar:lib/jbox2d-library-2.2.1.1.jar"
 			classname="Main"
 			fork="yes" >
 			<sysproperty key="java.library.path" path="lib/"/>
