@@ -6,6 +6,7 @@ import java.util.*;
 import javax.swing.ImageIcon;
 import java.awt.*;
 import java.awt.geom.*;
+import java.io.InputStream;
 
 public class ImageManager {
 	
@@ -14,6 +15,7 @@ public class ImageManager {
 
 	private static HashMap<String,BufferedImage> cache = new HashMap<String,BufferedImage>();
 	private static HashMap<String,Image> instanceCache = new HashMap<String,Image>();
+	private static Properties defaultScales = null;	
 
 	private static void load(String name) throws Exception {
 
@@ -52,6 +54,7 @@ public class ImageManager {
 			return instanceCache.get(key);
 
 		BufferedImage raw = getImage(name);
+		float defaultScale = getDefaultScale(name);
 		Image tbr = null;
 
 		//if the image is too small, don't try to do transforms on it
@@ -59,7 +62,7 @@ public class ImageManager {
 			return raw;
 
 		try {
-			tbr = getImageInstance(raw, xScale, yScale, rotation);
+			tbr = getImageInstance(raw, xScale*defaultScale, yScale*defaultScale, rotation);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return raw;
@@ -98,6 +101,32 @@ public class ImageManager {
 		*/
 
 		return step2;
+
+	}
+
+	public static float getDefaultScale(String name) {
+
+		if (defaultScales == null) {
+			try {
+				InputStream is = Main.class.getResource("DEFAULT_SCALES").openStream();
+				Properties p = new Properties();
+				p.load(is);
+				is.close();
+				defaultScales = p;
+			} catch (Exception e) {
+				defaultScales = new Properties();
+			}
+		}
+
+		String val = defaultScales.getProperty(name);
+		if (val == null)
+			return 1.0f;
+
+		try {
+			return Float.parseFloat(val);
+		} catch (Exception e) {
+			return 1.0f;
+		}
 
 	}
 

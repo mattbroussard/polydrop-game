@@ -100,11 +100,12 @@ public class GraphicsWrapper {
 		if (!useInstanceCache) {
 
 			BufferedImage image = ImageManager.getImage(imgName);
+			float defaultScale = ImageManager.getDefaultScale(imgName);
 
 			AffineTransform tform = new AffineTransform();
 			tform.concatenate(AffineTransform.getTranslateInstance(realX, realY));
 			tform.concatenate(AffineTransform.getTranslateInstance(-image.getWidth()*scaleX*0.5f, -image.getHeight()*scaleY*0.5f));
-			tform.concatenate(AffineTransform.getScaleInstance(scaleX, scaleY));
+			tform.concatenate(AffineTransform.getScaleInstance(scaleX*defaultScale, scaleY*defaultScale));
 			if (rotation != 0)
 				tform.concatenate(AffineTransform.getRotateInstance(rotation / 180f * Math.PI, image.getWidth()*0.5f, image.getHeight()*0.5f));
 
