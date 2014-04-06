@@ -25,6 +25,7 @@
 			srcdir="src/"
 			destdir="classes/"
 			classpath="lib/LeapJava.jar:lib/leapJava.jar:lib/jbox2d-library-2.2.1.1.jar"
+			debug="true"
 			includeantruntime="no" />
 	</target>
 
