@@ -17,18 +17,30 @@ public class TutorialView extends View  implements RadialMenuListener{
 	static final int MOVE_PLATFORM = 0;
 	static final int LINE_UP_PLATFORM = 1;
 	static final int HOLD_POLY = 2;
-	static final int PAUSE = 3;
-	static final int UNPAUSE = 4;
-	static final int PAUSE_AGAIN = 5;
-	static final int MOVE_CURSOR = 6;
-	static final int LINE_UP_CURSOR = 7;
-	static final int SELECT_PLAY = 8;
+	static final int SCORE_ONE = 3;
+	static final int SCORE_TWO = 4;
+	static final int HEALTH_ONE = 5;
+	static final int HEALTH_TWO = 6;
+	static final int HEALTH_THREE = 7;
+	static final int LEVEL_INDICATOR = 8;
+	static final int PAUSE = 9;
+	static final int UNPAUSE = 10;
+	static final int PAUSE_AGAIN = 11;
+	static final int MOVE_CURSOR = 12;
+	static final int LINE_UP_CURSOR = 13;
+	static final int SELECT_PLAY = 14;
+	static final int GAMEOVER = 15;
 	
 	static final int PAUSE_DELAY = 100;
+	
+	private int score = 0;
+	private int health = 35;
 	
 	long pauseTimer = 0;
 	long time;
 	long squareSpawnTime;
+	long healthIncrease;
+	long startedLevel;
 	
 	World world;
 	Platform p;
@@ -50,13 +62,20 @@ public class TutorialView extends View  implements RadialMenuListener{
 	private String[] instructions = {	
 			"Move your hand to move the platform!",
 			"Line the platform up here",							
-			"Hold the poly until it dissapears!",					
+			"Hold the poly until it dissapears!",
+			"This will tell you your score",
+			"Your score will increase everytime you catch a poly",
+			"This will tell you how much health you have left",
+			"Your health will decrease every time you drop a poly",
+			"Your health regenerates with time",
+			"This tells you how close you are to leveling up based on your score",
 			"Make a fist to pause the game",							
 			"Unclench your fist to unpause",							
 			"Pause again",												
 			"Now stick out your pointer finger to control the cursor",	
 			"Move the cursor here",										
-			"Drag the cursor to the left until you start the game!"};	
+			"Drag the cursor to the left until you start the game!",
+			"Don't be that guy"};	
 	
 
 	
@@ -91,6 +110,30 @@ public class TutorialView extends View  implements RadialMenuListener{
 		case HOLD_POLY:
 			setStringCoord(8f,5f);
 			break;
+		case SCORE_ONE:
+			setStringCoord(3f,2.5f);
+			g2.fillRect(.5f, 1.25f, 3.5f, .125f, Colors.HEALTH_GOOD);
+			break;
+		case SCORE_TWO:
+			setStringCoord(5.75f,2.5f);
+			g2.fillRect(.5f, 1.25f, 3.5f, .125f, Colors.HEALTH_GOOD);
+			break;
+		case HEALTH_ONE:
+			setStringCoord(10f,2.5f);
+			g2.fillRect(11.5f, 1.5f, 3, .125f, Colors.HEALTH_GOOD);
+			break;
+		case HEALTH_TWO:
+			setStringCoord(10f,2.5f);
+			g2.fillRect(11.5f, 1.5f, 3, .125f, Colors.HEALTH_GOOD);
+			break;
+		case HEALTH_THREE:
+			setStringCoord(11f,2.5f);
+			g2.fillRect(11.5f, 1.5f, 3, .125f, Colors.HEALTH_GOOD);
+			break;
+		case LEVEL_INDICATOR:
+			setStringCoord(8f,2.5f);
+			g2.fillRect(14.25f,1.75f,1.5f,.125f, Colors.HEALTH_GOOD);
+			break;
 		case PAUSE:
 			setStringCoord(8f,5f);
 			break;
@@ -111,13 +154,28 @@ public class TutorialView extends View  implements RadialMenuListener{
 			setStringCoord(6.25f,5f);
 			g2.fillRect(12, 5, 3, .125f, Colors.LEAP_WARNING_OVERLAY);
 			break;
+		case GAMEOVER:
+			setStringCoord(8f, 6f);
+			g2.drawStringCentered("GAME OVER", 2.55f, Colors.HEALTH_BAD, 8f, 4f);
+		}
+		
+		if(level >= HOLD_POLY){
+			//Draw score
+			TextRenderer.drawScore(g2, score);
+
+			//Draw radial level indicator
+			LevelRenderer.drawLevelIndicator(g2, 1, .75f, isPaused());		
+
+			//Draw health bar
+			HealthRenderer.drawHealthBar(g2, health, isPaused());
+			
 		}
 		
 		g2.drawStringCentered(instructions[level], fontSize, stringColor, stringX, stringY);
 		
 		if(!isPaused()){
 			physicsUpdate(System.currentTimeMillis());
-		}else if(level > PAUSE_AGAIN){
+		}else if(level > PAUSE_AGAIN && level != GAMEOVER){
 			menu.draw(g2);
 		}
 		instructionUpdate(System.currentTimeMillis());
@@ -159,7 +217,7 @@ public class TutorialView extends View  implements RadialMenuListener{
 			pauseTimer = 0;
 
 		}
-		if(level == instructions.length-1){
+		if(level == SELECT_PLAY){
 			return;
 		}
 		this.paused = paused;
@@ -171,6 +229,11 @@ public class TutorialView extends View  implements RadialMenuListener{
 
 		world.step((now-time)/1000f, 6, 2);
 		
+		if(now - healthIncrease > 3 * 1000 && level != GAMEOVER){
+			health = Math.min(health+3, 100);
+			healthIncrease = now;
+		}
+		
 		Iterator<DrawableBody> itr = blockList.iterator();
 		while( itr.hasNext() ) {
 			DrawableBody b = itr.next();
@@ -180,14 +243,23 @@ public class TutorialView extends View  implements RadialMenuListener{
 				// remove block
 				itr.remove();
 				world.destroyBody(b.getBody());
-				level++;
+				score += b.getReward();
+				levelUp(now);
 			}
 			Vec2 pos = b.getBody().getPosition();
 			if(pos.y < -2) {
 				//Try again
+				score += b.getPenalty();
+				health = Math.max(0, health-5);
+				if(health == 0){
+					level = GAMEOVER;
+					startedLevel = now;
+				}else{
+					instructions[level] = "Try again!";
+				}
 				itr.remove();
 				world.destroyBody(b.getBody());
-				instructions[level] = "Try again!";
+
 			}
 		}
 
@@ -198,7 +270,7 @@ public class TutorialView extends View  implements RadialMenuListener{
 		switch(level){
 			case MOVE_PLATFORM:
 				if(dx > 15f){
-					level++;
+					levelUp(now);
 					dx = 0;
 				}
 				break;
@@ -206,7 +278,7 @@ public class TutorialView extends View  implements RadialMenuListener{
 				
 				if(	Math.abs(p.getBody().getPosition().x + 4 - .5) < 1
 				 && Math.abs(10 - p.getBody().getPosition().y + .5 - 5) < 1){
-					level++;
+					levelUp(now);
 				}
 				break;
 			case HOLD_POLY:
@@ -215,40 +287,83 @@ public class TutorialView extends View  implements RadialMenuListener{
 					blockList.get(0).reduceLifetime(5);
 				}
 
-				break;		
+				break;	
+			case SCORE_ONE:
+				if(now - startedLevel > 5 * 1000){
+					levelUp(now);
+				}
+				break;
+			case SCORE_TWO:
+				if(now - startedLevel > 5 * 1000){
+					levelUp(now);
+				}
+				break;
+			case HEALTH_ONE:
+				if(now - startedLevel > 5 * 1000){
+					levelUp(now);
+				}
+				break;
+			case HEALTH_TWO:
+				if(now - startedLevel > 5 * 1000){
+					levelUp(now);
+				}
+				break;
+			case HEALTH_THREE:
+				if(now - startedLevel > 5 * 1000){
+					levelUp(now);
+				}
+				break;
+			case LEVEL_INDICATOR:
+				if(now - startedLevel > 5 * 1000){
+					levelUp(now);
+				}
+				break;
 			case PAUSE:
 				if(isPaused()){
-					level++;
+					levelUp(now);
 				}
 				break;
 			case UNPAUSE:
 				if(!isPaused()){
-					level++;
+					levelUp(now);
 				}
 				break;
 			case PAUSE_AGAIN:
 				if(isPaused()){
-					level++;
+					levelUp(now);
 				}
 				break;
 			case MOVE_CURSOR:
 				if(dx > 275){
 					dx = 0;
-					level++;
+					levelUp(now);
 				}
 				break;
 			case LINE_UP_CURSOR:
 				if( Math.abs(menu.cursorX - 15) < .5f
 				 && Math.abs(menu.cursorY -  5) < .5f){
-					level++;
+					levelUp(now);
 				}
 				break;
 			case SELECT_PLAY:
 
 				break;
+			case GAMEOVER:
+				if(now - startedLevel > 5 * 1000){
+					level = 0;
+					score = 0;
+					health = 35;
+					instructions[HOLD_POLY] = "Hold the poly until it dissapears!";
+				}
+				break;
 
 
 		}
+	}
+	
+	public void levelUp(long now){
+		startedLevel = now;
+		level++;
 	}
 	
 	public void updatePlatform(double handx, double handy, double theta, long dt){
@@ -280,7 +395,7 @@ public class TutorialView extends View  implements RadialMenuListener{
 		int newPoly = (int)(Math.random()*5)+3;
 		
 		System.out.println("spawing at "+x);
-		return new PolyBody(world, x, newPoly, GameModel.FREE_PLAY);
+		return new PolyBody(world, x, newPoly, GameModel.ONE_HAND);
 	}
 
 	public void onMenuSelection(int id) {
