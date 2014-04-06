@@ -12,6 +12,7 @@ public class RadialMenu {
 	RadialMenuItem selected = null;
 	int active = -1;
 	float selectExtent = 0;
+	boolean drawCursor = true;
 
 	static final float ITEM_GAP = 0.5f;
 
@@ -156,7 +157,7 @@ public class RadialMenu {
 		g2.restore();
 
 		//draw cursor
-		if (System.currentTimeMillis() - lastPointerUpdate < 300)
+		if (System.currentTimeMillis() - lastPointerUpdate < 300 && drawCursor)
 			g2.fillCircle(cursorX, cursorY, 0.25f, Colors.MENU_CURSOR);
 
 	}
