@@ -119,6 +119,7 @@ public class SplashView extends View implements RadialMenuListener {
 		rp.getBody().setLinearVelocity(new Vec2(-1*v,0));
 		lp.getBody().setLinearVelocity(new Vec2(v,0));
 		
+		
 	//	rp.getBody().setLinearVelocity(new Vec2(0,0));
 	//	lp.getBody().setLinearVelocity(new Vec2(0,0));
 			

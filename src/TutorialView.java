@@ -197,7 +197,7 @@ public class TutorialView extends View  implements RadialMenuListener{
 	public void instructionUpdate(long now){
 		switch(level){
 			case MOVE_PLATFORM:
-				if(dx > 7f){
+				if(dx > 15f){
 					level++;
 					dx = 0;
 				}
@@ -215,8 +215,7 @@ public class TutorialView extends View  implements RadialMenuListener{
 					blockList.get(0).reduceLifetime(5);
 				}
 
-				break;
-				
+				break;		
 			case PAUSE:
 				if(isPaused()){
 					level++;
