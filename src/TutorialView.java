@@ -59,7 +59,7 @@ public class TutorialView extends View  implements RadialMenuListener{
 	World world;
 	Platform platform;
 
-	private int instructionNumber = PAUSE;
+	private int instructionNumber = 0;
 	
 	float dx = 0;
 	float fontSize = .5f;
