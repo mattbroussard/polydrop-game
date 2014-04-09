@@ -45,7 +45,7 @@ public class TutorialView extends View implements RadialMenuListener {
 		/* SCORE_EXPLANATION_TWO */
 			new Instruction(8f, 5f, "But if you drop it, it will decrease your score and your health"),
 		/* HEALTH_EXPLANATION_ONE */
-			new Instruction(9.25f, .825f, "This is your health bar"),
+			new Instruction(9.25f, 0.9f, "This is your health bar"),
 		/* HEALTH_EXPLANATION_TWO */
 			new Instruction(8f, 5f, "Your health will regenerate with time"),
 		/* LEVEL_INDICATOR_EXPLANATION_ONE */
@@ -63,7 +63,7 @@ public class TutorialView extends View implements RadialMenuListener {
 		/* MOVE_CURSOR */
 			new Instruction(6.25f, 5f, "Now stick out your pointer finger to control the cursor"),	
 		/* LINE_UP_CURSOR */
-			new Instruction(12f, 1.5f, "Move the cursor here"),										
+			new Instruction(9.75f, 5f, "Move the cursor here"),										
 		/* SELECT_PLAY */
 			new Instruction(6.25f, 5f, "Drag the cursor to the left to go back!"),
 		/* GAMEOVER */
