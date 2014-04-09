@@ -57,6 +57,9 @@ public class Colors {
 	public static final Color LEAP_WARNING_OVERLAY = new Color(150, 0, 0, 150);
 	public static final Color LEAP_WARNING_TEXT = Color.white;
 
+	public static final Color HIT_TEST_HIGHLIGHT = new Color(255, 255, 255, 100);
+	public static final Color HIT_TEST_PROGRESS = Color.white;
+	
 	public static final Color TUTORIAL_TEXT = Color.white;
 
 	public static Color interpolateColor(Color a, Color c, double progress) {

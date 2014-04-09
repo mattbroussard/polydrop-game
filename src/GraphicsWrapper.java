@@ -54,29 +54,35 @@ public class GraphicsWrapper {
 		return PRECISION_FACTOR;
 	}
 
-	public void drawString(String s, float fontSize, Color c, float x, float y) {
+	public void drawString(String s, float fontSize, Color c, float x, float y, boolean centered) {
 		
-		float scale = getCurrentScale();
+		//Support multiline strings
+		String[] lines = s.split("\n");
+		if (lines.length > 1) {
+			for (String line : lines) {
+				drawString(line, fontSize, c, x, y, centered);
+				y += fontSize * 1.2f;
+			}
+			return;
+		}
 
-		Font f = new Font(FONT_NAME, 0, (int)Math.round(fontSize*scale));
-
-		g2.setColor(c);
-		g2.setFont(f);
-		g2.drawString(s, x * scale, y * scale);
-	
-	}
-
-	public void drawStringCentered(String s, float fontSize, Color c, float x, float y) {
-		
 		float scale = getCurrentScale();
 
 		Font f = new Font(FONT_NAME, 0, (int)Math.round(fontSize*scale));
 		g2.setFont(f);
 		g2.setColor(c);
 
-		float w = g2.getFontMetrics(f).stringWidth(s);
+		float w = centered ? g2.getFontMetrics(f).stringWidth(s) : 0;
 		g2.drawString(s, x*scale - w/2.0f, y*scale);
 
+	}
+
+	//These are here to avoid having to change code using them elsewhere
+	public void drawStringCentered(String s, float fontSize, Color c, float x, float y) {
+		drawString(s, fontSize, c, x, y, true);
+	}
+	public void drawString(String s, float fontSize, Color c, float x, float y) {
+		drawString(s, fontSize, c, x, y, false);
 	}
 
 	public void drawImage(String imgName, float x, float y) {
@@ -100,11 +106,12 @@ public class GraphicsWrapper {
 		if (!useInstanceCache) {
 
 			BufferedImage image = ImageManager.getImage(imgName);
+			float defaultScale = ImageManager.getDefaultScale(imgName);
 
 			AffineTransform tform = new AffineTransform();
 			tform.concatenate(AffineTransform.getTranslateInstance(realX, realY));
 			tform.concatenate(AffineTransform.getTranslateInstance(-image.getWidth()*scaleX*0.5f, -image.getHeight()*scaleY*0.5f));
-			tform.concatenate(AffineTransform.getScaleInstance(scaleX, scaleY));
+			tform.concatenate(AffineTransform.getScaleInstance(scaleX*defaultScale, scaleY*defaultScale));
 			if (rotation != 0)
 				tform.concatenate(AffineTransform.getRotateInstance(rotation / 180f * Math.PI, image.getWidth()*0.5f, image.getHeight()*0.5f));
 

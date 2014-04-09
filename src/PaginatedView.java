@@ -21,6 +21,7 @@ public abstract class PaginatedView extends View implements RadialMenuListener {
 		nextMenu.addItem(new RadialMenuItem(PAGINATED_MENU_NEXT, "Next", "menuForward", 163, 34, RadialMenuItem.ORIENT_LEFT));
 		prevMenu = new RadialMenu(-1.5f, 5f, this);
 		prevMenu.addItem(new RadialMenuItem(PAGINATED_MENU_PREV, "Previous", "menuReturn", -17, 34, RadialMenuItem.ORIENT_RIGHT));
+		prevMenu.drawCursor = false;
 
 	}
 

@@ -24,7 +24,8 @@
 		<javac
 			srcdir="src/"
 			destdir="classes/"
-			classpath="lib/leapJava.jar:lib/jbox2d-library-2.2.1.1.jar"
+			classpath="lib/LeapJava.jar:lib/leapJava.jar:lib/jbox2d-library-2.2.1.1.jar"
+			debug="true"
 			includeantruntime="no" />
 	</target>
 
@@ -55,7 +56,7 @@
 	<!-- runs already-compiled classfiles with specified command-line arguments -->
 	<target name="execute">
 		<java
-			classpath="res:classes:lib/leapJava.jar:lib/jbox2d-library-2.2.1.1.jar"
+			classpath="res:classes:lib/LeapJava.jar:lib/leapJava.jar:lib/jbox2d-library-2.2.1.1.jar"
 			classname="Main"
 			fork="yes" >
 			<sysproperty key="java.library.path" path="lib/"/>
@@ -102,6 +103,7 @@
 				<exclude name="META-INF/*" />
 				<exclude name="META-INF/maven" />
 			</zipfileset>
+			<fileset dir="." includes="LICENSE.txt" />
 		</jar>
 	</target>
 
@@ -190,6 +192,7 @@
 			<fileset dir="${javahome}" includes="**/*" />
 		</copy>
 
+		<copy file="LICENSE.txt" todir="distrib/${version}/Windows/" />
 		<copy file="distrib/${version}/PolyDrop.jar" todir="distrib/${version}/Windows/" />
 		<copy todir="distrib/${version}/Windows">
 			<fileset dir="lib/" includes="Leap.dll, LeapJava.dll" />
