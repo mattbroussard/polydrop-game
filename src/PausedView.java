@@ -13,6 +13,7 @@ public class PausedView extends View implements RadialMenuListener {
 	static final int PAUSE_MENU_EXIT_GAME = 3;
 	static final int PAUSE_MENU_LEADERBOARD = 4;
 	static final int PAUSE_MENU_MUTE = 5;
+	static final int PAUSE_MENU_TUTORIAL = 6;
 
 	public PausedView(GameController controller, GameView gameView) {
 
@@ -23,10 +24,11 @@ public class PausedView extends View implements RadialMenuListener {
 		menu.addItem(new RadialMenuItem(PAUSE_MENU_MODE_FREE, "Free Play", "freeMode", 60, 20, RadialMenuItem.ORIENT_TOP, Colors.MENU_MODE_FREE_SELECTED, Colors.MENU_MODE_FREE_ACTIVE));
 		menu.addItem(new RadialMenuItem(PAUSE_MENU_MODE_DUAL, "Two Hands", "dualMode", 80, 20, RadialMenuItem.ORIENT_TOP, Colors.MENU_MODE_DUAL_SELECTED, Colors.MENU_MODE_DUAL_ACTIVE));
 		menu.addItem(new RadialMenuItem(PAUSE_MENU_MODE_SINGLE, "One Hand", "singleMode", 100, 20, RadialMenuItem.ORIENT_TOP, Colors.MENU_MODE_SINGLE_SELECTED, Colors.MENU_MODE_SINGLE_ACTIVE));
-		menu.addItem(new RadialMenuItem(PAUSE_MENU_EXIT_GAME, "Exit Game", "exit", 240, 20, RadialMenuItem.ORIENT_BOTTOM));
-		menu.addItem(new RadialMenuItem(PAUSE_MENU_LEADERBOARD, "High Scores", "leaderboard", 260, 20, RadialMenuItem.ORIENT_BOTTOM));
-		
-		muteMenuItem = new RadialMenuItem(PAUSE_MENU_MUTE, "Mute", "mute", 280, 20, RadialMenuItem.ORIENT_BOTTOM);
+		menu.addItem(new RadialMenuItem(PAUSE_MENU_EXIT_GAME, "Exit Game", "exit", 230, 20, RadialMenuItem.ORIENT_BOTTOM));
+		menu.addItem(new RadialMenuItem(PAUSE_MENU_LEADERBOARD, "High Scores", "leaderboard", 250, 20, RadialMenuItem.ORIENT_BOTTOM));
+		menu.addItem(new RadialMenuItem(PAUSE_MENU_TUTORIAL, "Tutorial", "tutorial", 270, 20, RadialMenuItem.ORIENT_BOTTOM));
+
+		muteMenuItem = new RadialMenuItem(PAUSE_MENU_MUTE, "Mute", "mute", 290, 20, RadialMenuItem.ORIENT_BOTTOM);
 		menu.addItem(muteMenuItem);
 
 	}
@@ -105,6 +107,11 @@ public class PausedView extends View implements RadialMenuListener {
 			case PAUSE_MENU_LEADERBOARD:
 				controller.setUsingUI(true);
 				getViewManager().pushView("leaderboard");
+				break;
+
+			case PAUSE_MENU_TUTORIAL:
+				controller.setUsingUI(true);
+				getViewManager().pushView("tutorial");
 				break;
 
 			default:

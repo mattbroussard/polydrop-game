@@ -426,6 +426,7 @@ public class TutorialView extends View implements RadialMenuListener {
 
 		switch (id) {
 			case TUTORIAL_MENU_EXIT:
+				instructionNumber = 0;
 				getViewManager().popView();
 				break;
 		}
