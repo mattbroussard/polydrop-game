@@ -1,0 +1,3 @@
+tutorialHand: modified from http://openclipart.org/detail/190777/hand-open-by-schplook-190777
+tutorialFist: modified from http://openclipart.org/detail/1210/sign-language-s-fist-by-liftarn
+tutorialPointer: modified from http://openclipart.org/detail/169880/pointer-by-frankes

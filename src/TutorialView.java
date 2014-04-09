@@ -32,42 +32,42 @@ public class TutorialView extends View implements RadialMenuListener {
 	static final int LINE_UP_CURSOR = 14;
 	static final int SELECT_PLAY = 15;
 	static final int GAMEOVER = 16;
-	
+
 	Instruction[] instructions = {	
 		/* MOVE_PLATFORM */
-			new Instruction(8f, 5f, "Move your hand to move the platform!\nAnd make sure your fingers are spread!"),
+			new Instruction(8f, 5f, "Open your hand with your palm facing downward,\nand move it around to control the platform.", 8f, 3.35f, "tutorialHand"),
 		/* LINE_UP_PLATFORM */
-			new Instruction(4.5f, 6.25f, "Line the platform up here"),							
+			new Instruction(4.5f, 6.25f, "Move the platform here."),
 		/* HOLD_POLY */
-			new Instruction(8f, 5f, "Catch the poly!"),
+			new Instruction(8f, 5f, "Catch the falling shape!"),
 		/* SCORE_EXPLANATION_ONE */
-			new Instruction(8f, 5f, "If you hold it long enough, it will increase your score"),
+			new Instruction(8f, 5f, "If you hold it long enough, it will fade and disappear\nand you'll get points for it."),
 		/* SCORE_EXPLANATION_TWO */
-			new Instruction(8f, 5f, "But if you drop it, it will decrease your score and your health"),
+			new Instruction(8f, 5f, "But if you drop it, you'll lose points and health!"),
 		/* HEALTH_EXPLANATION_ONE */
-			new Instruction(9.25f, 0.9f, "This is your health bar"),
+			new Instruction(9.25f, 0.9f, "This is your health bar."),
 		/* HEALTH_EXPLANATION_TWO */
-			new Instruction(8f, 5f, "Your health will regenerate with time"),
+			new Instruction(8f, 5f, "Your health regenerates with time, but is reduced by dropping shapes.\nIf it reaches zero, it's GAME OVER."),
 		/* LEVEL_INDICATOR_EXPLANATION_ONE */
-			new Instruction(8f, 2.5f, "This tells you how close you are to leveling up based on your score"),
+			new Instruction(8f, 2.75f, "This shows you your progress toward leveling up.", 14.5f, 2.2f, "tutorialCallout"),
 		/* LEVEL_INDICATOR_EXPLANATION_TWO */
-			new Instruction(8f, 5f, "When you level up, shapes begin to fall faster"),
+			new Instruction(8f, 5f, "When you level up, you unlock new shapes and they fall faster."),
 		/* RECEIVED_POINTS */
-			new Instruction(8f, 5f, "Yay! You got points!"),
+			new Instruction(8f, 5f, "Awesome, you got the points!"),
 		/* PAUSE */
-			new Instruction(8f, 5f, "Now, make a fist to pause the game"),							
+			new Instruction(8f, 5f, "Make a fist to pause the game.", 8f, 3.35f, "tutorialFist"),
 		/* UNPAUSE */
-			new Instruction(8f, 5f, "Unclench your fist to unpause"),							
+			new Instruction(8f, 5f, "Open your hand again to unpause the game.", 8f, 3.35f, "tutorialHand"),
 		/* PAUSE_AGAIN */
-			new Instruction(8f, 5f, "Pause again"),												
+			new Instruction(8f, 5f, "Now, pause the game again.", 8f, 3.35f, "tutorialFist"),
 		/* MOVE_CURSOR */
-			new Instruction(6.25f, 5f, "Now stick out your pointer finger to control the cursor"),	
+			new Instruction(6.25f, 5f, "Extend your index finger to control the cursor.", 6.25f, 3.35f, "tutorialPointer"),
 		/* LINE_UP_CURSOR */
-			new Instruction(9.75f, 5f, "Move the cursor here"),										
+			new Instruction(9.75f, 5f, "Move the cursor here."),
 		/* SELECT_PLAY */
-			new Instruction(6.25f, 5f, "Drag the cursor to the left to go back!"),
+			new Instruction(6.25f, 5f, "Drag the cursor to the left\nto complete the tutorial!"),
 		/* GAMEOVER */
-			new Instruction(8f, 6f, "Don't be that guy")
+			new Instruction(8f, 6f, "Don't be that guy!")
 	};
 	
 	RadialMenu menu;
@@ -138,11 +138,11 @@ public class TutorialView extends View implements RadialMenuListener {
 
 			case LINE_UP_CURSOR:
 				g2.maskCircle(15, 5, .25f);
-				g2.fillCircle(15, 5, .5f, Colors.LEAP_WARNING_OVERLAY);
+				g2.fillCircle(15, 5, .5f, Colors.TUTORIAL_CURSOR_TARGET);
 				break;
 
 			case SELECT_PLAY:
-				g2.fillRect(12, 5, 3, .125f, Colors.LEAP_WARNING_OVERLAY);
+				g2.drawImage("tutorialArrow", 13.5f, 5f);
 				break;
 
 			case GAMEOVER:
@@ -167,7 +167,7 @@ public class TutorialView extends View implements RadialMenuListener {
 
 		}
 		
-		//draw text for the current instruction
+		//draw text and image for the current instruction
 		g2.drawStringCentered(
 			instructions[instructionNumber].description,
 			fontSize,
@@ -175,6 +175,13 @@ public class TutorialView extends View implements RadialMenuListener {
 			instructions[instructionNumber].x,
 			instructions[instructionNumber].y
 		);
+		if (instructions[instructionNumber].image != null) {
+			g2.drawImage(
+				instructions[instructionNumber].image,
+				instructions[instructionNumber].imgX,
+				instructions[instructionNumber].imgY
+			);
+		}
 		
 		//Time- and paused-state- sensitive updates
 		if(!isPaused()){
@@ -188,11 +195,33 @@ public class TutorialView extends View implements RadialMenuListener {
 		instructionUpdate(System.currentTimeMillis());
 		
 		//draw bodies
-		BodyRenderer.drawBody(platform, g2, isPaused());
-		for(DrawableBody db : blockList){
-			BodyRenderer.drawBody(db, g2, isPaused());
+		if (instructionNumber < MOVE_CURSOR) {
+			BodyRenderer.drawBody(platform, g2, isPaused());
+			for(DrawableBody db : blockList){
+				BodyRenderer.drawBody(db, g2, isPaused());
+			}
 		}
 
+		//draw progress -- this bit comes almost directly from PaginatedView
+		String progress = "";
+		for (int i = 0; i < getCurrentPage(); i++) progress += "\u25E6";
+		progress += "\u2022";
+		for (int i = getCurrentPage()+1; i < pageCount(); i++) progress += "\u25E6";
+		g2.drawStringCentered(progress, 0.75f, Color.WHITE, 8f, 9.5f);
+
+	}
+
+	public int pageCount() { return 7; }
+	public int getCurrentPage() {
+		int i = 0;
+		if (instructionNumber >= LINE_UP_PLATFORM) i++;
+		if (instructionNumber >= HOLD_POLY) i++;
+		if (instructionNumber >= SCORE_EXPLANATION_ONE) i++;
+		if (instructionNumber >= HEALTH_EXPLANATION_ONE) i++;
+		if (instructionNumber >= PAUSE) i++;
+		if (instructionNumber >= MOVE_CURSOR) i++;
+		if (instructionNumber == GAMEOVER) i = 2;
+		return i;
 	}
 
 	//TODO: as mentioned at top of file, mostly copied from GameController ... try to improve.
@@ -203,11 +232,11 @@ public class TutorialView extends View implements RadialMenuListener {
 
 			if (!isPaused() && pauseTimer == 0) {
 				pauseTimer = System.currentTimeMillis();
-				System.out.println("Started pause timer");
+				System.out.println("Started tutorial pause timer");
 				return;
 			} else if (pauseTimer < 0) {
 				pauseTimer = 0;
-				System.out.println("Cancelled unpause timer");
+				System.out.println("Cancelled tutorial unpause timer");
 				return;
 			} else if (System.currentTimeMillis()-pauseTimer < PAUSE_DELAY) {
 				return;
@@ -264,7 +293,7 @@ public class TutorialView extends View implements RadialMenuListener {
 					setInstructionNumber(GAMEOVER, now);
 				}else{
 					setInstructionNumber(HOLD_POLY, now);
-					instructions[instructionNumber].setDescription("Try again"); 
+					instructions[HOLD_POLY].setDescription("Try Again"); 
 				}
 				itr.remove();
 				SoundManager.play("pointLoss");	
@@ -303,7 +332,7 @@ public class TutorialView extends View implements RadialMenuListener {
 
 			case HOLD_POLY:
 				if(blockList.size() < 1){
-					blockList.add(spawn(-8 + 4.5f));
+					blockList.add(spawn(platform.getBody().getPosition().x));
 				}
 				//deliberately fall through to level-updating block
 			case SCORE_EXPLANATION_ONE:
@@ -350,7 +379,7 @@ public class TutorialView extends View implements RadialMenuListener {
 					instructionNumber = 0;
 					score = 0;
 					health = 35;
-					instructions[HOLD_POLY].setDescription("Hold the poly until it dissapears!"); 
+					instructions[HOLD_POLY].setDescription("Catch the falling shape!"); 
 				}
 				break;
 
@@ -414,21 +443,33 @@ public class TutorialView extends View implements RadialMenuListener {
 		}
 	}
 
-}
+	private class Instruction {
+		
+		float x, y;
+		String description;
 
-class Instruction{
-	
-	float x, y;
-	String description;
-	
-	public Instruction(float x, float y, String description){
-		this.x = x;
-		this.y = y;
-		this.description = description;
-	}
-	
-	public void setDescription(String description){
-		this.description = description;
+		String image;
+		float imgX, imgY;
+		
+		public Instruction(float x, float y, String description) {
+			this.x = x;
+			this.y = y;
+			this.description = description;
+		}
+
+		public Instruction(float x, float y, String description, float imgX, float imgY, String image) {
+			this.x = x;
+			this.y = y;
+			this.description = description;
+			this.imgX = imgX;
+			this.imgY = imgY;
+			this.image = image;
+		}
+		
+		public void setDescription(String description){
+			this.description = description;
+		}
+
 	}
 
 }

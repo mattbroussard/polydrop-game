@@ -61,6 +61,7 @@ public class Colors {
 	public static final Color HIT_TEST_PROGRESS = Color.white;
 	
 	public static final Color TUTORIAL_TEXT = Color.white;
+	public static final Color TUTORIAL_CURSOR_TARGET = new Color(0, 150, 0, 150);
 
 	public static Color interpolateColor(Color a, Color c, double progress) {
 
