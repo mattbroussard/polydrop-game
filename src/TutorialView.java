@@ -77,7 +77,7 @@ public class TutorialView extends View  implements RadialMenuListener{
 			new Instruction(8f, 5f, "Catch the poly!"),
 			new Instruction(8f, 5f, "If you hold it long enough, it will increase your score"),
 			new Instruction(8f, 5f, "But if you drop it, it will decrease your score and your health"),
-			new Instruction(9.25f, .825f, "This is your health bar"),
+			new Instruction(9.25f, .9f, "This is your health bar"),
 			new Instruction(8f,5f,"Your health will regenerate with time"),
 			new Instruction(8f,2.5f,"This tells you how close you are to leveling up based on your score"),
 			new Instruction(8f,5f,"When you level up, shapes begin to fall faster"), //Thought about saying 'more frequently', but I think people will understand, and this sounds better
@@ -86,7 +86,7 @@ public class TutorialView extends View  implements RadialMenuListener{
 			new Instruction(8f,5f,"Unclench your fist to unpause"),							
 			new Instruction(8f,5f,"Pause again"),												
 			new Instruction(6.25f,5f, "Now stick out your pointer finger to control the cursor"),	
-			new Instruction(12f,1.5f,"Move the cursor here"),										
+			new Instruction(9.75f,5f,"Move the cursor here"),										
 			new Instruction(6.25f,5f,"Drag the cursor to the left to go back!"),
 			new Instruction(8f, 6f,"Don't be that guy") };	
 	
@@ -108,6 +108,7 @@ public class TutorialView extends View  implements RadialMenuListener{
 	public void draw(GraphicsWrapper g2, boolean active) {
 		
 		if(!active){
+			instructionNumber = 0;
 			return;
 		}
 		
