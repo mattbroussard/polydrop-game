@@ -54,29 +54,35 @@ public class GraphicsWrapper {
 		return PRECISION_FACTOR;
 	}
 
-	public void drawString(String s, float fontSize, Color c, float x, float y) {
+	public void drawString(String s, float fontSize, Color c, float x, float y, boolean centered) {
 		
-		float scale = getCurrentScale();
+		//Support multiline strings
+		String[] lines = s.split("\n");
+		if (lines.length > 1) {
+			for (String line : lines) {
+				drawString(line, fontSize, c, x, y, centered);
+				y += fontSize * 1.2f;
+			}
+			return;
+		}
 
-		Font f = new Font(FONT_NAME, 0, (int)Math.round(fontSize*scale));
-
-		g2.setColor(c);
-		g2.setFont(f);
-		g2.drawString(s, x * scale, y * scale);
-	
-	}
-
-	public void drawStringCentered(String s, float fontSize, Color c, float x, float y) {
-		
 		float scale = getCurrentScale();
 
 		Font f = new Font(FONT_NAME, 0, (int)Math.round(fontSize*scale));
 		g2.setFont(f);
 		g2.setColor(c);
 
-		float w = g2.getFontMetrics(f).stringWidth(s);
+		float w = centered ? g2.getFontMetrics(f).stringWidth(s) : 0;
 		g2.drawString(s, x*scale - w/2.0f, y*scale);
 
+	}
+
+	//These are here to avoid having to change code using them elsewhere
+	public void drawStringCentered(String s, float fontSize, Color c, float x, float y) {
+		drawString(s, fontSize, c, x, y, true);
+	}
+	public void drawString(String s, float fontSize, Color c, float x, float y) {
+		drawString(s, fontSize, c, x, y, false);
 	}
 
 	public void drawImage(String imgName, float x, float y) {
