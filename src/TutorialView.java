@@ -91,21 +91,36 @@ public class TutorialView extends View implements RadialMenuListener {
 	
 	public TutorialView(){
 
-		world = new World(new Vec2(0.0f, -20f));
-		
 		menu = new RadialMenu(16.5f, 5f, this);
 		menu.addItem(new RadialMenuItem(TUTORIAL_MENU_EXIT, "Back", "menuReturn", 163, 34, RadialMenuItem.ORIENT_LEFT));
 		menu.setActiveItem(TUTORIAL_MENU_EXIT);
 		
+		onActive();
+
+	}
+
+	public void onActive() {
+
+		//when the tutorial is entered, reset everything to a fresh state
+		blockList = new ArrayList<DrawableBody>();
+		world = new World(new Vec2(0.0f, -20f));
 		platform = new Platform(world, Platform.FULL);
+		instructionNumber = 0;
+		startedLevel = 0;
+		dx = 0;
+		health = 35;
+		healthIncrease = 0;
+		paused = false;
+		pauseTimer = 0;
+		score = 0;
 		time = System.currentTimeMillis();
+		instructions[HOLD_POLY].setDescription("Catch the falling shape!");
 
 	}
 
 	public void draw(GraphicsWrapper g2, boolean active) {
 		
 		if(!active){
-			instructionNumber = 0;
 			return;
 		}
 		
@@ -220,7 +235,7 @@ public class TutorialView extends View implements RadialMenuListener {
 		if (instructionNumber >= HEALTH_EXPLANATION_ONE) i++;
 		if (instructionNumber >= PAUSE) i++;
 		if (instructionNumber >= MOVE_CURSOR) i++;
-		if (instructionNumber == GAMEOVER) i = 2;
+		if (instructionNumber == GAMEOVER) i = 0;
 		return i;
 	}
 
@@ -379,7 +394,7 @@ public class TutorialView extends View implements RadialMenuListener {
 					instructionNumber = 0;
 					score = 0;
 					health = 35;
-					instructions[HOLD_POLY].setDescription("Catch the falling shape!"); 
+					instructions[HOLD_POLY].setDescription("Catch the falling shape!");
 				}
 				break;
 
@@ -426,7 +441,6 @@ public class TutorialView extends View implements RadialMenuListener {
 
 		switch (id) {
 			case TUTORIAL_MENU_EXIT:
-				instructionNumber = 0;
 				getViewManager().popView();
 				break;
 		}
