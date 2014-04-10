@@ -19,6 +19,7 @@
     <minVersion>1.7.0</minVersion>
     <maxVersion></maxVersion>
     <jdkPreference>preferJre</jdkPreference>
+    <opt>-Xmx1024M</opt>
   </jre>
 
   <!-- we put these things here because, but the Ant script overrides them -->

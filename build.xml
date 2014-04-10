@@ -61,6 +61,7 @@
 			fork="yes" >
 			<sysproperty key="java.library.path" path="lib/"/>
 			<arg line="${args}" />
+			<jvmarg value="-Xmx1024M" />
 		</java>
 	</target>
 
@@ -140,6 +141,7 @@
 			<classpath file="distrib/${version}/PolyDrop.jar" />
 			<librarypath dir="lib/" includes="libLeap.dylib, libLeapJava.dylib" />
 			<runtime dir="${javahome}" if:set="includeJRE" />
+			<option value="-Xmx1024M" />
 		</bundleapp>
 
 		<!-- this is a little ugly, but adds to Info.plist the necessary keys to support Retina and fullscreen mode on Mac -->
