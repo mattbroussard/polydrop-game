@@ -1,4 +1,6 @@
 
+import java.awt.event.KeyEvent;
+
 public class PausedView extends View implements RadialMenuListener {
 	
 	GameView gameView;
@@ -124,6 +126,23 @@ public class PausedView extends View implements RadialMenuListener {
 
 	public void pointerUpdate(float cursorX, float cursorY) {
 		menu.pointerUpdate(cursorX, cursorY);
+	}
+
+	StringBuilder cheat = new StringBuilder();
+	public void onKey(int keyCode) {
+
+		//this is the vector through which cheats are entered
+		if (keyCode >= KeyEvent.VK_A && keyCode <= KeyEvent.VK_Z) {
+			char c = (char)(keyCode - KeyEvent.VK_A + (char)'a');
+			cheat.append(c);
+			if (cheat.length() > 100)
+				cheat.delete(0, 50);
+		} else if (keyCode == KeyEvent.VK_ENTER) {
+			String s = cheat.toString();
+			cheat = new StringBuilder();
+			CheatManager.applyCheat(s);
+		}
+
 	}
 
 }

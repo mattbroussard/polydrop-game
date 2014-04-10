@@ -289,6 +289,10 @@ public class GameController implements Runnable {
 						itr.remove();
 						if(model.getGameMode() != GameModel.FREE_PLAY) {
 							model.reduceHealth();
+							if (CheatManager.failfast) {
+								for (int i = 0; i < 4; i++)
+									model.reduceHealth();
+							}
 						}
 						if (view != null)
 							view.notifyScore(b, b.getPenalty());
