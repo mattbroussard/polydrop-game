@@ -44,7 +44,9 @@ public class BodyRenderer {
 		if (c!=null && (!CheatManager.limes || db instanceof Platform))
 			g2.fillPath(poly, c);
 		else if (CheatManager.limes) {
+			g2.rotate(body.getAngle() / (float)Math.PI * 180f);
 			g2.drawImage("lime", body.getWorldCenter().x + 8f, 10f - body.getWorldCenter().y, false);
+			g2.restore();
 		}
 
 	}
