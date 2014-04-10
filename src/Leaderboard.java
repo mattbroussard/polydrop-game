@@ -79,6 +79,8 @@ public class Leaderboard extends View implements RadialMenuListener {
 			SoundManager.play("highScore");
 
 			String name = promptForName(score, insertIndex+1);
+			if (name==null)
+				return;
 			entry.name = name;
 
 			topList.add(insertIndex, entry);
