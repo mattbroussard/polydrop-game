@@ -61,6 +61,7 @@ public class Main {
 		lay.add(Box.createVerticalGlue());
 		lay.setCursor(Toolkit.getDefaultToolkit().createCustomCursor(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), new Point(), "null"));
 		frame.addKeyListener(vm);
+		frame.addWindowListener(vm);
 
 		//Setup full screen window
 		if (fullScreen) {

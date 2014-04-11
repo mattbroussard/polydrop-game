@@ -30,6 +30,7 @@ public class LeapController extends Listener implements Runnable {
 	double dx = 0, dy = 0;
 	
 	private long lastUpdate;
+	private boolean windowFocused = true;
 
 	//normalizes a number n between a and b to be between 0 and 1. Clips if necessary.
 	private double normalize(double n, double a, double b) {
@@ -42,6 +43,14 @@ public class LeapController extends Listener implements Runnable {
 		if (n <= a) return 0f;
 
 		return (n - a) / (b - a);
+
+	}
+
+	public void notifyWindowState(boolean focused) {
+
+		this.windowFocused = focused;
+		if (!focused)
+			game.pause(false);
 
 	}
 
@@ -344,6 +353,10 @@ public class LeapController extends Listener implements Runnable {
 
 		viewManager.setLeapWarningVisible(!leap.isConnected());
 
+		//If the ViewManager tells us the window has been unfocused, don't send any Leap commands until the window is refocused
+		if (!windowFocused)
+			return;
+
 		processFrameForPlatform(frame);
 		processFrameForMenu(frame);
 
@@ -369,6 +382,7 @@ public class LeapController extends Listener implements Runnable {
 		this.game = game;
 		this.tutorialView = tutorialView;
 		this.viewManager = viewManager;
+		viewManager.leapController = this;
 
 		//setup Leap listener/controller
 		leap = new Controller();

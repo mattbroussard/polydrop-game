@@ -1,17 +1,23 @@
 
 import java.awt.Graphics;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.Iterator;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowListener;
+import java.awt.event.WindowEvent;
 import java.awt.Dimension;
 import java.awt.Color;
 import java.awt.Container;
 import java.util.HashMap;
 
-public class ViewManager extends JComponent implements KeyListener {
+public class ViewManager extends JComponent implements KeyListener, WindowListener {
 	
+	//this will be set by the LeapController upon its construction
+	public LeapController leapController;
+
 	private ConcurrentLinkedDeque<View> views = new ConcurrentLinkedDeque<View>();
 	private HashMap<String, View> registry = new HashMap<String, View>();
 
@@ -183,5 +189,30 @@ public class ViewManager extends JComponent implements KeyListener {
 	//we always get what we want
 	public Dimension getMaximumSize() { return getPreferredSize(); }
 	public Dimension getMinimumSize() { return getPreferredSize(); }
+
+	public void windowActivated(WindowEvent event) {
+
+		if (leapController != null)
+			leapController.notifyWindowState(true);
+
+	}
+
+	public void windowDeactivated(WindowEvent event) {
+		
+		if (event.getOppositeWindow() != null || event.getWindow() == null)
+			return;
+
+		if (leapController != null)
+			leapController.notifyWindowState(false);
+
+		((JFrame)event.getWindow()).setState(JFrame.ICONIFIED);
+
+	}
+
+	public void windowClosed(WindowEvent event) {}
+	public void windowClosing(WindowEvent event) {}
+	public void windowDeiconified(WindowEvent event) {}
+	public void windowIconified(WindowEvent event) {}
+	public void windowOpened(WindowEvent event) {}
 
 }
