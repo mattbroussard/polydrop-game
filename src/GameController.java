@@ -160,7 +160,6 @@ public class GameController implements Runnable {
 	}
 
 	public DrawableBody spawn() {
-		int sides = (int)Math.round(Math.random()*5) + 3;
 		float x;
 
         // int level = Arrays.binarySearch(scoreNeededToLevel, model.getMaxScore());
@@ -195,7 +194,8 @@ public class GameController implements Runnable {
 			x = (float)(Math.random() * 12 - 6 );
 		}
 		System.out.println("spawing at "+x);
-		return new PolyBody(model.world, x, distributions[level][newPoly], model.gameMode);
+		int sides = !CheatManager.dropfast ? distributions[level][newPoly] : (int)Math.round(Math.random()*5)+3;
+		return new PolyBody(model.world, x, sides, model.gameMode);
 	}
 
 	public void run() {
@@ -218,7 +218,8 @@ public class GameController implements Runnable {
 
 			// drop block every 2 seconds
 			long now = System.currentTimeMillis();
-			if(now - squareSpawnTime >= 2*timesToSpawn[model.getLevel()]) {
+			long spawnTime = CheatManager.dropfast ? 50 : timesToSpawn[model.getLevel()];
+			if(now - squareSpawnTime >= 2*spawnTime) {
 				DrawableBody db = spawn();
 				synchronized (model.blockList) {
 					model.blockList.add(db);

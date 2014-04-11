@@ -74,7 +74,7 @@ public class Leaderboard extends View implements RadialMenuListener {
 
 		int binSearch = Collections.binarySearch(topList, entry);
 		int insertIndex = binSearch < 0 ? -binSearch-1 : binSearch+1; //binarySearch can say it found the entry if score comparator returns 0
-		if (insertIndex < N_ENTRIES) {
+		if (insertIndex < N_ENTRIES && !CheatManager.leaderboardForbidden) {
 			
 			SoundManager.play("highScore");
 
