@@ -153,6 +153,10 @@ public class ViewManager extends JComponent implements KeyListener, WindowListen
 
 	public void keyReleased(KeyEvent e) {
 
+		//escape key exits app from anywhere
+		if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
+			System.exit(0);
+
 		View activeView = views.peek();
 		if (activeView != null)
 			activeView.onKey(e.getKeyCode());
