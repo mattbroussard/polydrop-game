@@ -208,12 +208,9 @@ public class ViewManager extends JComponent implements KeyListener, WindowListen
 
 		//Due to JDK bug (https://bugs.openjdk.java.net/browse/JDK-8032078), this can throw an undocumented exception under certain conditions on OS X.
 		//Additionally, when this happens, we don't seem to ever get windowActivated back, so don't stop Leap events if this happens.
-		//TODO Matt: there is still an issue here on OSX where clicking a link in About renders the app inoperable upon returning to it.
-		try {
+		//Because of this, for the time being, we're not going to set ICONIFIED on Mac.
+		if (System.getProperty("os.name", "generic").toLowerCase().indexOf("mac") < 0)
 			((JFrame)event.getWindow()).setState(JFrame.ICONIFIED);
-		} catch (Exception e) {
-			return;
-		}
 
 		if (leapController != null)
 			leapController.notifyWindowState(false);
