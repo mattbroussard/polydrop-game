@@ -15,16 +15,17 @@ public class SplashView extends View implements RadialMenuListener {
 	static final int SPLASH_MENU_ABOUT = 3;
 	static final int SPLASH_MENU_EXIT_GAME = 4;
 	
-	long squareSpawnTime; 
+	long time;
+	World world;
+
+	long prevSpawnTime; 
+	double dropRate = 0.5*1000; // milliseconds
 	
 	Platform rp, lp;
 	float leftPlatformX = -5f;
 	float rightPlatformX = 1f;
-	float a;
-	float v;
-	float terminalv = 1f;
-	long time;
-	World world;
+	float freq = 1f; // Hz
+	float amplitude = 2f; // amplitude
 	
 	ArrayList<DrawableBody> blockList = new ArrayList<DrawableBody>();
 
@@ -46,12 +47,12 @@ public class SplashView extends View implements RadialMenuListener {
 		
 		rp.getBody().setTransform(new Vec2(rightPlatformX,3), 0);
 		lp.getBody().setTransform(new Vec2(leftPlatformX,2), 0);
-		v = terminalv;
+		//v = terminalv;
 
 	}
 
 	public void draw(GraphicsWrapper g2, boolean active) {
-		update(); 
+		update();
 		g2.prepare();
 
 		g2.fillRect(0f, 0f, 16f, 10f, Colors.PAUSED);
@@ -73,51 +74,64 @@ public class SplashView extends View implements RadialMenuListener {
 	
 	public void update(){ 
 		long now = System.currentTimeMillis();
-		if(now - squareSpawnTime >= 0.5*1000) {
+
+		// Spawn a new block
+		if(now - prevSpawnTime >= dropRate) {
 			DrawableBody db = spawn();
 			synchronized (blockList) {
 				blockList.add(db);
 			}
-			squareSpawnTime = now;
+			prevSpawnTime = now;
 		}		
 
+		// advance physics
 		world.step((now-time)/1000f, 6, 2);
+		time = System.currentTimeMillis();
 		
-		//Reduce lifetimes
+		// Reduce lifetimes
 		Iterator<DrawableBody> itr = blockList.iterator();
 		while( itr.hasNext() ) {
 			DrawableBody b = itr.next();
 			long dt = now - time;
 			b.reduceLifetime(dt);
 			if( b.getExpiration() <= 0 ) {
-				// remove block
+				// Block expires
 				itr.remove();
 				world.destroyBody(b.getBody());
-			}
-			
+			}			
 
 			Vec2 pos = b.getBody().getPosition();
 			if(pos.y < -2) {
-				// Oh no! Lose points. :(
+				// Block falls off screen
 				itr.remove();
 				world.destroyBody(b.getBody());				
 			}
 		}
-		a = (lp.getBody().getPosition().x - leftPlatformX) * -.1f;
+
 		updatePlatforms();
-		time = System.currentTimeMillis();
+		
+	}
+
+	private float positionToAcceleration(float x) {
+		double a = -1*amplitude*freq*freq*x;
+		
+		System.out.println(x +"\t"+ v);
+		return (float)v;
 	}
 	
 	public void updatePlatforms(){
-		rp.getBody().setLinearVelocity(new Vec2(-1*v,0));
-		lp.getBody().setLinearVelocity(new Vec2(v,0));
-		
-		rp.getBody().setAngularVelocity(-1*v/10);
-		lp.getBody().setAngularVelocity(   v/10);
+		float x = rp.getBody().getPosition().x;
+		float v = positionToAcceleration(x - rightPlatformX);
 
-		v += a;
-		if(v > terminalv ) v = terminalv;
-		if( v < -1 * terminalv) v = -1 * terminalv;
+		rp.getBody().setLinearVelocity(new Vec2(   v,0));
+		lp.getBody().setLinearVelocity(new Vec2(-1*v,0));
+		
+		//rp.getBody().setAngularVelocity(-1*v/10);
+		//lp.getBody().setAngularVelocity(   v/10);
+
+		//v += a;
+		//if(v > terminalv ) v = terminalv;
+		//if( v < -1 * terminalv) v = -1 * terminalv;
 	}
 	
 	public DrawableBody spawn() {
