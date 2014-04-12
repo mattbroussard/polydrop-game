@@ -18,9 +18,11 @@ public class SplashView extends View implements RadialMenuListener {
 	long squareSpawnTime; 
 	
 	Platform rp, lp;
+	float leftPlatformX = -5f;
+	float rightPlatformX = 1f;
 	float a;
 	float v;
-	float terminalv = 3.5f;
+	float terminalv = 1f;
 	long time;
 	World world;
 	
@@ -42,8 +44,8 @@ public class SplashView extends View implements RadialMenuListener {
 		rp = new Platform(world, Platform.RIGHT);
 		lp = new Platform(world, Platform.LEFT);
 		
-		rp.getBody().setTransform(new Vec2(-2,6), 0);
-		lp.getBody().setTransform(new Vec2(-2,3), 0);
+		rp.getBody().setTransform(new Vec2(rightPlatformX,3), 0);
+		lp.getBody().setTransform(new Vec2(leftPlatformX,2), 0);
 		v = terminalv;
 
 	}
@@ -64,15 +66,6 @@ public class SplashView extends View implements RadialMenuListener {
 		}
 		
 		g2.prepare();
-		 	
-		//TODO: clearly, this is temporary
-		//g2.drawStringCentered("le splash~", 1.5f, Colors.SCORE, 8.0f, 5.0f);
-		//g2.drawStringCentered("build " + Main.getVersion(), 0.2f, Colors.SCORE, 8.0f, 6.5f);
-
-		String[] poly = {"P", "o", "l", "y", "D", "r", "o", "p"};
-		for(int i = 0; i < poly.length; i++){
-			g2.drawStringCentered(poly[i], 0.75f, Colors.SHAPES[i%Colors.SHAPES.length], 3.25f+.75f*i, 5.75f); 
-		}
 
 		menu.draw(g2);
 
@@ -80,7 +73,7 @@ public class SplashView extends View implements RadialMenuListener {
 	
 	public void update(){ 
 		long now = System.currentTimeMillis();
-		if(now - squareSpawnTime >= 2.5*1000) {
+		if(now - squareSpawnTime >= 0.5*1000) {
 			DrawableBody db = spawn();
 			synchronized (blockList) {
 				blockList.add(db);
@@ -110,7 +103,7 @@ public class SplashView extends View implements RadialMenuListener {
 				world.destroyBody(b.getBody());				
 			}
 		}
-		a = (lp.getBody().getPosition().x + 2) * -.1f;
+		a = (lp.getBody().getPosition().x - leftPlatformX) * -.1f;
 		updatePlatforms();
 		time = System.currentTimeMillis();
 	}
@@ -119,10 +112,9 @@ public class SplashView extends View implements RadialMenuListener {
 		rp.getBody().setLinearVelocity(new Vec2(-1*v,0));
 		lp.getBody().setLinearVelocity(new Vec2(v,0));
 		
-		
-	//	rp.getBody().setLinearVelocity(new Vec2(0,0));
-	//	lp.getBody().setLinearVelocity(new Vec2(0,0));
-			
+		rp.getBody().setAngularVelocity(-1*v/10);
+		lp.getBody().setAngularVelocity(   v/10);
+
 		v += a;
 		if(v > terminalv ) v = terminalv;
 		if( v < -1 * terminalv) v = -1 * terminalv;
