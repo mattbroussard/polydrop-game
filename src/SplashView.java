@@ -64,8 +64,8 @@ public class SplashView extends View implements RadialMenuListener {
 		for(DrawableBody db : blockList){
 			BodyRenderer.drawBody(db, g2, false);
 		}
-		
-		g2.prepare();
+
+		g2.drawImage("splashLogo", 4f, 2f);
 
 		menu.draw(g2);
 
