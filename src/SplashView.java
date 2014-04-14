@@ -15,17 +15,21 @@ public class SplashView extends View implements RadialMenuListener {
 	static final int SPLASH_MENU_ABOUT = 3;
 	static final int SPLASH_MENU_EXIT_GAME = 4;
 	
-	long time;
+	long prevTime;
 	World world;
 
 	long prevSpawnTime; 
 	double dropRate = 0.5*1000; // milliseconds
 	
 	Platform rp, lp;
-	float leftPlatformX = -5f;
-	float rightPlatformX = 1f;
-	float freq = 1f; // Hz
-	float amplitude = 2f; // amplitude
+	float leftPlatformX = -4.5f;
+	float rightPlatformX = 1.5f;
+	float amplitude = 1.5f; // amplitude
+	float platformSpeed = (float)Math.PI/2000f; // rad/s
+	float platformAngleSpeed = (float)Math.PI/3000f;
+	
+	long accumulatedTime = 0;
+	float maxdt = 50f;
 	
 	ArrayList<DrawableBody> blockList = new ArrayList<DrawableBody>();
 
@@ -45,10 +49,10 @@ public class SplashView extends View implements RadialMenuListener {
 		rp = new Platform(world, Platform.RIGHT);
 		lp = new Platform(world, Platform.LEFT);
 		
-		rp.getBody().setTransform(new Vec2(rightPlatformX,3), 0);
-		lp.getBody().setTransform(new Vec2(leftPlatformX,2), 0);
-		//v = terminalv;
+		rp.getBody().setTransform(new Vec2(rightPlatformX, 4), 0);
+		lp.getBody().setTransform(new Vec2(leftPlatformX, 2), 0);
 
+		prevTime = System.currentTimeMillis();
 	}
 
 	public void draw(GraphicsWrapper g2, boolean active) {
@@ -74,6 +78,7 @@ public class SplashView extends View implements RadialMenuListener {
 	
 	public void update(){ 
 		long now = System.currentTimeMillis();
+		long dt = Math.min(now - prevTime, (long)maxdt); // accounts for pausing
 
 		// Spawn a new block
 		if(now - prevSpawnTime >= dropRate) {
@@ -85,14 +90,14 @@ public class SplashView extends View implements RadialMenuListener {
 		}		
 
 		// advance physics
-		world.step((now-time)/1000f, 6, 2);
-		time = System.currentTimeMillis();
+		updatePlatforms(dt);
+		world.step(dt/1000f, 6, 2);
+		prevTime = System.currentTimeMillis();
 		
 		// Reduce lifetimes
 		Iterator<DrawableBody> itr = blockList.iterator();
 		while( itr.hasNext() ) {
 			DrawableBody b = itr.next();
-			long dt = now - time;
 			b.reduceLifetime(dt);
 			if( b.getExpiration() <= 0 ) {
 				// Block expires
@@ -108,30 +113,35 @@ public class SplashView extends View implements RadialMenuListener {
 			}
 		}
 
-		updatePlatforms();
-		
+		prevTime = now;
 	}
 
-	private float positionToAcceleration(float x) {
-		double a = -1*amplitude*freq*freq*x;
-		
-		System.out.println(x +"\t"+ v);
-		return (float)v;
+	private float platformPositionFromTime(long time) {
+		float x = (float)(amplitude*Math.sin(platformSpeed*time));
+		return x;
+	}
+
+	private float platformAngleFromTime(long time) {
+		float x = (float)(0.1*Math.sin(platformAngleSpeed*time));
+		return x;
 	}
 	
-	public void updatePlatforms(){
-		float x = rp.getBody().getPosition().x;
-		float v = positionToAcceleration(x - rightPlatformX);
+	public void updatePlatforms(long dt){
+		accumulatedTime += dt;
+
+		float curX = rp.getBody().getPosition().x - rightPlatformX;
+		float nextX = platformPositionFromTime(accumulatedTime);
+		float v = (nextX - curX);
 
 		rp.getBody().setLinearVelocity(new Vec2(   v,0));
 		lp.getBody().setLinearVelocity(new Vec2(-1*v,0));
-		
-		//rp.getBody().setAngularVelocity(-1*v/10);
-		//lp.getBody().setAngularVelocity(   v/10);
 
-		//v += a;
-		//if(v > terminalv ) v = terminalv;
-		//if( v < -1 * terminalv) v = -1 * terminalv;
+		float curAngle  = rp.getBody().getAngle();
+		float nextAngle = platformAngleFromTime(accumulatedTime);
+		v = nextAngle - curAngle;
+		
+		rp.getBody().setAngularVelocity(   v);
+		lp.getBody().setAngularVelocity(-1*v);
 	}
 	
 	public DrawableBody spawn() {
