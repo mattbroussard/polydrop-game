@@ -1,6 +1,7 @@
+
 import java.util.ArrayList;
 import java.util.Iterator;
-
+import java.awt.Color;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.World;
 
@@ -22,11 +23,8 @@ public class SplashView extends View implements RadialMenuListener {
 	double dropRate = 0.5*1000; // milliseconds
 	
 	Platform rp, lp;
-	float leftPlatformX = -4.5f;
-	float rightPlatformX = 1.5f;
-	float amplitude = 1.5f; // amplitude
-	float platformSpeed = (float)Math.PI/2000f; // rad/s
-	float platformAngleSpeed = (float)Math.PI/3000f;
+	TranslationFunction lpFunc = new TranslationFunction(new SplashPlatformPath(), -4.5f, 2.25f);
+	TranslationFunction rpFunc = new TranslationFunction(new SplashPlatformPath(), 1f, 5f);
 	
 	long accumulatedTime = 0;
 	float maxdt = 50f;
@@ -49,22 +47,27 @@ public class SplashView extends View implements RadialMenuListener {
 		rp = new Platform(world, Platform.RIGHT);
 		lp = new Platform(world, Platform.LEFT);
 		
-		rp.getBody().setTransform(new Vec2(rightPlatformX, 4), 0);
-		lp.getBody().setTransform(new Vec2(leftPlatformX, 2), 0);
+		rp.getBody().setTransform(new Vec2(rpFunc.getOriginX(), rpFunc.getOriginY()), 0);
+		lp.getBody().setTransform(new Vec2(lpFunc.getOriginX(), lpFunc.getOriginY()), 0);
 
 		prevTime = System.currentTimeMillis();
+
 	}
 
 	public void draw(GraphicsWrapper g2, boolean active) {
+
 		update();
 		g2.prepare();
 
 		g2.fillRect(0f, 0f, 16f, 10f, Colors.PAUSED);
 		if (!active) return;
 
-		
 		BodyRenderer.drawBody(rp, g2, false);
 		BodyRenderer.drawBody(lp, g2, false);
+		
+		//debug
+		//lpFunc.debugDraw(g2);
+		//rpFunc.debugDraw(g2);
 		
 		for(DrawableBody db : blockList){
 			BodyRenderer.drawBody(db, g2, false);
@@ -77,6 +80,7 @@ public class SplashView extends View implements RadialMenuListener {
 	}
 	
 	public void update(){ 
+
 		long now = System.currentTimeMillis();
 		long dt = Math.min(now - prevTime, (long)maxdt); // accounts for pausing
 
@@ -114,37 +118,20 @@ public class SplashView extends View implements RadialMenuListener {
 		}
 
 		prevTime = now;
+
 	}
 
-	private float platformPositionFromTime(long time) {
-		float x = (float)(amplitude*Math.sin(platformSpeed*time));
-		return x;
-	}
-
-	private float platformAngleFromTime(long time) {
-		float x = (float)(0.1*Math.sin(platformAngleSpeed*time));
-		return x;
-	}
-	
 	public void updatePlatforms(long dt){
+
 		accumulatedTime += dt;
 
-		float curX = rp.getBody().getPosition().x - rightPlatformX;
-		float nextX = platformPositionFromTime(accumulatedTime);
-		float v = (nextX - curX);
+		lpFunc.updateBody(lp, accumulatedTime, dt);
+		rpFunc.updateBody(rp, accumulatedTime + lpFunc.getPeriod()/3, dt);
 
-		rp.getBody().setLinearVelocity(new Vec2(   v,0));
-		lp.getBody().setLinearVelocity(new Vec2(-1*v,0));
-
-		float curAngle  = rp.getBody().getAngle();
-		float nextAngle = platformAngleFromTime(accumulatedTime);
-		v = nextAngle - curAngle;
-		
-		rp.getBody().setAngularVelocity(   v);
-		lp.getBody().setAngularVelocity(-1*v);
 	}
 	
 	public DrawableBody spawn() {
+
 		int sides = (int)Math.round(Math.random()*5) + 3;
 		float x;
 
@@ -157,6 +144,7 @@ public class SplashView extends View implements RadialMenuListener {
 		
 		System.out.println("spawing at "+x);
 		return new PolyBody(world, x, newPoly, GameModel.FREE_PLAY);
+
 	}
 
 	public void onMenuSelection(int id) {
@@ -193,5 +181,91 @@ public class SplashView extends View implements RadialMenuListener {
 	public void pointerUpdate(float cursorX, float cursorY) {
 		menu.pointerUpdate(cursorX, cursorY);
 	}
+
+}
+
+abstract class ParametricFunction {
+
+	public final void debugDraw(GraphicsWrapper g2) {
+
+		//draw path of matt's platform
+		float animTime = getPeriod();
+		for (float i = 0; i < 1; i += 0.01f) {
+			Color c = Color.getHSBColor(i, 1f, 0.7f);
+			g2.fillCircle(
+				getX((long)Math.round(animTime*i))+8f,
+				10f-getY((long)Math.round(animTime*i)),
+				0.05f,
+				c
+			);
+		}
+
+	}
+
+	public final void updateBody(DrawableBody db, long time, long dt) {
+
+		float xv = (getX(time) - db.getBody().getPosition().x) / dt * 1000f;
+		float yv = (getY(time) - db.getBody().getPosition().y) / dt * 1000f;
+		float av = (getTheta(time) - db.getBody().getAngle()) / dt * 1000f;
+		db.getBody().setLinearVelocity(new Vec2(xv, yv));
+		db.getBody().setAngularVelocity(av);
+
+	}
+
+	//overridable functions
+	public abstract long getPeriod();
+	public abstract float getX(long time);
+	public abstract float getY(long time);
+	public float getTheta(long time) { return 0; }
+
+}
+
+class SplashPlatformPath extends ParametricFunction {
+
+	final long period = 6000;
+	final long anglePeriod = 3000;
+	final float xAmp = 1.0f;
+	final float yAmp = 0.4f;
+	final float angleAmp = 0.15f;
+
+	public SplashPlatformPath() {}
+
+	public long getPeriod() {
+		return period;
+	}
+
+	public float getX(long time) {
+		return xAmp * (float)Math.cos(2*Math.PI/period*time);
+	}
+
+	public float getY(long time) {
+		return yAmp * (float)Math.sin(2*Math.PI/period*time*2);
+	}
+
+	public float getTheta(long time) {
+		return (float)(angleAmp*Math.sin(2*Math.PI/anglePeriod*time));
+	}
+
+}
+
+class TranslationFunction extends ParametricFunction {
+
+	ParametricFunction func;
+	float x;
+	float y;
+
+	public TranslationFunction(ParametricFunction func, float x, float y) {
+		this.func = func;
+		this.x = x;
+		this.y = y;
+	}
+
+	public long getPeriod() { return func.getPeriod(); }
+	public float getX(long time) { return func.getX(time) + x; }
+	public float getY(long time) { return func.getY(time) + y; }
+	public float getTheta(long time) { return func.getTheta(time); }
+
+	public float getOriginX() { return x; }
+	public float getOriginY() { return y; }
 
 }
