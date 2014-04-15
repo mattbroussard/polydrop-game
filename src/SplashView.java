@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.awt.Color;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.World;
-
+import java.awt.event.KeyEvent;
 
 public class SplashView extends View implements RadialMenuListener {
 	
@@ -74,6 +74,8 @@ public class SplashView extends View implements RadialMenuListener {
 		}
 
 		g2.drawImage("splashLogo", 4f, 2f);
+
+		g2.drawStringCentered("Press the spacebar for a tutorial", 0.25f, Color.WHITE, 8f, 9.7f);
 
 		menu.draw(g2);
 
@@ -176,6 +178,12 @@ public class SplashView extends View implements RadialMenuListener {
 
 		SoundManager.play("menuChoice");
 
+	}
+
+	public void onKey(int keyCode) {
+		if (keyCode == KeyEvent.VK_SPACE) {
+			getViewManager().pushView("tutorial");
+		}
 	}
 
 	public void pointerUpdate(float cursorX, float cursorY) {
