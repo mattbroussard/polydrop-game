@@ -232,10 +232,10 @@ abstract class ParametricFunction {
 class SplashPlatformPath extends ParametricFunction {
 
 	final long period = 6000;
-	final long anglePeriod = 3000;
+	final long anglePeriod = 3500;
 	final float xAmp = 1.0f;
 	final float yAmp = 0.4f;
-	final float angleAmp = 0.15f;
+	final float angleAmp = 0.12f;
 
 	public SplashPlatformPath() {}
 
