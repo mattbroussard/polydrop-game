@@ -1,6 +1,7 @@
 
 import java.awt.Paint;
 import java.util.*;
+import java.awt.geom.Arc2D;
 
 public class RadialMenu {
 	
@@ -33,6 +34,12 @@ public class RadialMenu {
 
 		items.add(item);
 		Collections.sort(items);
+
+	}
+
+	public boolean angleContained(float candidate, float start, float extent) {
+
+		return new Arc2D.Float(0, 0, 0, 0, start, extent, Arc2D.PIE).containsAngle(candidate);
 
 	}
 
@@ -71,8 +78,7 @@ public class RadialMenu {
 			
 			float leeway = (float) ((r - 2.8) * 7.5);
 		
-			//TODO: what was this r < x business for? Remove? -Matt
-			if (/*r < x ||*/ theta < selected.startAngle - leeway || theta > selected.startAngle+selected.arcAngle + leeway) {
+			if (!angleContained(theta, selected.startAngle-leeway, selected.arcAngle+2*leeway)) {
 				
 				//System.out.println("-- selection cancelled");
 				selected = null;
@@ -103,7 +109,7 @@ public class RadialMenu {
 
 			for (RadialMenuItem candidate : items) {
 
-				if (theta > candidate.startAngle && theta < candidate.startAngle+candidate.arcAngle) {
+				if (angleContained(theta, candidate.startAngle, candidate.arcAngle)) {
 
 					//System.out.println("-- found a selection");
 					selected = candidate;
