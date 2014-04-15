@@ -74,6 +74,7 @@ public class SplashView extends View implements RadialMenuListener {
 		}
 
 		g2.drawImage("splashLogo", 4f, 2f);
+		g2.drawImage("splashPlayButtonHelp", 15f, 5f);
 
 		g2.drawStringCentered("Press the spacebar for a tutorial", 0.25f, Color.WHITE, 8f, 9.7f);
 
