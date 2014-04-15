@@ -129,6 +129,9 @@ public class ViewManager extends JComponent implements KeyListener, WindowListen
 		if (leapWarningVisible)
 			leapWarning.draw(g2, true);
 
+		//For positioning elements, paint this grid on top of everything
+		//g2.drawImage("testGrid", 8f, 5f);
+
 		paintFPS(g2);
 
 	}
