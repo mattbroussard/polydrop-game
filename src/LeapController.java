@@ -89,10 +89,17 @@ public class LeapController extends Listener implements Runnable {
 		long dt = (lastUpdate < 0) ? 0 : now-lastUpdate;
 
 		int mode = game.getModel().getGameMode();
+
+		//special case for tutorial -- we ignore the mode of the actual game
+		//previously, this caused a hang if you entered the tutorial from the pausedview while in 2hand mode
+		if (viewManager.isActiveView("tutorial"))
+			mode = -1;
+
 		switch (mode) {
 
 			case GameModel.FREE_PLAY:
 			case GameModel.ONE_HAND:
+			case -1: //TutorialView special case, see above
 				
 				if (rightHand == null) {
 					game.pause(true);

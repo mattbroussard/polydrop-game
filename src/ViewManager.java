@@ -112,6 +112,15 @@ public class ViewManager extends JComponent implements KeyListener, WindowListen
 
 	}
 
+	public boolean isActiveView(String viewName) {
+
+		View view = getView(viewName);
+		View activeView = views.peek();
+
+		return view != null && activeView != null && view == activeView;
+
+	}
+
 	public void paintComponent(Graphics g) {
 
 		GraphicsWrapper g2 = new GraphicsWrapper(g, this);
