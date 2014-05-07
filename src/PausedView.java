@@ -1,5 +1,6 @@
 
 import java.awt.event.KeyEvent;
+import java.awt.Color;
 
 public class PausedView extends View implements RadialMenuListener {
 	
@@ -42,6 +43,11 @@ public class PausedView extends View implements RadialMenuListener {
 		if (active) {
 			TextRenderer.drawPaused(g2);
 			menu.draw(g2);
+
+			//draw text and image to guide user how to unpause
+			g2.drawImage("tutorialHand", 8f, 5f);
+			g2.drawStringCentered("Open your hand to unpause the game.", 0.25f, Color.WHITE, 8f, 6.5f);
+
 		}
 
 	}
