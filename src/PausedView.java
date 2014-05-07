@@ -41,13 +41,14 @@ public class PausedView extends View implements RadialMenuListener {
 		gameView.draw(g2, false, active);
 
 		if (active) {
-			TextRenderer.drawPaused(g2);
-			menu.draw(g2);
 
 			//draw text and image to guide user how to unpause
 			g2.drawImage("tutorialHand", 8f, 5f);
 			g2.drawStringCentered("Open your hand to unpause the game.", 0.25f, Color.WHITE, 8f, 6.5f);
 
+			TextRenderer.drawPaused(g2);
+			menu.draw(g2);
+			
 		}
 
 	}
