@@ -5,7 +5,7 @@ PolyDrop is a game created by Matt Broussard, Josh Kelle, and Dallas Kelle for u
 ## Authors
 
 * [Matt Broussard](http://mattb.name/) ([email](http://scr.im/mbroussard))
-* Josh Kelle ([email](http://scr.im/jkelle))
+* [Josh Kelle](http://joshkelle.com/) ([email](http://scr.im/jkelle))
 * Dallas Kelle ([email](http://scr.im/dkelle))
 
 ## Disclaimer
